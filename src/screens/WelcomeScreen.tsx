@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Image, ScrollView, StyleSheet, Text, View, useWindowDimensions,
+  Image, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +15,7 @@ export default function WelcomeScreen() {
   // Calibrated to the design mockup (512x1024): positions as fractions of
   // screen height, sizes scale from screen width so it matches on every device.
   const k = W / 512;
-  const logoSize = Math.round(k * 99);
+  const logoSize = Math.round(k * 92);
   const wordmarkSize = Math.round(k * 40);
   const tagSize = Math.max(10.5, k * 14);
   const tagSpacing = k * 3.3;
@@ -41,16 +41,11 @@ export default function WelcomeScreen() {
         resizeMode="cover"
       />
 
-      <ScrollView
-        style={styles.body}
-        contentContainerStyle={{
-          alignItems: 'center',
-          paddingTop: H * 0.328,
-          paddingBottom: insets.bottom + 14,
-        }}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-        keyboardShouldPersistTaps="handled"
+      <View
+        style={[
+          styles.body,
+          { alignItems: 'center', paddingTop: H * 0.47, paddingBottom: insets.bottom + H * 0.012 },
+        ]}
       >
         <Image
           source={require('../assets/img/logo_splash.png')}
@@ -58,21 +53,21 @@ export default function WelcomeScreen() {
           resizeMode="contain"
         />
 
-        <View style={{ marginTop: H * 0.127 }}>
+        <View style={{ marginTop: H * 0.012 }}>
           <Wordmark size={wordmarkSize} />
         </View>
 
-        <Text style={[styles.tag, { marginTop: H * 0.023, fontSize: tagSize, letterSpacing: tagSpacing }]}>
+        <Text style={[styles.tag, { marginTop: H * 0.006, fontSize: tagSize, letterSpacing: tagSpacing }]}>
           Your Movies. Your Way.
         </Text>
 
-        <Text style={[styles.desc, { marginTop: H * 0.03, fontSize: descSize, lineHeight: descSize * 1.5, maxWidth: W * 0.66 }]}>
+        <Text style={[styles.desc, { marginTop: H * 0.018, fontSize: descSize, lineHeight: descSize * 1.5, maxWidth: W * 0.66 }]}>
           Discover, stream and enjoy the best movies, TV shows and more — all in one place.
         </Text>
 
-        <View style={[styles.grid, { marginTop: H * 0.044, marginHorizontal: W * 0.123 }]}>
+        <View style={[styles.grid, { marginTop: H * 0.032, marginHorizontal: W * 0.06 }]}>
           {features.map((f, i) => (
-            <View key={i} style={[styles.cell, { width: W * 0.185 }]}>
+            <View key={i} style={[styles.cell, { width: W * 0.22 }]}>
               {f.icon}
               <Text style={[styles.cellText, { fontSize: labelSize, lineHeight: labelSize * 1.3, marginTop: Math.round(k * 13) }]}>
                 {f.label}
@@ -86,16 +81,16 @@ export default function WelcomeScreen() {
           onPress={() => nav.navigate('CreateAccount')}
           height={btnHeight}
           fontSize={btnText}
-          style={{ marginTop: H * 0.045, alignSelf: 'stretch', marginHorizontal: W * 0.086 }}
+          style={{ marginTop: H * 0.04, alignSelf: 'stretch', marginHorizontal: W * 0.086 }}
         />
 
-        <View style={[styles.dots, { marginTop: H * 0.033 }]}>
+        <View style={[styles.dots, { marginTop: H * 0.024 }]}>
           <View style={[styles.dotActive, { width: W * 0.014, height: W * 0.015 }]} />
           <View style={styles.dot} />
           <View style={styles.dot} />
           <View style={styles.dot} />
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
