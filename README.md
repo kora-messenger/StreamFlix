@@ -52,6 +52,7 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 | Login | Darkened character collage, brand lockup, gradient title accent, both fields gradient-bordered, corner glow backdrop |
 | Home | Banners, categories and title rows |
 | Search | Discovery, trending and community |
+| Adaptive launcher icon | Transparent logo foreground on a dark gradient background, masked by Android into the device shape — no black square on the home screen (legacy rounded/circle PNGs included for older devices) |
 | Movie View | Placeholder player (play/pause, progress, HD notice, fullscreen), meta line, action chips, resource block with episode grid, For you grid + Comments, floating Download button, download sheet with quality chips and episode checkboxes |
 
 ## Design system
