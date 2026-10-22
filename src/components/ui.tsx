@@ -121,7 +121,7 @@ export const Lockup = ({ stacked = false, scale = 1 }: { stacked?: boolean; scal
         <View>
           <View style={{ flexDirection: 'row' }}>
             <Text style={[s.wmWhite, { fontSize: 38 * scale }]}>Stream</Text>
-            <GradientText text="Max" size={38 * scale} width={62 * scale} height={46 * scale} />
+            <GradientText text="Max" size={38 * scale} width={Math.round(78 * scale)} height={46 * scale} />
           </View>
           <Text style={[s.wmTag, { fontSize: 15 * scale }]}>Your Movies. Your Way.</Text>
         </View>
@@ -130,10 +130,10 @@ export const Lockup = ({ stacked = false, scale = 1 }: { stacked?: boolean; scal
   );
 };
 
-export const Wordmark = ({ size = 56, width = 330 }: { size?: number; width?: number }) => (
+export const Wordmark = ({ size = 56 }: { size?: number }) => (
   <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
     <Text style={{ color: '#fff', fontSize: size, fontWeight: '800', letterSpacing: -1.5 }}>Stream</Text>
-    <GradientText text="Max" size={size} width={width * 0.24} height={size * 1.2} weight="800" />
+    <GradientText text="Max" size={size} width={Math.round(size * 2.1)} height={size * 1.2} weight="800" />
   </View>
 );
 

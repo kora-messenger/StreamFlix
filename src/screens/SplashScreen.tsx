@@ -47,7 +47,7 @@ export default function SplashScreen() {
       </Svg>
       <Animated.View style={[styles.center, { opacity: fade }]}>
         <Image source={require('../assets/img/logo_splash.png')} style={styles.logo} resizeMode="contain" />
-        <Wordmark size={46} width={310} />
+        <Wordmark size={46} />
         <Text style={styles.tag}>Your Movies. Your Way.</Text>
         <View style={{ marginTop: 26 }}>
           <Spinner size={52} />
