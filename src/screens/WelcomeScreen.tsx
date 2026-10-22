@@ -22,18 +22,16 @@ export default function WelcomeScreen() {
 
   return (
     <View style={styles.root}>
-      {/* Hero — top ~53% of the screen, fading into the background */}
-      <View style={{ height: H * 0.48 }}>
-        <Image
-          source={require('../assets/img/welcome_hero_faded.png')}
-          style={{ flex: 1, width: W }}
-          resizeMode="cover"
-        />
-      </View>
+      {/* Popcorn hero is the full-screen background; all content sits on top of it */}
+      <Image
+        source={require('../assets/img/welcome_hero_full.png')}
+        style={{ position: 'absolute', top: 0, left: 0, width: W, height: H }}
+        resizeMode="cover"
+      />
 
       <ScrollView
-        style={[styles.body, { marginTop: -H * 0.055 }]}
-        contentContainerStyle={{ alignItems: 'center', paddingHorizontal: W * 0.085, paddingBottom: insets.bottom + 18 }}
+        style={styles.body}
+        contentContainerStyle={{ alignItems: 'center', paddingHorizontal: W * 0.085, paddingTop: H * 0.46, paddingBottom: insets.bottom + 18 }}
         showsVerticalScrollIndicator={false}
         bounces={false}
         keyboardShouldPersistTaps="handled"
