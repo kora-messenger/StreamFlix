@@ -32,7 +32,7 @@ StreamFlix is a full-featured streaming app built with React Native. It delivers
 - Remember me and forgot-password flows
 
 ### Discovery
-- Home screen with auto-rotating hero banners
+- Home screen with auto-rotating full-bleed hero banners with baked key-art titles, a Featured card row for the hero titles (poster, name, year, download button), then Trending, Popular and New Releases
 - Rotating search pill with trending placeholders and gradient "Search" text; the far-right slot is reserved for future ad placements
 - Category tabs: Football, Trending, Movie, Nollywood
 - Horizontal title rows with one-tap download buttons

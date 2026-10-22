@@ -69,6 +69,10 @@ function Section({ heading, data }: { heading: string; data: Title[] }) {
 }
 
 export default function HomeScreen() {
+  const heroCards: Title[] = heroBanners.map(h => {
+    const [genre, year] = h.meta.split(' | ');
+    return { id: h.id, title: h.title, year, genre, poster: h.image };
+  });
   const nav = useNavigation<any>();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -108,10 +112,6 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <View style={{ width, height: heroH }}>
                 <Image source={item.image} style={{ width, height: heroH }} resizeMode="cover" />
-                <View style={styles.heroText}>
-                  <Text style={styles.heroTitle}>{item.title}</Text>
-                  <Text style={styles.heroMeta}>{item.meta}</Text>
-                </View>
               </View>
             )}
           />
@@ -133,6 +133,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={{ marginTop: -50 }}>
+          <Section heading="Featured" data={heroCards} />
           <Section heading="Trending Now" data={titles.slice(0, 8)} />
           <Section heading="Popular Movies" data={titles.slice(4, 12)} />
           <Section heading="New Releases" data={[...titles].reverse().slice(0, 8)} />
@@ -183,9 +184,6 @@ const styles = StyleSheet.create({
   tab: { color: '#a9adc2', fontSize: 17, fontWeight: '500', paddingVertical: 6 },
   tabOn: { color: '#fff', fontWeight: '800' },
   tabLine: { height: 3, borderRadius: 2, marginTop: -1 },
-  heroText: { position: 'absolute', left: 20, bottom: 70 },
-  heroTitle: { color: '#fff', fontSize: 30, fontWeight: '900', letterSpacing: -0.5, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 8 },
-  heroMeta: { color: '#d4d7e6', fontSize: 14, marginTop: 4 },
   dots: { position: 'absolute', bottom: 66, alignSelf: 'center', flexDirection: 'row' },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.35)', marginHorizontal: 3 },
   dotOn: { width: 18, backgroundColor: '#00D2FF' },
