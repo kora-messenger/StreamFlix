@@ -53,19 +53,19 @@ export default function WelcomeScreen() {
           resizeMode="contain"
         />
 
-        <View style={{ marginTop: H * 0.016 }}>
+        <View style={{ marginTop: H * 0.012 }}>
           <Wordmark size={wordmarkSize} />
         </View>
 
-        <Text style={[styles.tag, { marginTop: H * 0.023, fontSize: tagSize, letterSpacing: tagSpacing }]}>
+        <Text style={[styles.tag, { marginTop: H * 0.018, fontSize: tagSize, letterSpacing: tagSpacing }]}>
           Your Movies. Your Way.
         </Text>
 
-        <Text style={[styles.desc, { marginTop: H * 0.03, fontSize: descSize, lineHeight: descSize * 1.5, maxWidth: W * 0.66 }]}>
+        <Text style={[styles.desc, { marginTop: H * 0.022, fontSize: descSize, lineHeight: descSize * 1.5, maxWidth: W * 0.66 }]}>
           Discover, stream and enjoy the best movies, TV shows and more — all in one place.
         </Text>
 
-        <View style={[styles.grid, { marginTop: H * 0.044, marginHorizontal: W * 0.123 }]}>
+        <View style={[styles.grid, { marginTop: H * 0.034, marginHorizontal: W * 0.123 }]}>
           {features.map((f, i) => (
             <View key={i} style={[styles.cell, { width: W * 0.19 }]}>
               {f.icon}
@@ -85,10 +85,10 @@ export default function WelcomeScreen() {
           onPress={() => nav.navigate('CreateAccount')}
           height={btnHeight}
           fontSize={btnText}
-          style={{ marginTop: H * 0.045, alignSelf: 'stretch', marginHorizontal: W * 0.086 }}
+          style={{ marginTop: H * 0.036, alignSelf: 'stretch', marginHorizontal: W * 0.086 }}
         />
 
-        <View style={[styles.dots, { marginTop: H * 0.033 }]}>
+        <View style={[styles.dots, { marginTop: H * 0.026 }]}>
           <View style={[styles.dotActive, { width: W * 0.014, height: W * 0.015 }]} />
           <View style={styles.dot} />
           <View style={styles.dot} />
