@@ -39,10 +39,10 @@ export default function LoginScreen() {
         style={{ position: 'absolute', top: 0, width: W, height: H * 0.285 }}
         resizeMode="cover"
       />
-      {/* faint purple/blue arc at the very bottom */}
+      {/* designed bottom glow: deep blue-violet rising from the bottom edge, purple-shifted left */}
       <Image
-        source={require('../assets/img/bottom_glow.png')}
-        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.055, opacity: 0.55 }}
+        source={require('../assets/img/login_bottom_glow.png')}
+        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.105 }}
         resizeMode="stretch"
       />
 
