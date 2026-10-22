@@ -20,8 +20,8 @@ export default function WelcomeScreen() {
   const tagSize = Math.max(13, Math.round(k * 20));
   const tagSpacing = k * 0.2;
   const descSize = Math.max(11, Math.round(k * 14));
-  const iconSize = Math.round(k * 31);
-  const labelSize = Math.max(10, Math.round(k * 11));
+  const iconSize = Math.round(k * 30);
+  const labelSize = Math.max(9.5, Math.round(k * 12.5));
   const btnHeight = Math.max(50, Math.round(k * 60));
   const btnText = Math.max(15, Math.round(k * 18));
 
@@ -65,7 +65,7 @@ export default function WelcomeScreen() {
           Discover, stream and enjoy the best movies, TV shows and more — all in one place.
         </Text>
 
-        <View style={[styles.grid, { marginTop: H * 0.034, marginHorizontal: W * 0.123 }]}>
+        <View style={[styles.grid, { marginTop: H * 0.034, marginHorizontal: W * 0.102 }]}>
           {features.map((f, i) => (
             <View key={i} style={[styles.cell, { width: W * 0.19 }]}>
               {f.icon}
