@@ -98,7 +98,7 @@ Requires Node 22+ and JDK 21.
 
 ## Building the APK
 
-Every push to `main` triggers a release build via GitHub Actions. Grab the `streamflix-release-apk` artifact from the [Actions tab](https://github.com/kora-messenger/StreamMax/actions).
+Every push to `main` triggers a release build via GitHub Actions. Grab the `StreamMax-release-apk` artifact from the [Actions tab](https://github.com/kora-messenger/StreamMax/actions).
 
 ## Roadmap
 
