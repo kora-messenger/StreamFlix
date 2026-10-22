@@ -16,8 +16,8 @@ export default function WelcomeScreen() {
   // wordmark ~55%, tagline ~62%, desc ~66%, icons ~74%, button ~85%, dots ~94%.
   const k = W / 512;
   const logoSize = Math.round(k * 99);
-  const wordmarkSize = Math.round(k * 40);
-  const tagSize = Math.max(12, Math.round(k * 18));
+  const wordmarkSize = Math.round(k * 56);
+  const tagSize = Math.max(13, Math.round(k * 20));
   const tagSpacing = k * 1.5;
   const descSize = Math.max(11, Math.round(k * 15));
   const iconSize = Math.round(k * 31);
