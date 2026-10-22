@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions,
+  Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -8,99 +8,116 @@ import {
   Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton,
 } from '../components/ui';
 import { AppleLogo, CheckIcon, GoogleG, LockIcon, MailIcon } from '../components/icons';
-import { colors } from '../theme/tokens';
 
+/**
+ * FIXED layout (no scrolling). Positions are percentages of the screen height,
+ * measured from the 512x1024 design reference. Pure black background; the top
+ * image is dark at the center and fades to black at both sides.
+ */
 export default function LoginScreen() {
   const nav = useNavigation<any>();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const k = W / 512;
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [remember, setRemember] = useState(true);
 
+  const fieldPad = W * 0.092;   // fields + buttons: x 47-464 of 512
+  const textPad = W * 0.164;    // heading + sub: x 84 of 512
+  const fieldH = Math.round(k * 46);
+  const fieldGap = Math.round(k * 14);
+  const fieldFs = Math.round(k * 14);
+  const btnH = Math.round(k * 46);
+  const socialH = Math.round(k * 42);
+
   return (
-    <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {/* Darkened character collage, top ~28% */}
+    <View style={[styles.root, { backgroundColor: '#000000' }]}>
+      {/* darkened collage: visible at the center, fading to black on both sides */}
       <Image
-        source={require('../assets/img/login_hero_dark.png')}
+        source={require('../assets/img/login_hero_fade.png')}
         style={{ position: 'absolute', top: 0, width: W, height: H * 0.285 }}
         resizeMode="cover"
       />
-      {/* Purple/blue corner glows at the bottom */}
+      {/* faint purple/blue arc at the very bottom */}
       <Image
         source={require('../assets/img/bottom_glow.png')}
-        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.125 }}
+        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.055, opacity: 0.55 }}
         resizeMode="stretch"
       />
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: insets.top + H * 0.055,
-          paddingBottom: insets.bottom + H * 0.035,
-          paddingHorizontal: W * 0.09,
-        }}>
-        <View style={{ alignItems: 'center' }}>
-          <Lockup scale={0.72} />
-        </View>
-        <Text style={[styles.tag, { marginTop: H * 0.085 }]}>Your Movies. Your Way.</Text>
 
-        <View style={[styles.titleRow, { marginTop: H * 0.025 }]}>
-          <Text style={styles.title}>Welcome </Text>
-          <GradientText text="Back" size={40} width={122} height={50} weight="800" colorsArr={['#3A78FF', '#A044FF']} />
-        </View>
-        <Text style={[styles.sub, { marginTop: H * 0.008 }]}>Log in to continue watching your favorite movies and shows.</Text>
+      {/* logo + app name + tagline (one centered block) */}
+      <View style={{ position: 'absolute', top: H * 0.098, left: 0, right: 0, alignItems: 'center' }}>
+        <Lockup scale={1.05} />
+      </View>
 
-        <View style={{ marginTop: H * 0.028, gap: 12 }}>
-          <Field icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" focused />
-          <Field icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={setPw} secure focused />
-        </View>
+      {/* heading + sub (left-aligned in the reference) */}
+      <View style={[styles.titleRow, { top: H * 0.246, left: textPad }]}>
+        <Text style={[styles.title, { fontSize: Math.round(k * 40) }]}>Welcome </Text>
+        <GradientText text="Back" size={Math.round(k * 40)} width={Math.round(k * 100)} height={Math.round(k * 48)} weight="800" colorsArr={['#3A78FF', '#A044FF']} />
+      </View>
+      <Text style={[styles.sub, { top: H * 0.30, left: textPad, width: W * 0.55, fontSize: Math.round(k * 16), lineHeight: Math.round(k * 22) }]}>
+        Log in to continue watching your favorite movies and shows.
+      </Text>
 
-        <View style={[styles.rememberRow, { marginTop: H * 0.018 }]}>
-          <Pressable style={styles.remember} onPress={() => setRemember(r => !r)}>
-            <View style={[styles.check, remember ? styles.checkOn : null]}>
-              {remember ? <CheckIcon size={15} /> : null}
-            </View>
-            <Text style={styles.rememberText}>Remember me</Text>
-          </Pressable>
-          <Pressable><Text style={styles.forgot}>Forgot password?</Text></Pressable>
-        </View>
+      {/* fields */}
+      <View style={{ position: 'absolute', top: H * 0.373, left: fieldPad, right: fieldPad, gap: fieldGap }}>
+        <Field h={fieldH} fs={fieldFs} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" focused />
+        <Field h={fieldH} fs={fieldFs} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={setPw} secure />
+      </View>
 
-        <GradientButton label="Log In" onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} style={{ marginTop: H * 0.028 }} />
-        <View style={{ marginTop: H * 0.032 }}>
-          <OrDivider />
-        </View>
-        <View style={{ marginTop: H * 0.026 }}>
-          <OutlineButton label="Continue with Google" icon={<GoogleG />} />
-        </View>
-        <View style={{ marginTop: H * 0.012 }}>
-          <OutlineButton label="Continue with Apple" icon={<AppleLogo />} />
-        </View>
+      {/* remember / forgot */}
+      <View style={[styles.rememberRow, { top: H * 0.505, left: fieldPad, right: fieldPad }]}>
+        <Pressable style={styles.remember} onPress={() => setRemember(r => !r)}>
+          <View style={[styles.check, remember ? styles.checkOn : null]}>
+            {remember ? <CheckIcon size={14} /> : null}
+          </View>
+          <Text style={[styles.rememberText, { fontSize: Math.round(k * 13) }]}>Remember me</Text>
+        </Pressable>
+        <Pressable><Text style={[styles.forgot, { fontSize: Math.round(k * 13) }]}>Forgot password?</Text></Pressable>
+      </View>
 
-        <View style={[styles.signRow, { marginTop: H * 0.028 }]}>
-          <Text style={styles.signText}>Don't have an account? </Text>
-          <Pressable onPress={() => nav.navigate('CreateAccount')}>
-            <Text style={styles.signLink}>Sign Up</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      {/* log in button (arrow like the reference) */}
+      <View style={{ position: 'absolute', top: H * 0.573, left: fieldPad, right: fieldPad }}>
+        <GradientButton label="Log In" height={btnH} fontSize={Math.round(k * 17)} onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} />
+      </View>
+
+      {/* or divider */}
+      <View style={{ position: 'absolute', top: H * 0.665, left: fieldPad, right: fieldPad }}>
+        <OrDivider compact />
+      </View>
+
+      {/* social */}
+      <View style={{ position: 'absolute', top: H * 0.70, left: fieldPad, right: fieldPad }}>
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} />
+      </View>
+      <View style={{ position: 'absolute', top: H * 0.77, left: fieldPad, right: fieldPad }}>
+        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
+      </View>
+
+      {/* sign up row */}
+      <View style={[styles.signRow, { top: H * 0.858 }]}>
+        <Text style={[styles.signText, { fontSize: Math.round(k * 13) }]}>Don't have an account? </Text>
+        <Pressable onPress={() => nav.navigate('CreateAccount')}>
+          <Text style={[styles.signLink, { fontSize: Math.round(k * 14.5) }]}>Sign Up</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
-  tag: { color: '#aab0c4', fontSize: 13, letterSpacing: 2.4, textAlign: 'center' },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 40, fontWeight: '800', letterSpacing: -0.5 },
-  sub: { color: '#9fb0d8', fontSize: 15, lineHeight: 23, textAlign: 'center', maxWidth: 320, alignSelf: 'center' },
-  rememberRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  root: { flex: 1 },
+  titleRow: { position: 'absolute', flexDirection: 'row', alignItems: 'center' },
+  title: { color: '#fff', fontWeight: '800', letterSpacing: -0.5 },
+  sub: { position: 'absolute', color: '#9CA3AF' },
+  rememberRow: { position: 'absolute', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   remember: { flexDirection: 'row', alignItems: 'center' },
-  check: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: '#3a4268', alignItems: 'center', justifyContent: 'center' },
+  check: { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: '#3a4268', alignItems: 'center', justifyContent: 'center' },
   checkOn: { backgroundColor: '#7B2CBF', borderColor: '#7B2CBF' },
-  rememberText: { color: '#e4e6f5', fontSize: 14.5, marginLeft: 11 },
-  forgot: { color: '#6C63FF', fontSize: 14.5, fontWeight: '600' },
-  signRow: { flexDirection: 'row', justifyContent: 'center' },
-  signText: { color: '#d7d9ea', fontSize: 14.5 },
-  signLink: { color: '#6C63FF', fontSize: 14.5, fontWeight: '700' },
+  rememberText: { color: '#e4e6f5', marginLeft: 10 },
+  forgot: { color: '#6C63FF', fontWeight: '600' },
+  signRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
+  signText: { color: '#d7d9ea' },
+  signLink: { color: '#6C63FF', fontWeight: '700' },
 });
