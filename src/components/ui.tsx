@@ -8,16 +8,16 @@ import { colors, gradients } from '../theme/tokens';
 import { ArrowRight, EyeIcon, EyeOffIcon } from './icons';
 
 export const GradientButton = ({
-  label, onPress, arrow = true, style,
-}: { label: string; onPress?: () => void; arrow?: boolean; style?: ViewStyle }) => (
+  label, onPress, arrow = true, style, height, fontSize,
+}: { label: string; onPress?: () => void; arrow?: boolean; style?: ViewStyle; height?: number; fontSize?: number }) => (
   <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }, style]}>
     <LinearGradient
       colors={gradients.button}
       start={{ x: 0, y: 0.5 }}
       end={{ x: 1, y: 0.5 }}
-      style={s.gradBtn}>
-      <Text style={s.gradBtnText}>{label}</Text>
-      {arrow ? <ArrowRight size={22} color="#fff" /> : null}
+      style={[s.gradBtn, height ? { height, borderRadius: height / 2 } : null]}>
+      <Text style={[s.gradBtnText, fontSize ? { fontSize } : null]}>{label}</Text>
+      {arrow ? <ArrowRight size={fontSize ? fontSize + 4 : 22} color="#fff" /> : null}
     </LinearGradient>
   </Pressable>
 );
