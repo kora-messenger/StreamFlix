@@ -44,7 +44,7 @@ export default function WelcomeScreen() {
       <View
         style={[
           styles.body,
-          { alignItems: 'center', paddingTop: H * 0.347, paddingBottom: insets.bottom + H * 0.012 },
+          { alignItems: 'center', paddingTop: H * 0.451, paddingBottom: insets.bottom + H * 0.012 },
         ]}
       >
         <Image
@@ -53,7 +53,7 @@ export default function WelcomeScreen() {
           resizeMode="contain"
         />
 
-        <View style={{ marginTop: H * 0.108 }}>
+        <View style={{ marginTop: H * 0.016 }}>
           <Wordmark size={wordmarkSize} />
         </View>
 
