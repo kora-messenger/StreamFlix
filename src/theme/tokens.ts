@@ -18,7 +18,7 @@ export const colors = {
 
 export const gradients = {
   brand: ['#6C63FF', '#00D2FF'],
-  button: ['#8a2bff', '#2b6bff', '#1e8bff'],
+  button: ['#8822fb', '#4337fc', '#1168fd'],
   accent: ['#00d2ff', '#9d50bb'],
   wordmark: ['#00d2ff', '#b300ff'],
   glow: ['#6C63FF', '#00D2FF'],
