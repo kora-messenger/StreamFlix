@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import { categories, heroBanners, rotatingSearch, titles, Title } from '../data/mock';
 import { GradientText } from '../components/ui';
 import { DownloadIcon, SearchIcon } from '../components/icons';
+import { Alert } from 'react-native';
+import { getCurrentUser, logout, AuthUser } from '../core/auth/authService';
 import { colors, gradients } from '../theme/tokens';
 
 const BAR_H = 52;
@@ -79,6 +81,16 @@ export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState(1);
+  const [me, setMe] = useState<AuthUser | null>(null);
+  useEffect(() => { getCurrentUser().then(setMe); }, []);
+
+  const signOut = () => {
+    if (!me) return;
+    Alert.alert('Sign out', `Sign out of ${me.email}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign out', style: 'destructive', onPress: async () => { await logout(); nav.reset({ index: 0, routes: [{ name: 'Welcome' }] }); } },
+    ]);
+  };
   const listRef = useRef<FlatList>(null);
   const heroH = width * 1.12;
 
@@ -154,7 +166,12 @@ export default function HomeScreen() {
               <GradientText text="Search" size={15} width={52} height={20} weight="700" colorsArr={gradients.brand} />
             </View>
           </Pressable>
-          {/* Ad slot: intentionally empty until ads are introduced */}
+          {/* Account avatar: tap to sign out */}
+          <Pressable onPress={signOut} style={styles.avatarBtn}>
+            <LinearGradient colors={gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.avatar}>
+              <Text style={styles.avatarText}>{(me?.fullName || '?')[0].toUpperCase()}</Text>
+            </LinearGradient>
+          </Pressable>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
           {categories.map((c, i) => (
@@ -195,4 +212,7 @@ const styles = StyleSheet.create({
   cardTitle: { color: '#fff', fontSize: 15, fontWeight: '700' },
   cardMeta: { color: '#9a9db0', fontSize: 12.5, marginTop: 4 },
   dl: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  avatarBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: '#fff', fontSize: 14, fontWeight: '800' },
 });

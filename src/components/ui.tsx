@@ -58,8 +58,8 @@ export const GradientText = ({
 };
 
 export const Field = ({
-  icon, secure, style, focused, h, fs, ...rest
-}: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle; h?: number; fs?: number }) => {
+  icon, secure, style, focused, h, fs, error, ...rest
+}: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle; h?: number; fs?: number; error?: boolean }) => {
   const [hidden, setHidden] = useState(!!secure);
   const [isFocus, setFocus] = useState(false);
   const active = focused || isFocus;
@@ -93,7 +93,7 @@ export const Field = ({
       </LinearGradient>
     );
   }
-  return <View style={[s.fieldBorderIdle, style]}>{inner}</View>;
+  return <View style={[s.fieldBorderIdle, error && !active ? s.fieldBorderError : null, style]}>{inner}</View>;
 };
 
 export const OrDivider = ({ compact }: { compact?: boolean }) => (
@@ -185,6 +185,7 @@ const s = StyleSheet.create({
   fieldBorderIdle: {
     borderRadius: 16, borderWidth: 1.2, borderColor: '#2d2f45', overflow: 'hidden',
   },
+  fieldBorderError: { borderColor: '#ff4d6d' },
   field: {
     height: 56, borderRadius: 15, backgroundColor: '#0f121c',
     flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18,

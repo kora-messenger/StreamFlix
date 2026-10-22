@@ -25,6 +25,12 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 ## Features
 
 ### Authentication
+- Real device-local accounts: salted SHA-256 password hashing (js-sha256), per-field validation with red error states and an inline error banner — no plaintext passwords ever stored (AsyncStorage)
+- Create Account: name/email/password/confirm validation, duplicate-email protection, auto sign-in on success
+- Login: credential checks with field-specific errors ("No account found with this email", "Incorrect password"), Remember me checkbox (session persists across app restarts only when checked)
+- Forgot password: in-app reset sheet — set a new password for an existing account by email
+- Session routing: splash resumes a remembered session straight to Home; account avatar in the Home top bar shows the signed-in initial and signs out (confirm dialog)
+- Auth service is an isolated layer (`src/core/auth/authService.ts`) so storage can later be swapped for a remote backend without touching screens
 - Splash screen with deep navy radial backdrop, faint poster art in the corners and two sweeping translucent film-strip ribbons with sprocket holes
 - Android 12+ device splash (SplashScreen API): neon logo icon on the deep navy backdrop, matching icon background inside the system container and a 200 ms icon animation, followed by the in-app cinematic splash
 - Welcome onboarding: cinematic TV-room hero (new background art) runs edge to edge as the full-screen backdrop fading into deep black, with the neon logo, StreamMax wordmark, tagline, description, gradient feature icons, full-width Get Started CTA and page dots overlaid on top at design-mockup proportions — fixed layout, no scrolling

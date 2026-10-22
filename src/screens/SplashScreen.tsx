@@ -3,6 +3,7 @@ import { Animated, Easing, Image, StyleSheet, Text, View, useWindowDimensions } 
 import Svg, { Path, Defs, LinearGradient as SvgGrad, Stop } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { Spinner, Wordmark } from '../components/ui';
+import { resumeSession } from '../core/auth/authService';
 
 const grad = (id: string, a: string, b: string) => (
   <Defs>
@@ -27,7 +28,10 @@ export default function SplashScreen() {
   const fade = new Animated.Value(0);
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-    const t = setTimeout(() => nav.reset({ index: 0, routes: [{ name: 'Welcome' }] }), 2400);
+    const t = setTimeout(async () => {
+    const user = await resumeSession();
+    nav.reset({ index: 0, routes: [{ name: user ? 'Home' : 'Welcome' }] });
+  }, 2400);
     return () => clearTimeout(t);
   }, []);
   const { width: W, height: H } = useWindowDimensions();

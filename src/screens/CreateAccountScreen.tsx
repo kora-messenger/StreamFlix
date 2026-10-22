@@ -9,6 +9,7 @@ import {
 } from '../components/ui';
 import { AppleLogo, BackIcon, GoogleG, LockIcon, MailIcon, UserIcon } from '../components/icons';
 import { colors } from '../theme/tokens';
+import * as auth from '../core/auth/authService';
 
 /**
  * FIXED layout (no scrolling). Every element is positioned as a percentage of the
@@ -23,6 +24,20 @@ export default function CreateAccountScreen() {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
+  const [banner, setBanner] = useState('');
+  const [bad, setBad] = useState<Record<string, boolean>>({});
+  const [busy, setBusy] = useState(false);
+
+  const fix = (field: string) => () => { setBanner(''); setBad(b => ({ ...b, [field]: false })); };
+
+  const createAccount = async () => {
+    setBusy(true);
+    const r = await auth.register({ fullName: name, email, password: pw, confirm: pw2 });
+    setBusy(false);
+    if (r.ok) { nav.reset({ index: 0, routes: [{ name: 'Home' }] }); return; }
+    setBanner(r.message || 'Something went wrong');
+    setBad({ [r.field || 'email']: true });
+  };
 
   const padX = W * 0.102;
   const fieldH = Math.round(k * 46);      // compact input boxes
@@ -60,10 +75,10 @@ export default function CreateAccountScreen() {
 
       {/* fields */}
       <View style={{ position: 'absolute', top: H * 0.314, left: padX, right: padX, gap: fieldGap }}>
-        <Field h={fieldH} fs={fieldFs} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={setName} focused={name.length === 0} />
-        <Field h={fieldH} fs={fieldFs} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
-        <Field h={fieldH} fs={fieldFs} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={setPw} secure />
-        <Field h={fieldH} fs={fieldFs} icon={<LockIcon />} placeholder="Confirm password" value={pw2} onChangeText={setPw2} secure />
+        <Field h={fieldH} fs={fieldFs} error={bad.name} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={v => { setName(v); fix('name')(); }} focused={name.length === 0} />
+        <Field h={fieldH} fs={fieldFs} error={bad.email} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={v => { setEmail(v); fix('email')(); }} keyboardType="email-address" autoCapitalize="none" />
+        <Field h={fieldH} fs={fieldFs} error={bad.password} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={v => { setPw(v); fix('password')(); }} secure />
+        <Field h={fieldH} fs={fieldFs} error={bad.confirm} icon={<LockIcon />} placeholder="Confirm password" value={pw2} onChangeText={v => { setPw2(v); fix('confirm')(); }} secure />
       </View>
 
       {/* primary button */}
@@ -106,6 +121,7 @@ const styles = StyleSheet.create({
   titleRow: { position: 'absolute', flexDirection: 'row', alignItems: 'center' },
   title: { color: '#fff', fontWeight: '800', letterSpacing: -0.3 },
   sub: { position: 'absolute', color: '#94a3b8' },
+  errorBanner: { position: 'absolute', color: '#ff4d6d', textAlign: 'center', fontWeight: '600' },
   signRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
   signText: { color: '#d7d9ea' },
   signLink: { color: '#3b82f6', fontWeight: '600' },
