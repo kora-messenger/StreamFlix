@@ -7,7 +7,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { categories, heroBanners, rotatingSearch, titles, Title } from '../data/mock';
-import { DownloadIcon, GiftIcon, SearchIcon } from '../components/icons';
+import { GradientText } from '../components/ui';
+import { DownloadIcon, SearchIcon } from '../components/icons';
 import { colors, gradients } from '../theme/tokens';
 
 const BAR_H = 52;
@@ -146,11 +147,11 @@ export default function HomeScreen() {
             <SearchIcon size={19} color="#a9adc2" />
             <View style={{ width: 10 }} />
             <RotatingPlaceholder />
-            <LinearGradient colors={gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.searchBtn}>
-              <Text style={styles.searchBtnText}>Search</Text>
-            </LinearGradient>
+            <View style={styles.searchWord}>
+              <GradientText text="Search" size={15} width={52} height={20} weight="700" colorsArr={gradients.brand} />
+            </View>
           </Pressable>
-          <GiftIcon size={26} color="#fff" />
+          {/* Ad slot: intentionally empty until ads are introduced */}
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
           {categories.map((c, i) => (
@@ -177,8 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', paddingLeft: 14, paddingRight: 4, marginRight: 12,
   },
   ph: { color: '#c7cadb', fontSize: 14.5 },
-  searchBtn: { height: 32, borderRadius: 16, paddingHorizontal: 14, justifyContent: 'center' },
-  searchBtnText: { color: '#fff', fontSize: 13.5, fontWeight: '700' },
+  searchWord: { paddingLeft: 12, paddingRight: 6 },
   tabs: { paddingHorizontal: 16, height: TABS_H, alignItems: 'center' },
   tab: { color: '#a9adc2', fontSize: 17, fontWeight: '500', paddingVertical: 6 },
   tabOn: { color: '#fff', fontWeight: '800' },
