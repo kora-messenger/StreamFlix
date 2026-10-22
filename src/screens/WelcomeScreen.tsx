@@ -22,8 +22,8 @@ export default function WelcomeScreen() {
   const descSize = Math.max(11, Math.round(k * 14));
   const iconSize = Math.round(k * 30);
   const labelSize = Math.max(9.5, Math.round(k * 12.5));
-  const btnHeight = Math.max(50, Math.round(k * 60));
-  const btnText = Math.max(15, Math.round(k * 18));
+  const btnHeight = Math.max(44, Math.round(k * 48));
+  const btnText = Math.max(13, Math.round(k * 15));
 
   const features = [
     { icon: <FeatureClapper size={iconSize} />, label: 'Thousands of\nMovies & Shows' },
