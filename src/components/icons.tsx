@@ -95,3 +95,28 @@ export const FeatureHeart = ({ size = 34 }: P) => (
     <Path d="M20 33S6 24.5 6 14.8C6 10.5 9.2 7.5 13 7.5c2.9 0 5.2 1.6 7 4.2 1.8-2.6 4.1-4.2 7-4.2 3.8 0 7 3 7 7.3C34 24.5 20 33 20 33z" stroke="url(#fh)" strokeWidth="2.4" strokeLinejoin="round" />
   </Svg>
 );
+
+export const PauseIcon = ({ size = 18, color = '#fff' }: P) => (
+  <Svg {...base(size)}><Path d="M8 5v14M16 5v14" {...st(color, 2.6)} /></Svg>
+);
+export const FullscreenIcon = ({ size = 20, color = '#fff' }: P) => (
+  <Svg {...base(size)}><Path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" {...st(color, 2)} /></Svg>
+);
+export const CloseIcon = ({ size = 22, color = '#fff' }: P) => (
+  <Svg {...base(size)}><Path d="M6 6l12 12M18 6L6 18" {...st(color, 2.2)} /></Svg>
+);
+export const ChevronDownIcon = ({ size = 16, color = '#9a9db0' }: P) => (
+  <Svg {...base(size)}><Path d="M6 9l6 6 6-6" {...st(color, 2)} /></Svg>
+);
+export const PlusCircleIcon = ({ size = 22, color = '#c9cbe0' }: P) => (
+  <Svg {...base(size)}><Circle cx="12" cy="12" r="9" {...st(color)} /><Path d="M12 8v8M8 12h8" {...st(color)} /></Svg>
+);
+export const ShareIcon = ({ size = 22, color = '#c9cbe0' }: P) => (
+  <Svg {...base(size)}><Path d="M12 3v13" {...st(color)} /><Path d="M7.5 7.5L12 3l4.5 4.5" {...st(color)} /><Path d="M5 12v8h14v-8" {...st(color)} /></Svg>
+);
+export const StarIcon = ({ size = 14, color = '#f6b73c' }: P) => (
+  <Svg {...base(size)} fill="none"><Path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2L12 16.9 6.4 20l1.3-6.2L3 9.5l6.3-.7L12 3z" fill={color} /></Svg>
+);
+export const CrownIcon = ({ size = 12, color = '#f6b73c' }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none"><Path d="M3 18h18l1.5-11-6 4.5L12 4 7.5 11.5l-6-4.5L3 18z" fill={color} /></Svg>
+);
