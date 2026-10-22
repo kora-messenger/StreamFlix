@@ -49,7 +49,7 @@ StreamFlix is a full-featured streaming app built with React Native. It delivers
 | Splash | Cinematic backdrop, sweeping film-strip ribbons, brand lockup and gradient spinner |
 | Welcome | Onboarding and sign-up entry point |
 | Create Account | New user registration |
-| Login | Returning user authentication |
+| Login | Darkened character collage, brand lockup, gradient title accent, both fields gradient-bordered, corner glow backdrop |
 | Home | Banners, categories and title rows |
 | Search | Discovery, trending and community |
 

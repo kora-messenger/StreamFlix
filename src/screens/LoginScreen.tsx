@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -13,7 +12,7 @@ import { colors } from '../theme/tokens';
 
 export default function LoginScreen() {
   const nav = useNavigation<any>();
-  const { width } = useWindowDimensions();
+  const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
@@ -21,34 +20,43 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* Darkened character collage, top ~28% */}
       <Image
-        source={require('../assets/img/login_posters_faded.png')}
-        style={{ position: 'absolute', top: 0, width, height: width * 0.95 }}
+        source={require('../assets/img/login_hero_dark.png')}
+        style={{ position: 'absolute', top: 0, width: W, height: H * 0.285 }}
         resizeMode="cover"
       />
-      <LinearGradient
-        colors={['rgba(5,5,7,0)', 'rgba(5,5,7,0.55)', colors.bg]}
-        style={{ position: 'absolute', top: width * 0.1, width, height: width * 0.85 }}
-        pointerEvents="none"
+      {/* Purple/blue corner glows at the bottom */}
+      <Image
+        source={require('../assets/img/bottom_glow.png')}
+        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.125 }}
+        resizeMode="stretch"
       />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + 36, paddingBottom: insets.bottom + 40, paddingHorizontal: 24 }}>
-        <Lockup scale={0.78} />
+        contentContainerStyle={{
+          paddingTop: insets.top + H * 0.055,
+          paddingBottom: insets.bottom + H * 0.035,
+          paddingHorizontal: W * 0.09,
+        }}>
+        <View style={{ alignItems: 'center' }}>
+          <Lockup scale={0.72} />
+        </View>
+        <Text style={[styles.tag, { marginTop: H * 0.085 }]}>Your Movies. Your Way.</Text>
 
-        <View style={styles.titleRow}>
+        <View style={[styles.titleRow, { marginTop: H * 0.025 }]}>
           <Text style={styles.title}>Welcome </Text>
-          <GradientText text="Back" size={40} width={120} height={50} weight="800" colorsArr={['#6C63FF', '#00D2FF']} />
+          <GradientText text="Back" size={40} width={122} height={50} weight="800" colorsArr={['#3A78FF', '#A044FF']} />
         </View>
-        <Text style={styles.sub}>Log in to continue watching your favorite movies and shows.</Text>
+        <Text style={[styles.sub, { marginTop: H * 0.008 }]}>Log in to continue watching your favorite movies and shows.</Text>
 
-        <View style={{ marginTop: 26, gap: 14 }}>
-          <Field icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" focused={email.length === 0} />
-          <Field icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={setPw} secure />
+        <View style={{ marginTop: H * 0.028, gap: 12 }}>
+          <Field icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" focused />
+          <Field icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={setPw} secure focused />
         </View>
 
-        <View style={styles.rememberRow}>
+        <View style={[styles.rememberRow, { marginTop: H * 0.018 }]}>
           <Pressable style={styles.remember} onPress={() => setRemember(r => !r)}>
             <View style={[styles.check, remember ? styles.checkOn : null]}>
               {remember ? <CheckIcon size={15} /> : null}
@@ -58,41 +66,41 @@ export default function LoginScreen() {
           <Pressable><Text style={styles.forgot}>Forgot password?</Text></Pressable>
         </View>
 
-        <GradientButton label="Log In" onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} style={{ marginTop: 22 }} />
-        <OrDivider />
-        <View style={{ gap: 12 }}>
+        <GradientButton label="Log In" onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} style={{ marginTop: H * 0.028 }} />
+        <View style={{ marginTop: H * 0.032 }}>
+          <OrDivider />
+        </View>
+        <View style={{ marginTop: H * 0.026 }}>
           <OutlineButton label="Continue with Google" icon={<GoogleG />} />
+        </View>
+        <View style={{ marginTop: H * 0.012 }}>
           <OutlineButton label="Continue with Apple" icon={<AppleLogo />} />
         </View>
 
-        <View style={styles.signRow}>
+        <View style={[styles.signRow, { marginTop: H * 0.028 }]}>
           <Text style={styles.signText}>Don't have an account? </Text>
           <Pressable onPress={() => nav.navigate('CreateAccount')}>
             <Text style={styles.signLink}>Sign Up</Text>
           </Pressable>
         </View>
       </ScrollView>
-      <LinearGradient
-        colors={['rgba(108,99,255,0)', 'rgba(108,99,255,0.35)']}
-        style={{ position: 'absolute', bottom: 0, width, height: 90 }}
-        pointerEvents="none"
-      />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  titleRow: { flexDirection: 'row', alignItems: 'center', marginTop: 22 },
+  tag: { color: '#aab0c4', fontSize: 13, letterSpacing: 2.4, textAlign: 'center' },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   title: { color: '#fff', fontSize: 40, fontWeight: '800', letterSpacing: -0.5 },
-  sub: { color: '#9fb0d8', fontSize: 16, lineHeight: 25, marginTop: 8, maxWidth: 300 },
-  rememberRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 18 },
+  sub: { color: '#9fb0d8', fontSize: 15, lineHeight: 23, textAlign: 'center', maxWidth: 320, alignSelf: 'center' },
+  rememberRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   remember: { flexDirection: 'row', alignItems: 'center' },
   check: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: '#3a4268', alignItems: 'center', justifyContent: 'center' },
-  checkOn: { backgroundColor: '#7a3cff', borderColor: '#7a3cff' },
+  checkOn: { backgroundColor: '#7B2CBF', borderColor: '#7B2CBF' },
   rememberText: { color: '#e4e6f5', fontSize: 14.5, marginLeft: 11 },
-  forgot: { color: colors.link, fontSize: 14.5, fontWeight: '600' },
-  signRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 28 },
+  forgot: { color: '#6C63FF', fontSize: 14.5, fontWeight: '600' },
+  signRow: { flexDirection: 'row', justifyContent: 'center' },
   signText: { color: '#d7d9ea', fontSize: 14.5 },
-  signLink: { color: colors.link, fontSize: 14.5, fontWeight: '700' },
+  signLink: { color: '#6C63FF', fontSize: 14.5, fontWeight: '700' },
 });
