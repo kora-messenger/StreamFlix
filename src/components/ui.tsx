@@ -171,7 +171,7 @@ export const Spinner = ({ size = 50 }: { size?: number }) => {
 const s = StyleSheet.create({
   gradBtn: {
     height: 58, borderRadius: 29, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'center', gap: 10,
+    justifyContent: 'center', gap: 10, alignSelf: 'stretch',
   },
   gradBtnText: { color: '#fff', fontSize: 18, fontWeight: '600' },
   outlineBtn: {
