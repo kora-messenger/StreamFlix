@@ -49,7 +49,7 @@ export default function CreateAccountScreen() {
           <GradientText text="Account" size={30} width={168} height={38} weight="800" />
         </View>
         <Text style={[styles.sub, { marginTop: H * 0.02 }]}>
-          Join StreamFlix and get unlimited access to your favorite movies, TV shows and more.
+          Join StreamMax and get unlimited access to your favorite movies, TV shows and more.
         </Text>
 
         <View style={{ marginTop: H * 0.04, gap: 11 }}>

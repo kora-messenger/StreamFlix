@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="src/assets/img/logo.png" width="140" alt="StreamFlix logo" />
+<img src="src/assets/img/logo.png" width="140" alt="StreamMax logo" />
 
-# StreamFlix
+# StreamMax
 
 **Your Movies. Your Way.**
 
@@ -10,7 +10,7 @@ A modern movie and TV streaming platform for Android and iOS.
 
 React Native · TypeScript · Dark Cinematic UI
 
-[![Build](https://img.shields.io/badge/build-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/kora-messenger/StreamFlix/actions)
+[![Build](https://img.shields.io/badge/build-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/kora-messenger/StreamMax/actions)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-6C63FF)]()
 [![License](https://img.shields.io/badge/license-Proprietary-00D2FF)]()
 
@@ -20,7 +20,7 @@ React Native · TypeScript · Dark Cinematic UI
 
 ## Overview
 
-StreamFlix is a full-featured streaming app built with React Native. It delivers a premium, cinema-grade experience: a dark, immersive interface, a purple-to-blue brand gradient, and a neon play-button-and-film-strip logo. Discovery, search and playback are designed to feel instant and personal.
+StreamMax is a full-featured streaming app built with React Native. It delivers a premium, cinema-grade experience: a dark, immersive interface, a purple-to-blue brand gradient, and a neon play-button-and-film-strip logo. Discovery, search and playback are designed to feel instant and personal.
 
 ## Features
 
@@ -97,7 +97,7 @@ Requires Node 22+ and JDK 21.
 
 ## Building the APK
 
-Every push to `main` triggers a release build via GitHub Actions. Grab the `streamflix-release-apk` artifact from the [Actions tab](https://github.com/kora-messenger/StreamFlix/actions).
+Every push to `main` triggers a release build via GitHub Actions. Grab the `streamflix-release-apk` artifact from the [Actions tab](https://github.com/kora-messenger/StreamMax/actions).
 
 ## Roadmap
 
@@ -114,4 +114,4 @@ Core experience implemented with mock data. Backend, playback and payments are i
 
 ---
 
-© 2026 StreamFlix. All rights reserved.
+© 2026 StreamMax. All rights reserved.

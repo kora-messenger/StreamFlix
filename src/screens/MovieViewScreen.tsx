@@ -128,7 +128,7 @@ export default function MovieViewScreen() {
         <View style={styles.resBlock}>
           <View style={styles.resHead}>
             <Text style={styles.resTitle}>Resource</Text>
-            <Text style={styles.resBy}>Uploaded by StreamFlix</Text>
+            <Text style={styles.resBy}>Uploaded by StreamMax</Text>
           </View>
           <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
             <View style={styles.drop}><Text style={styles.dropText}>Original Audio</Text><ChevronDownIcon /></View>
@@ -214,7 +214,7 @@ export default function MovieViewScreen() {
           <View style={styles.resCard}>
             <View style={styles.resHead}>
               <Text style={styles.resTitle}>Resources</Text>
-              <Text style={styles.resBy}>Uploaded by StreamFlix</Text>
+              <Text style={styles.resBy}>Uploaded by StreamMax</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <View style={styles.drop}><Text style={styles.dropText}>Original Audio</Text><ChevronDownIcon /></View>

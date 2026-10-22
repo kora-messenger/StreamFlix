@@ -8,7 +8,7 @@
         <item name="android:navigationBarColor">@color/splashBackground</item>
     </style>
 
-    <!-- Launch theme: full white splash with the StreamFlix shield, StreamFlix dark launch theme. -->
+    <!-- Launch theme: full white splash with the StreamMax shield, StreamMax dark launch theme. -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splashBackground</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
