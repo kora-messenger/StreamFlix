@@ -123,7 +123,7 @@ export const Lockup = ({ stacked = false, scale = 1 }: { stacked?: boolean; scal
             <Text style={[s.wmWhite, { fontSize: 38 * scale }]}>Stream</Text>
             <GradientText text="Max" size={38 * scale} width={Math.round(78 * scale)} height={46 * scale} />
           </View>
-          <Text style={[s.wmTag, { fontSize: 15 * scale }]}>Your Movies. Your Way.</Text>
+          <Text style={[s.wmTag, { fontSize: 16 * scale }]}>Your Movies. Your Way.</Text>
         </View>
       </View>
     </View>

@@ -45,19 +45,16 @@ export default function CreateAccountScreen() {
       </Pressable>
 
       {/* lockup + tagline */}
-      <View style={{ position: 'absolute', top: H * 0.074, left: 0, right: 0, alignItems: 'center' }}>
-        <Lockup scale={0.85} />
+      <View style={{ position: 'absolute', top: H * 0.075, left: 0, right: 0, alignItems: 'center' }}>
+        <Lockup scale={1.05} />
       </View>
-      <Text style={[styles.tag, { top: H * 0.123, fontSize: Math.round(k * 13), letterSpacing: k * 1.2 }]}>
-        Your Movies. Your Way.
-      </Text>
 
       {/* heading + sub */}
-      <View style={[styles.titleRow, { top: H * 0.192, left: padX }]}>
-        <Text style={[styles.title, { fontSize: Math.round(k * 32) }]}>Create Your </Text>
-        <GradientText text="Account" size={Math.round(k * 32)} width={Math.round(k * 135)} height={Math.round(k * 40)} weight="800" />
+      <View style={[styles.titleRow, { top: H * 0.202, left: padX }]}>
+        <Text style={[styles.title, { fontSize: Math.round(k * 40) }]}>Create Your </Text>
+        <GradientText text="Account" size={Math.round(k * 40)} width={Math.round(k * 165)} height={Math.round(k * 48)} weight="800" />
       </View>
-      <Text style={[styles.sub, { top: H * 0.252, left: padX, width: W * 0.7, fontSize: Math.round(k * 14), lineHeight: Math.round(k * 20) }]}>
+      <Text style={[styles.sub, { top: H * 0.257, left: padX, width: W * 0.65, fontSize: Math.round(k * 16), lineHeight: Math.round(k * 22) }]}>
         Join StreamMax and get unlimited access to your favorite movies, TV shows and more.
       </Text>
 
@@ -70,31 +67,31 @@ export default function CreateAccountScreen() {
       </View>
 
       {/* primary button */}
-      <View style={{ position: 'absolute', top: H * 0.585, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: H * 0.604, left: padX, right: padX }}>
         <GradientButton label="Create Account" arrow={false} height={btnH} fontSize={Math.round(k * 15)} onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} />
       </View>
 
       {/* or divider */}
-      <View style={{ position: 'absolute', top: H * 0.665, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: H * 0.674, left: padX, right: padX }}>
         <OrDivider compact />
       </View>
 
       {/* social */}
-      <View style={{ position: 'absolute', top: H * 0.700, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: H * 0.723, left: padX, right: padX }}>
         <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} />
       </View>
-      <View style={{ position: 'absolute', top: H * 0.755, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: H * 0.792, left: padX, right: padX }}>
         <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
       </View>
 
       {/* sign in + legal */}
-      <View style={[styles.signRow, { top: H * 0.843 }]}>
+      <View style={[styles.signRow, { top: H * 0.879 }]}>
         <Text style={[styles.signText, { fontSize: Math.round(k * 13) }]}>Already have an account? </Text>
         <Pressable onPress={() => nav.navigate('Login')}>
           <Text style={[styles.signLink, { fontSize: Math.round(k * 14) }]}>Sign In</Text>
         </Pressable>
       </View>
-      <Text style={[styles.legal, { top: H * 0.895, fontSize: Math.round(k * 11), lineHeight: Math.round(k * 17) }]}>
+      <Text style={[styles.legal, { top: H * 0.925, fontSize: Math.round(k * 11), lineHeight: Math.round(k * 17) }]}>
         By creating an account, you agree to our{'\n'}
         <Text style={styles.legalLink}>Terms of Service</Text>  •  <Text style={styles.legalLink}>Privacy Policy</Text>
       </Text>
@@ -106,7 +103,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   hero: { position: 'absolute', top: 0, right: 0 },
   back: { position: 'absolute', width: 36, height: 36, justifyContent: 'center' },
-  tag: { position: 'absolute', left: 0, right: 0, color: '#e9ebf5', textAlign: 'center' },
   titleRow: { position: 'absolute', flexDirection: 'row', alignItems: 'center' },
   title: { color: '#fff', fontWeight: '800', letterSpacing: -0.3 },
   sub: { position: 'absolute', color: '#94a3b8' },
