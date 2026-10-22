@@ -23,11 +23,11 @@ export const GradientButton = ({
 );
 
 export const OutlineButton = ({
-  label, icon, onPress,
-}: { label: string; icon: React.ReactNode; onPress?: () => void }) => (
-  <Pressable onPress={onPress} style={({ pressed }) => [s.outlineBtn, { opacity: pressed ? 0.8 : 1 }]}>
+  label, icon, onPress, height, fontSize,
+}: { label: string; icon: React.ReactNode; onPress?: () => void; height?: number; fontSize?: number }) => (
+  <Pressable onPress={onPress} style={({ pressed }) => [s.outlineBtn, height ? { height, borderRadius: height / 2 } : null, { opacity: pressed ? 0.8 : 1 }]}>
     <View style={s.outlineIcon}>{icon}</View>
-    <Text style={s.outlineText}>{label}</Text>
+    <Text style={[s.outlineText, fontSize ? { fontSize } : null]}>{label}</Text>
   </Pressable>
 );
 
@@ -58,13 +58,13 @@ export const GradientText = ({
 };
 
 export const Field = ({
-  icon, secure, style, focused, ...rest
-}: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle }) => {
+  icon, secure, style, focused, h, fs, ...rest
+}: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle; h?: number; fs?: number }) => {
   const [hidden, setHidden] = useState(!!secure);
   const [isFocus, setFocus] = useState(false);
   const active = focused || isFocus;
   const inner = (
-    <View style={[s.field, active ? s.fieldActive : null]}>
+    <View style={[s.field, active ? s.fieldActive : null, h ? { height: h, borderRadius: Math.min(15, h / 3) } : null]}>
       <View style={s.fieldIcon}>{icon}</View>
       <TextInput
         {...rest}
@@ -72,7 +72,7 @@ export const Field = ({
         placeholderTextColor="#7b7f96"
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
-        style={s.fieldInput}
+        style={[s.fieldInput, h ? { height: h } : null, fs ? { fontSize: fs } : null]}
         selectionColor={colors.secondary}
       />
       {secure ? (
@@ -96,8 +96,8 @@ export const Field = ({
   return <View style={[s.fieldBorderIdle, style]}>{inner}</View>;
 };
 
-export const OrDivider = () => (
-  <View style={s.orRow}>
+export const OrDivider = ({ compact }: { compact?: boolean }) => (
+  <View style={[s.orRow, compact ? { marginVertical: 0 } : null]}>
     <View style={s.orLine} />
     <Text style={s.orText}>or</Text>
     <View style={s.orLine} />
