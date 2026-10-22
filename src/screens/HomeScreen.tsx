@@ -82,13 +82,11 @@ export default function HomeScreen() {
   const listRef = useRef<FlatList>(null);
   const heroH = width * 1.12;
 
+  const idx = useRef(0);
   useEffect(() => {
     const t = setInterval(() => {
-      setSlide(p => {
-        const n = (p + 1) % heroBanners.length;
-        listRef.current?.scrollToOffset({ offset: n * width, animated: true });
-        return n;
-      });
+      idx.current = (idx.current + 1) % heroBanners.length;
+      listRef.current?.scrollToOffset({ offset: idx.current * width, animated: true });
     }, 4200);
     return () => clearInterval(t);
   }, [width]);
