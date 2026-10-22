@@ -7,6 +7,7 @@ import CreateAccountScreen from '../screens/CreateAccountScreen';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
+import MovieViewScreen from '../screens/MovieViewScreen';
 import { colors } from '../theme/tokens';
 
 const Stack = createNativeStackNavigator();
@@ -28,6 +29,7 @@ export default function Navigation() {
         <Stack.Screen name="Login" component={LoginScreen} options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="MovieView" component={MovieViewScreen} options={{ animation: 'slide_from_right' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
