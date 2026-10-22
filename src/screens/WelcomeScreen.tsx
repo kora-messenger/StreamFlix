@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
   const wordmarkSize = Math.round(k * 56);
   const tagSize = Math.max(13, Math.round(k * 20));
   const tagSpacing = k * 0.2;
-  const descSize = Math.max(11, Math.round(k * 15));
+  const descSize = Math.max(11, Math.round(k * 14));
   const iconSize = Math.round(k * 31);
   const labelSize = Math.max(10, Math.round(k * 11));
   const btnHeight = Math.max(50, Math.round(k * 60));
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#050505' },
   body: { flex: 1 },
   tag: { color: '#ffffff', fontWeight: '400' },
-  desc: { color: '#b0b3b8', textAlign: 'center', fontWeight: '300' },
+  desc: { color: '#B1B4C5', textAlign: 'center', fontWeight: '300' },
   grid: { flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-between' },
   cell: { alignItems: 'center' },
   cellText: { color: 'rgba(255,255,255,0.82)', textAlign: 'center', fontWeight: '500' },
