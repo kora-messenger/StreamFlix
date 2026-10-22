@@ -42,7 +42,7 @@ export default function LoginScreen() {
       {/* designed bottom glow: deep blue-violet rising from the bottom edge, purple-shifted left */}
       <Image
         source={require('../assets/img/login_bottom_glow.png')}
-        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.105 }}
+        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.132 }}
         resizeMode="stretch"
       />
 
