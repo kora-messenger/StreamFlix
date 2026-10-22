@@ -175,12 +175,12 @@ const s = StyleSheet.create({
   },
   gradBtnText: { color: '#fff', fontSize: 18, fontWeight: '600' },
   outlineBtn: {
-    height: 54, borderRadius: 27, borderWidth: 1.3, borderColor: '#3a4268',
+    height: 56, borderRadius: 28, borderWidth: 1.3, borderColor: '#3a4268',
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     backgroundColor: '#070810',
   },
   outlineIcon: { marginRight: 14 },
-  outlineText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  outlineText: { color: '#fff', fontSize: 15, fontWeight: '600' },
   fieldBorder: { borderRadius: 16, padding: 1.4 },
   fieldBorderIdle: {
     borderRadius: 16, borderWidth: 1.2, borderColor: '#2d2f45', overflow: 'hidden',

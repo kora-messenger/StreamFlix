@@ -14,6 +14,7 @@ export default function CreateAccountScreen() {
   const nav = useNavigation<any>();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const k = W / 512;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
@@ -33,44 +34,44 @@ export default function CreateAccountScreen() {
         contentContainerStyle={{
           paddingTop: insets.top + H * 0.004,
           paddingBottom: H * 0.04,
-          paddingHorizontal: W * 0.09,
+          paddingHorizontal: W * 0.102,
         }}>
         <Pressable hitSlop={14} onPress={() => nav.goBack()} style={styles.back}>
           <BackIcon />
         </Pressable>
 
         <View style={{ marginTop: H * 0.03, alignItems: 'center' }}>
-          <Lockup scale={0.7} />
+          <Lockup scale={1.05} />
         </View>
-        <Text style={[styles.tag, { marginTop: H * 0.012 }]}>Your Movies. Your Way.</Text>
+        <Text style={[styles.tag, { marginTop: H * 0.012, fontSize: Math.round(k * 16), letterSpacing: k * 1 }]}>Your Movies. Your Way.</Text>
 
-        <View style={[styles.titleRow, { marginTop: H * 0.032 }]}>
-          <Text style={styles.title}>Create Your </Text>
-          <GradientText text="Account" size={30} width={168} height={38} weight="800" />
+        <View style={[styles.titleRow, { marginTop: H * 0.028 }]}>
+          <Text style={[styles.title, { fontSize: Math.round(k * 40) }]}>Create Your </Text>
+          <GradientText text="Account" size={Math.round(k * 40)} width={Math.round(k * 165)} height={Math.round(k * 48)} weight="800" />
         </View>
-        <Text style={[styles.sub, { marginTop: H * 0.02 }]}>
+        <Text style={[styles.sub, { marginTop: H * 0.019, fontSize: Math.round(k * 17), maxWidth: W * 0.66 }]}>
           Join StreamMax and get unlimited access to your favorite movies, TV shows and more.
         </Text>
 
-        <View style={{ marginTop: H * 0.04, gap: 11 }}>
+        <View style={{ marginTop: H * 0.036, gap: Math.round(k * 12) }}>
           <Field icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={setName} focused={name.length === 0} />
           <Field icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
           <Field icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={setPw} secure />
           <Field icon={<LockIcon />} placeholder="Confirm password" value={pw2} onChangeText={setPw2} secure />
         </View>
 
-        <GradientButton label="Create Account" onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} style={{ marginTop: H * 0.03 }} />
-        <View style={{ marginTop: H * 0.05 }}>
+        <GradientButton label="Create Account" arrow={false} height={Math.max(48, Math.round(k * 59))} fontSize={Math.round(k * 17)} onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} style={{ marginTop: H * 0.028 }} />
+        <View style={{ marginTop: H * 0.014 }}>
           <OrDivider />
         </View>
-        <View style={{ marginTop: H * 0.02 }}>
+        <View style={{ marginTop: H * 0.014 }}>
           <OutlineButton label="Continue with Google" icon={<GoogleG />} />
         </View>
-        <View style={{ marginTop: H * 0.012 }}>
+        <View style={{ marginTop: H * 0.017 }}>
           <OutlineButton label="Continue with Apple" icon={<AppleLogo />} />
         </View>
 
-        <View style={[styles.signRow, { marginTop: H * 0.036 }]}>
+        <View style={[styles.signRow, { marginTop: H * 0.03 }]}>
           <Text style={styles.signText}>Already have an account? </Text>
           <Pressable onPress={() => nav.navigate('Login')}>
             <Text style={styles.signLink}>Sign In</Text>
@@ -89,13 +90,13 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   hero: { position: 'absolute', top: 0, right: 0 },
   back: { width: 36, height: 36, justifyContent: 'center' },
-  tag: { color: '#aab0c4', fontSize: 13, letterSpacing: 2.4, textAlign: 'center' },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 30, fontWeight: '800', letterSpacing: -0.3 },
-  sub: { color: '#94a3b8', fontSize: 14, lineHeight: 21, textAlign: 'center', maxWidth: 320, alignSelf: 'center' },
+  tag: { color: '#e9ebf5', textAlign: 'center' },
+  titleRow: { flexDirection: 'row', alignItems: 'center' },
+  title: { color: '#fff', fontWeight: '800', letterSpacing: -0.3 },
+  sub: { color: '#94a3b8', lineHeight: 23 },
   signRow: { flexDirection: 'row', justifyContent: 'center' },
-  signText: { color: '#d7d9ea', fontSize: 14.5 },
-  signLink: { color: '#3b82f6', fontSize: 14.5, fontWeight: '600' },
-  legal: { color: '#8a90a5', fontSize: 11.5, textAlign: 'center', lineHeight: 18 },
+  signText: { color: '#d7d9ea', fontSize: 13 },
+  signLink: { color: '#3b82f6', fontSize: 15.5, fontWeight: '600' },
+  legal: { color: '#8a90a5', fontSize: 12, textAlign: 'center', lineHeight: 19 },
   legalLink: { color: '#3b82f6' },
 });
