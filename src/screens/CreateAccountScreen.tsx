@@ -36,7 +36,7 @@ export default function CreateAccountScreen() {
       {/* Spider-Man corner graphic, top-right, fading into the black bg */}
       <Image
         source={require('../assets/img/create_hero_corner.png')}
-        style={[styles.hero, { width: W * 0.74, height: H * 0.295 }]}
+        style={[styles.hero, { width: W * 0.45, height: W * 0.39, top: -W * 0.062 }]}
         resizeMode="cover"
       />
 
