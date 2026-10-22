@@ -52,6 +52,7 @@ StreamFlix is a full-featured streaming app built with React Native. It delivers
 | Login | Darkened character collage, brand lockup, gradient title accent, both fields gradient-bordered, corner glow backdrop |
 | Home | Banners, categories and title rows |
 | Search | Discovery, trending and community |
+| Movie View | Placeholder player (play/pause, progress, HD notice, fullscreen), meta line, action chips, resource block with episode grid, For you grid + Comments, floating Download button, download sheet with quality chips and episode checkboxes |
 
 ## Design system
 
@@ -81,7 +82,7 @@ src/
 ├── components/   Buttons, input fields, SVG icon set
 ├── data/         Mock catalog, categories, search data
 ├── navigation/   Stack navigator
-├── screens/      Splash, Welcome, CreateAccount, Login, Home, Search
+├── screens/      Splash, Welcome, CreateAccount, Login, Home, Search, MovieView
 └── theme/        Colors, gradients, radius tokens
 ```
 
