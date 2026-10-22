@@ -25,7 +25,7 @@ StreamFlix is a full-featured streaming app built with React Native. It delivers
 ## Features
 
 ### Authentication
-- Splash screen with poster-wall backdrop, animated wordmark and gradient spinner
+- Splash screen with deep navy radial backdrop, faint poster art in the corners and two sweeping translucent film-strip ribbons with sprocket holes
 - Welcome onboarding with cinematic hero art and feature highlights
 - Create Account and Login with animated gradient-focused input fields
 - Google and Apple sign-in options
@@ -46,7 +46,7 @@ StreamFlix is a full-featured streaming app built with React Native. It delivers
 
 | Screen | Purpose |
 | --- | --- |
-| Splash | Branding and load sequence |
+| Splash | Cinematic backdrop, sweeping film-strip ribbons, brand lockup and gradient spinner |
 | Welcome | Onboarding and sign-up entry point |
 | Create Account | New user registration |
 | Login | Returning user authentication |
@@ -63,7 +63,7 @@ StreamFlix is a full-featured streaming app built with React Native. It delivers
 | Accent wordmark | `#00D2FF` → `#B300FF` |
 | Typography | System sans-serif, 800-weight display |
 
-All icons are professional SVG. No emoji in the UI. Hero artwork fades into the background with custom gradients.
+All icons are professional SVG. No emoji in the UI. Hero artwork fades into the background with custom gradients. The brand lockup uses an alpha-keyed neon logo with its own glow.
 
 ## Tech stack
 
