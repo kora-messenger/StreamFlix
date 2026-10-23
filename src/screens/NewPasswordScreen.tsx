@@ -25,7 +25,6 @@ export default function NewPasswordScreen() {
   const k = W / 683;
   const padX = W * 0.095;
   const email: string = route.params?.email || '';
-  const code: string = route.params?.code || '';
 
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
@@ -50,7 +49,7 @@ export default function NewPasswordScreen() {
       return;
     }
     setBusy(true);
-    const r = await auth.resetPassword({ email, code, password: pw, confirm: pw2 });
+    const r = await auth.completeReset({ email, password: pw, confirm: pw2 });
     setBusy(false);
     if (!r.ok) {
       setErr(r.message || 'Something went wrong');

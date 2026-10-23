@@ -38,10 +38,12 @@ export default function ForgotPasswordScreen() {
     if (!exists) {
       setBad(true); setErr('No account found with this email'); return;
     }
-    const code = await auth.sendResetCode(e);
-    // email delivery lands with the backend mail service; until then the code is shown directly
-    toast(`Your reset code: ${code}. It expires in 10 minutes.`, 'info');
-    nav.navigate('EnterCode', { email: e });
+    const r = await auth.requestCode(e, 'reset');
+    if (!r.ok) {
+      setBad(true); setErr(r.message || 'Could not send the code'); return;
+    }
+    toast('Code sent to your email. It expires in 10 minutes.', 'info');
+    nav.navigate('EnterCode', { email: e, purpose: 'reset' });
   };
 
   return (

@@ -28,6 +28,11 @@ export default function EnterCodeScreen() {
   const padX = W * 0.113;
 
   const email: string = route.params?.email || '';
+  const purpose: 'reset' | 'signup' | 'login' | 'google' = route.params?.purpose || 'reset';
+  const pending: { fullName?: string; password?: string; confirm?: string; remember?: boolean } = {
+    fullName: route.params?.fullName, password: route.params?.password,
+    confirm: route.params?.confirm, remember: route.params?.remember,
+  };
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -46,18 +51,47 @@ export default function EnterCodeScreen() {
   const next = async () => {
     if (code.length < CODE_LEN || busy) return;
     setBusy(true);
-    const v = await auth.verifyResetCode(email, code);
+    const v = await auth.checkCode(email, purpose, code);
+    if (!v.ok) {
+      setBusy(false);
+      setErr(v.message || 'Incorrect code. Please try again.');
+      return;
+    }
+    if (purpose === 'reset') {
+      setBusy(false);
+      nav.navigate('NewPassword', { email });
+      return;
+    }
+    if (purpose === 'signup') {
+      const r = await auth.register({
+        fullName: pending.fullName || '', email, password: pending.password || '', confirm: pending.confirm || '',
+      });
+      setBusy(false);
+      if (r.ok) { nav.reset({ index: 0, routes: [{ name: 'Home' }] }); return; }
+      setErr(r.message || 'Could not create your account');
+      return;
+    }
+    if (purpose === 'login') {
+      const r = await auth.login({ email, password: pending.password || '', remember: !!pending.remember });
+      setBusy(false);
+      if (r.ok) { nav.reset({ index: 0, routes: [{ name: 'Home' }] }); return; }
+      setErr(r.message || 'Could not sign you in');
+      return;
+    }
+    // google
+    const r = await auth.googleVerified(email);
     setBusy(false);
-    if (!v.ok) { setErr(v.message || 'Incorrect code. Please try again.'); return; }
-    nav.navigate('NewPassword', { email, code });
+    if (r.ok) { nav.reset({ index: 0, routes: [{ name: 'Home' }] }); return; }
+    setErr(r.message || 'Could not sign you in');
   };
 
   const resend = async () => {
     if (left > 0) return;
-    const c = await auth.sendResetCode(email);
+    const r = await auth.requestCode(email, purpose);
+    if (!r.ok) { setErr(r.message || 'Could not resend the code'); return; }
     setCode(''); setErr('');
     setLeft(RESEND_SECONDS);
-    toast(`Your reset code: ${c}. It expires in 10 minutes.`, 'info');
+    toast('Code sent to your email.', 'info');
   };
 
   const boxW = Math.round(k * 71);
@@ -117,7 +151,7 @@ export default function EnterCodeScreen() {
       {/* Enter Reset Code */}
       <View style={[styles.titleRow, { top: H * 0.409 }]}>
         <Text style={[styles.titleWhite, { fontSize: Math.round(k * 42) }]}>Enter </Text>
-        <GradientText text="Reset Code" size={Math.round(k * 42)} width={Math.round(k * 272)} height={Math.round(k * 54)} weight="800" colorsArr={gradients.brand} />
+        <GradientText text={purpose === 'reset' ? 'Reset Code' : 'Code'} size={Math.round(k * 42)} width={Math.round(k * 272)} height={Math.round(k * 54)} weight="800" colorsArr={gradients.brand} />
       </View>
 
       {/* subtitle */}
@@ -125,7 +159,7 @@ export default function EnterCodeScreen() {
         top: H * 0.474, width: W * 0.66, left: W * 0.17,
         fontSize: Math.round(k * 16), lineHeight: Math.round(k * 30),
       }]}>
-        We&apos;ve sent a 6-digit code to your email address.{'\n'}Enter the code below to reset your password.
+        We&apos;ve sent a 6-digit code to your email address.{'\n'}{purpose === 'reset' ? 'Enter the code below to reset your password.' : 'Enter the code below to continue.'}
       </Text>
 
       {/* six code boxes */}

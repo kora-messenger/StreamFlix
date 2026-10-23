@@ -10,6 +10,44 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sha256 } from 'js-sha256';
 
+/* Remote email-verification backend (domain-swappable when StreamMax migrates
+   to its own .com infrastructure — this is the only place the URL lives). */
+const API_BASE = 'https://solas-463874c8.base44.app';
+const AUTH_FN = `${API_BASE}/functions/streammaxAuth`;
+export type CodeType = 'signup' | 'login' | 'reset' | 'google';
+export interface CodeResult { ok: boolean; message?: string; }
+
+async function callAuth(payload: Record<string, unknown>): Promise<CodeResult> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+    const res = await fetch(AUTH_FN, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    const data = (await res.json().catch(() => ({}))) as CodeResult;
+    return { ok: !!data.ok, message: data.message };
+  } catch {
+    return { ok: false, message: 'Could not reach the email service. Check your connection and try again.' };
+  }
+}
+
+/** Send a real 6-digit code to the user's inbox (10 min expiry, 5 attempts, rate-limited). */
+export async function requestCode(email: string, type: CodeType): Promise<CodeResult> {
+  const e = email.trim().toLowerCase();
+  if (!emailOk(e)) return { ok: false, message: 'Enter a valid email address' };
+  return callAuth({ action: 'sendCode', email: e, type });
+}
+
+/** Check a code the user typed against the backend. */
+export async function checkCode(email: string, type: CodeType, code: string): Promise<CodeResult> {
+  const e = email.trim().toLowerCase();
+  return callAuth({ action: 'verifyCode', email: e, type, code: code.trim() });
+}
+
 export interface AuthUser { id: string; fullName: string; email: string; }
 interface Account extends AuthUser { salt: string; hash: string; createdAt: number; }
 interface Session { userId: string; token: string; remember: boolean; }
@@ -41,6 +79,52 @@ async function openSession(account: Account, remember: boolean) {
   memorySession = { userId: account.id, token: randomHex(24), remember };
   if (remember) await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(memorySession));
   else await AsyncStorage.removeItem(SESSION_KEY);
+}
+
+/** Validate registration input without creating the account (used before emailing the signup code). */
+export async function precheckRegister(input: {
+  fullName: string; email: string; password: string; confirm: string;
+}): Promise<AuthResult> {
+  const fullName = input.fullName.trim();
+  const email = input.email.trim().toLowerCase();
+  if (!fullName) return { ok: false, field: 'name', message: 'Please enter your full name' };
+  if (!emailOk(email)) return { ok: false, field: 'email', message: 'Enter a valid email address' };
+  if (input.password.length < 6) return { ok: false, field: 'password', message: 'Password must be at least 6 characters' };
+  if (input.password !== input.confirm) return { ok: false, field: 'confirm', message: 'Passwords do not match' };
+  const list = await loadAccounts();
+  if (list.some(a => a.email === email)) return { ok: false, field: 'email', message: 'An account with this email already exists' };
+  return { ok: true };
+}
+
+/** Check credentials without opening a session (password step of the two-step login). */
+export async function checkPassword(email: string, password: string): Promise<AuthResult> {
+  const e = email.trim().toLowerCase();
+  if (!emailOk(e)) return { ok: false, field: 'email', message: 'Enter a valid email address' };
+  const list = await loadAccounts();
+  const account = list.find(a => a.email === e);
+  if (!account) return { ok: false, field: 'email', message: 'No account found with this email' };
+  if (hashPassword(password, account.salt) !== account.hash) {
+    return { ok: false, field: 'password', message: 'Incorrect password' };
+  }
+  return { ok: true, user: { id: account.id, fullName: account.fullName, email: account.email } };
+}
+
+/** Finish a Google email-code sign-in: open the existing account, or create one keyed to the email. */
+export async function googleVerified(email: string): Promise<AuthResult> {
+  const e = email.trim().toLowerCase();
+  if (!emailOk(e)) return { ok: false, field: 'email', message: 'Enter a valid email address' };
+  const list = await loadAccounts();
+  let account = list.find(a => a.email === e);
+  if (!account) {
+    const salt = randomHex(16);
+    // random local password the user never sees — they own the email and can reset anytime
+    const generated = randomHex(12);
+    account = { id: randomHex(12), fullName: e.split('@')[0], email: e, salt, hash: hashPassword(generated, salt), createdAt: Date.now() };
+    list.push(account);
+    await persist(list);
+  }
+  await openSession(account, true);
+  return { ok: true, user: { id: account.id, fullName: account.fullName, email: account.email } };
 }
 
 /** Create an account, log it in, and remember it. */
@@ -106,57 +190,15 @@ export async function logout() {
   await AsyncStorage.removeItem(SESSION_KEY);
 }
 
-/** Six-digit reset codes, device-local until the mail service is connected. */
-interface StoredResetCode { code: string; expiresAt: number; attempts: number; }
-const RESET_CODES_KEY = 'sm.resetCodes';
-
-async function readCodes(): Promise<Record<string, StoredResetCode>> {
-  const raw = await AsyncStorage.getItem(RESET_CODES_KEY);
-  return raw ? (JSON.parse(raw) as Record<string, StoredResetCode>) : {};
-}
-
-async function writeCodes(db: Record<string, StoredResetCode>) {
-  await AsyncStorage.setItem(RESET_CODES_KEY, JSON.stringify(db));
-}
-
-/** Generate and store a 6-digit reset code for an email. Returns the code; the caller decides how to deliver it. */
-export async function sendResetCode(email: string): Promise<string> {
-  const e = email.trim().toLowerCase();
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  const db = await readCodes();
-  db[e] = { code, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 };
-  await writeCodes(db);
-  return code;
-}
-
-/** Check a reset code (wrong attempts increment; 5 wrong tries invalidates it). */
-export async function verifyResetCode(email: string, code: string): Promise<{ ok: boolean; message?: string }> {
-  const e = email.trim().toLowerCase();
-  const db = await readCodes();
-  const rec = db[e];
-  if (!rec) return { ok: false, message: 'No reset code was requested. Go back and request one.' };
-  if (Date.now() > rec.expiresAt) return { ok: false, message: 'This code has expired. Request a new one.' };
-  if (rec.code === code.trim()) return { ok: true };
-  rec.attempts += 1;
-  if (rec.attempts >= 5) { delete db[e]; await writeCodes(db); return { ok: false, message: 'Too many wrong attempts. Request a new code.' }; }
-  await writeCodes(db);
-  return { ok: false, message: 'Incorrect code. Please try again.' };
-}
-
 /** Does an account exist for this email? */
 export async function emailExists(email: string): Promise<boolean> {
   const e = email.trim().toLowerCase();
   return (await loadAccounts()).some(a => a.email === e);
 }
 
-/** Device-local password reset by email (no mail infrastructure yet). */
-export async function resetPassword(input: { email: string; code: string; password: string; confirm: string }): Promise<AuthResult> {
+/** Set a new password after the emailed reset code was verified on the Enter Code screen. */
+export async function completeReset(input: { email: string; password: string; confirm: string }): Promise<AuthResult> {
   const email = input.email.trim().toLowerCase();
-  const v = await verifyResetCode(email, input.code);
-  if (!v.ok) return { ok: false, field: 'code', message: v.message };
-  const db = await readCodes();
-  delete db[email];
-  await writeCodes(db);
   const list = await loadAccounts();
   const account = list.find(a => a.email === email);
   if (!account) return { ok: false, field: 'email', message: 'No account found with this email' };

@@ -5,8 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast,
-} from '../components/ui';
+  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast, useToast } from '../components/ui';
 import { AppleLogo, CheckIcon, GoogleG, LockIcon, MailIcon } from '../components/icons';
 
 import * as auth from '../core/auth/authService';
@@ -18,6 +17,7 @@ import * as auth from '../core/auth/authService';
  */
 export default function LoginScreen() {
   const nav = useNavigation<any>();
+  const toast = useToast();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const k = W / 512;
@@ -31,11 +31,34 @@ export default function LoginScreen() {
 
   const doLogin = async () => {
     setBusy(true);
-    const r = await auth.login({ email, password: pw, remember });
+    const chk = await auth.checkPassword(email, pw);
+    if (!chk.ok) {
+      setBusy(false);
+      setBanner(chk.message || 'Something went wrong');
+      setBad({ [chk.field || 'email']: true });
+      return;
+    }
+    const r = await auth.requestCode(email, 'login');
     setBusy(false);
-    if (r.ok) { nav.reset({ index: 0, routes: [{ name: 'Home' }] }); return; }
-    setBanner(r.message || 'Something went wrong');
-    setBad({ [r.field || 'email']: true });
+    if (!r.ok) {
+      setBanner(r.message || 'Could not send the login code');
+      return;
+    }
+    toast('Login code sent to your email.', 'info');
+    nav.navigate('EnterCode', { email: email.trim().toLowerCase(), purpose: 'login', password: pw, remember });
+  };
+
+  const googleCode = async () => {
+    const e = email.trim().toLowerCase();
+    if (!/^([^\s@]+@[^\s@]+\.[^\s@]{2,})$/.test(e)) {
+      setBanner('Enter your email address first — we send a Google sign-in code to it.');
+      setBad({ email: true });
+      return;
+    }
+    const r = await auth.requestCode(e, 'google');
+    if (!r.ok) { setBanner(r.message || 'Could not send the code'); return; }
+    toast('Google sign-in code sent to your email.', 'info');
+    nav.navigate('EnterCode', { email: e, purpose: 'google' });
   };
 
   const fieldPad = W * 0.092;   // fields + buttons: x 47-464 of 512
@@ -108,7 +131,7 @@ export default function LoginScreen() {
 
       {/* social */}
       <View style={{ position: 'absolute', top: H * 0.70, left: fieldPad, right: fieldPad }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} />
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: H * 0.77, left: fieldPad, right: fieldPad }}>
         <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />

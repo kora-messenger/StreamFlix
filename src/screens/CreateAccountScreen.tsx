@@ -5,8 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast,
-} from '../components/ui';
+  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast, useToast } from '../components/ui';
 import { AppleLogo, BackIcon, GoogleG, LockIcon, MailIcon, UserIcon } from '../components/icons';
 import { colors } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
@@ -17,6 +16,7 @@ import * as auth from '../core/auth/authService';
  */
 export default function CreateAccountScreen() {
   const nav = useNavigation<any>();
+  const toast = useToast();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const k = W / 512;
@@ -32,11 +32,34 @@ export default function CreateAccountScreen() {
 
   const createAccount = async () => {
     setBusy(true);
-    const r = await auth.register({ fullName: name, email, password: pw, confirm: pw2 });
+    const pre = await auth.precheckRegister({ fullName: name, email, password: pw, confirm: pw2 });
+    if (!pre.ok) {
+      setBusy(false);
+      setBanner(pre.message || 'Something went wrong');
+      setBad({ [pre.field || 'email']: true });
+      return;
+    }
+    const r = await auth.requestCode(email, 'signup');
     setBusy(false);
-    if (r.ok) { nav.reset({ index: 0, routes: [{ name: 'Home' }] }); return; }
-    setBanner(r.message || 'Something went wrong');
-    setBad({ [r.field || 'email']: true });
+    if (!r.ok) {
+      setBanner(r.message || 'Could not send the verification code');
+      return;
+    }
+    toast('Verification code sent to your email.', 'info');
+    nav.navigate('EnterCode', { email: email.trim().toLowerCase(), purpose: 'signup', fullName: name, password: pw, confirm: pw2 });
+  };
+
+  const googleCode = async () => {
+    const e = email.trim().toLowerCase();
+    if (!/^([^\s@]+@[^\s@]+\.[^\s@]{2,})$/.test(e)) {
+      setBanner('Enter your email address first — we send a Google sign-in code to it.');
+      setBad({ email: true });
+      return;
+    }
+    const r = await auth.requestCode(e, 'google');
+    if (!r.ok) { setBanner(r.message || 'Could not send the code'); return; }
+    toast('Google sign-in code sent to your email.', 'info');
+    nav.navigate('EnterCode', { email: e, purpose: 'google' });
   };
 
   const padX = W * 0.102;
@@ -106,7 +129,7 @@ export default function CreateAccountScreen() {
 
       {/* social */}
       <View style={{ position: 'absolute', top: soc1Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} />
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: soc2Top, left: padX, right: padX }}>
         <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
