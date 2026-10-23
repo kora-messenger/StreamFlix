@@ -50,6 +50,14 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Ranked results list and community discovery
 
 ## Screens
+### DramaPlayer (opened from any Dramas card)
+MovieBox-style full-screen short-drama player measured from the reference screenshots. Interaction per Ijezie:
+- Every overlay — top back/EP bar, centered subtitle, right icon column (download, bookmark with count, share), bottom meta (thumbnail, title, description with a More/Less pill), the EP01/EP67 episode-selector pill, and the utility row (gold Premium Pro pill, speed dial cycling 1x/1.25x/1.5x/2x, HD 480P badge) — auto-hides after 3 seconds while playing.
+- Tap with overlays hidden brings everything back; tap while visible pauses (and resumes) the video, and while paused the overlays stay on screen. Paused state shows a translucent center play button.
+- The thin seek line at the very bottom edge is the only way to forward/scrub the video (thickens with a larger handle while dragging). No double-tap or hold gestures in this player.
+- Bookmark toggles green with an incremented count; download/share and the episode selector are wired as visual placeholders pending the real drama backend. Episode counts are placeholder data.
+
+
 ### Dramas (bottom-bar tab, replaces the old direct-to-search routing)
 MovieBox-style short-drama screen built from the reference recording, with the premium banner and error state explicitly excluded per Ijezie:
 - Snap hero carousel of tall portrait poster cards (62% screen width, 1.45 ratio) with neighbor cards peeking at the sides; each card carries a brand-gradient circular play button at the bottom-right and a title/meta/episode overlay.

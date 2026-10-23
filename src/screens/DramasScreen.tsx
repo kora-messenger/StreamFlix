@@ -33,7 +33,7 @@ function HeroCard({ item, cardW }: { item: Drama; cardW: number }) {
   const nav = useNavigation<any>();
   const ch = Math.round(cardW * 1.45);
   const open = () =>
-    nav.navigate('MovieView', { title: item.title, year: item.episodes + ' ep', genre: 'Drama', image: item.poster });
+    nav.navigate('DramaPlayer', { title: item.title, episodes: item.episodes, poster: item.poster, epLabel: 'EP01' });
   return (
     <Pressable style={{ width: cardW, height: ch }} onPress={open}>
       <Image source={item.poster} style={[styles.heroImg, { width: cardW, height: ch }]} />
@@ -58,7 +58,7 @@ function DramaCard({ item }: { item: Drama }) {
   return (
     <Pressable
       style={styles.dcard}
-      onPress={() => nav.navigate('MovieView', { title: item.title, year: item.episodes + ' ep', genre: 'Drama', image: item.poster })}
+      onPress={() => nav.navigate('DramaPlayer', { title: item.title, episodes: item.episodes, poster: item.poster, epLabel: 'EP01' })}
     >
       <Image source={item.poster} style={styles.dimg} />
       <Text numberOfLines={2} style={styles.dtitle}>{item.title}</Text>

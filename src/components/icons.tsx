@@ -332,3 +332,26 @@ export const VolumeIcon = ({ size = 22, color = '#fff' }: P) => (
     <Path d="M15 9a4.5 4.5 0 0 1 0 6M17.5 6.5a8 8 0 0 1 0 11" {...st(color, 1.7)} />
   </Svg>
 );
+
+// ---------- drama player icons ----------
+export const DownloadTrayIcon = ({ size = 22, color = '#fff' }: P) => (
+  <Svg {...base(size)}><Path d="M12 3.5v10.5" {...st(color, 2)} /><Path d="M7.5 9.5 12 13.5l4.5-4" {...st(color, 2)} /><Path d="M4.5 17.5h15" {...st(color, 2)} /></Svg>
+);
+export const BookmarkRibbonIcon = ({ size = 22, color = '#fff', filled = false }: P & { filled?: boolean }) => (
+  <Svg {...base(size)}>
+    <Path d="M6.5 3.5h11v17l-5.5-4.6-5.5 4.6v-17z" {...st(color, 2)} {...(filled ? { fill: color } : null)} />
+  </Svg>
+);
+export const StackIcon = ({ size = 15, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Path d="M12 3.5 20.5 8 12 12.5 3.5 8 12 3.5z" {...st(color, 1.6)} />
+    <Path d="M4 12.7 12 17l8-4.3" {...st(color, 1.6)} />
+  </Svg>
+);
+export const DialIcon = ({ size = 17, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Circle cx="12" cy="12" r="8.5" {...st(color, 1.7)} />
+    <Path d="M12 12 16 8" {...st(color, 1.7)} />
+    <Circle cx="12" cy="12" r="1.6" fill={color} />
+  </Svg>
+);

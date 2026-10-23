@@ -11,7 +11,7 @@ import {
   BackIcon, FullscreenIcon, PauseIcon, PlayIcon, Rewind10Icon, Forward10Icon,
 } from './icons';
 
-const TEST_HLS =
+export const TEST_HLS =
   'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8';
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const ACCENT = '#00D2FF';
