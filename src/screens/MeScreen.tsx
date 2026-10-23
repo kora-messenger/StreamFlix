@@ -134,7 +134,7 @@ export default function MeScreen() {
   const initial = name[0].toUpperCase();
 
   const onRow = (r: Row) => {
-    if (r.key === 'about') { toast('StreamMax v1.0.0', 'info'); return; }
+    if (r.key === 'about') { nav.navigate('About'); return; }
     toast(`${r.title} is coming soon`, 'info');
   };
 

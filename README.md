@@ -62,6 +62,9 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Group 2: Check update (toast: latest version), Privacy Policy, User Agreement, Log out (confirm, clears session, back to Welcome).
 - Switches are StreamMax-branded (cyan→purple gradient track when on, grey when off) and persist locally via AsyncStorage (`streammax.settings.v1`). Rows without a destination yet show the dark pill toast.
 
+### About us (opened from the About row on the Me screen)
+- MovieBox-clone layout: top bar with back chevron and centered bold "About us", StreamMax logo with the version number (v1.0.0) vertically centered in the body, and the footer disclaimer pinned to the bottom — "By continuing, you agree to our User Agreement and Privacy Policy." with both links in the StreamMax purple accent (placeholder toasts until the documents exist).
+
 ### DramaPlayer (opened from any Dramas card)
 MovieBox-style full-screen short-drama player, now matching the episode-feed recording:
 - Vertical episode paging: swiping up/down moves between episodes (EP01..EPn); the top EP label, subtitle, description and the EP01/EP67 pill track the active episode. Locked episodes keep the top bar, right icon column, bottom meta, episode pill and utility row visible over a dimmed frame.
