@@ -56,6 +56,12 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Purple "Log Out" button with confirm dialog; logs out of the local session and returns to Welcome.
 - Me tab routes from Home and Dramas; Log Out/Sign-out flows share the app-wide toast.
 
+### Settings (opened from the gear on the Me screen)
+- Layout measured from the MovieBox settings recording: centered "Settings" header with back chevron, then two rounded dark groups under the labels "Your app and preferences" and "More info and support".
+- Group 1: Notifications >, Language >, Watch Options (value Download/Stream, picker) >, Family Mode (switch + helper text), Download in background (switch; turning it on shows the "Stop optimizing battery usage? Deny / Allow" prompt), Auto activate Miniplayer (switch + helper, on by default), Privacy Settings >.
+- Group 2: Check update (toast: latest version), About us, Privacy Policy, User Agreement, Log out (confirm, clears session, back to Welcome).
+- Switches are StreamMax-branded (cyan→purple gradient track when on, grey when off) and persist locally via AsyncStorage (`streammax.settings.v1`). Rows without a destination yet show the dark pill toast.
+
 ### DramaPlayer (opened from any Dramas card)
 MovieBox-style full-screen short-drama player, now matching the episode-feed recording:
 - Vertical episode paging: swiping up/down moves between episodes (EP01..EPn); the top EP label, subtitle, description and the EP01/EP67 pill track the active episode. Locked episodes keep the top bar, right icon column, bottom meta, episode pill and utility row visible over a dimmed frame.

@@ -14,6 +14,7 @@ import DramasScreen from '../screens/DramasScreen';
 import DramaPlayerScreen from '../screens/DramaPlayerScreen';
 import MovieViewScreen from '../screens/MovieViewScreen';
 import MeScreen from '../screens/MeScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import { colors } from '../theme/tokens';
 
 const Stack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ export default function Navigation() {
         <Stack.Screen name="DramaPlayer" component={DramaPlayerScreen} options={{ animation: 'fade' }} />
         <Stack.Screen name="MovieView" component={MovieViewScreen} options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="Me" component={MeScreen} options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ animation: 'slide_from_right' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -163,7 +163,7 @@ export default function MeScreen() {
               <CamIcon size={13} />
             </Pressable>
           </View>
-          <Pressable hitSlop={12} style={styles.gear} onPress={() => toast('Settings coming soon', 'info')}>
+          <Pressable hitSlop={12} style={styles.gear} onPress={() => nav.navigate('Settings')}>
             <GearIcon size={24} color="#B9BCCB" />
           </Pressable>
           <View style={styles.nameRow}>
