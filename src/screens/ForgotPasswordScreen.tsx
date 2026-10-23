@@ -85,7 +85,7 @@ export default function ForgotPasswordScreen() {
         top: H * 0.545, width: W * 0.655, left: W * 0.1725,
         fontSize: Math.round(k * 15.5), lineHeight: Math.round(k * 29),
       }]}>
-        Enter your email address and we&apos;ll send you a link to reset your password.
+        Enter your email address and we&apos;ll send you a code to reset your password.
       </Text>
 
       {/* email field */}
@@ -110,7 +110,7 @@ export default function ForgotPasswordScreen() {
 
       {/* Send Reset Link */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
-        <GradientButton label="Send Reset Link" height={Math.round(k * 68)} fontSize={Math.round(k * 21)} onPress={send} />
+        <GradientButton label="Send Reset Code" height={Math.round(k * 68)} fontSize={Math.round(k * 21)} onPress={send} />
       </View>
 
       {/* footer */}

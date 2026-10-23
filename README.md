@@ -28,7 +28,7 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Real device-local accounts: salted SHA-256 password hashing (js-sha256), per-field validation with red error states and an inline error banner — no plaintext passwords ever stored (AsyncStorage)
 - Create Account: name/email/password/confirm validation, duplicate-email protection, auto sign-in on success
 - Login: credential checks with field-specific errors ("No account found with this email", "Incorrect password"), Remember me checkbox (session persists across app restarts only when checked)
-- Forgot password: dedicated designed flow — "No worries!" statement, padlock in a glowing purple-to-blue gradient ring, split gradient "Forgot Password?" title, email field and "Send Reset Link" button, then a matching New Password step (both screens share the login poster collage as a full-screen treated background, fixed layouts)
+- Forgot password: dedicated designed flow — "No worries!" statement, padlock in a glowing purple-to-blue gradient ring, split gradient "Forgot Password?" title, email field and "Send Reset Code" button, then a matching New Password step (both screens share the login poster collage as a full-screen treated background, fixed layouts)
 - Session routing: splash resumes a remembered session straight to Home; account avatar in the Home top bar shows the signed-in initial and signs out (confirm dialog)
 - Auth service is an isolated layer (`src/core/auth/authService.ts`) so storage can later be swapped for a remote backend without touching screens
 - Splash screen with deep navy radial backdrop, faint poster art in the corners and two sweeping translucent film-strip ribbons with sprocket holes
