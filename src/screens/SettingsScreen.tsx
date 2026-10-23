@@ -20,7 +20,7 @@ import { gradients } from '../theme/tokens';
      Family Mode (switch + helper text), Download in background (switch),
      Auto activate Miniplayer (switch + helper text), Privacy Settings >
    - section label "More info and support" over a second group:
-     Check update >, About us >, Privacy Policy >, User Agreement >, Log out >
+     Check update >, About us >, Privacy Policy >, Terms of Service >, Log out >
    Switch states persist locally. Rows without a destination yet show the
    app-wide dark pill toast. */
 
@@ -180,7 +180,7 @@ export default function SettingsScreen() {
             <Sep />
             <NavRow title="Privacy Policy" onPress={soon('Privacy Policy')} />
             <Sep />
-            <NavRow title="User Agreement" onPress={soon('User Agreement')} />
+            <NavRow title="Terms of Service" onPress={soon('Terms of Service')} />
             <Sep />
             <NavRow title="Log out" onPress={onLogout} />
           </View>
