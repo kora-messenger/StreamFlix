@@ -50,6 +50,12 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Ranked results list and community discovery
 
 ## Screens
+### Me (profile) — bottom-bar tab
+- MovieBox-style profile screen on a dark purple→black gradient (#1e0d35 → #0d0b10): avatar in a purple gradient ring with initial (camera edit button placeholder), name + email from the signed-in local account, purple "Premium" crown pill, gear (top right), and a stats row (Watch History / Favorites / Downloads — counts wired to real data later).
+- Three grouped rounded (#1a1b26, radius 16) settings containers: Account / Subscription / Privacy & Security, Notifications / Appearance / Downloads / Language (value: English), Help & Support / About (value: v1.0.0) — colored icon tiles, secondary descriptions, chevrons; rows pop the dark pill toast until their screens exist.
+- Purple "Log Out" button with confirm dialog; logs out of the local session and returns to Welcome.
+- Me tab routes from Home and Dramas; Log Out/Sign-out flows share the app-wide toast.
+
 ### DramaPlayer (opened from any Dramas card)
 MovieBox-style full-screen short-drama player, now matching the episode-feed recording:
 - Vertical episode paging: swiping up/down moves between episodes (EP01..EPn); the top EP label, subtitle, description and the EP01/EP67 pill track the active episode. Locked episodes keep the top bar, right icon column, bottom meta, episode pill and utility row visible over a dimmed frame.
