@@ -11,6 +11,7 @@ import {
   PauseIcon, PlayIcon, PlusCircleIcon, ShareIcon, StarIcon,
 } from '../components/icons';
 import { colors, gradients } from '../theme/tokens';
+import VideoPlayer from '../components/VideoPlayer';
 
 const EPISODES = [
   { ep: '01', name: 'The Engram', size: '158.2MB', dur: '01:05:06' },
@@ -46,10 +47,7 @@ export default function MovieViewScreen() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { title, year, genre, image } = route.params ?? {};
-  const playerH = width * 0.56;
 
-  const [playing, setPlaying] = useState(true);
-  const [fullscreen, setFullscreen] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [epTab, setEpTab] = useState(0); // 0 = All
   const [tab, setTab] = useState(0); // 0 = For you
@@ -60,34 +58,18 @@ export default function MovieViewScreen() {
     setSelected(s => (s.includes(i) ? s.filter(x => x !== i) : [...s, i]));
 
   const player = (
-    <View style={{ width, height: playerH, backgroundColor: '#000' }}>
-      <Image source={image} style={{ width, height: playerH }} resizeMode="cover" />
-      <View style={styles.playerShade} pointerEvents="none" />
-      <Pressable hitSlop={12} onPress={() => nav.goBack()} style={[styles.back, { marginTop: insets.top * 0 + 10 }]}>
-        <BackIcon size={24} />
-      </Pressable>
-      <View style={styles.hdPill}>
-        <Text style={styles.hdText}>HD Previewing. Unlock HD</Text>
-        <Text style={styles.hdArrow}> ›</Text>
-      </View>
-      <Pressable style={styles.playBtn} onPress={() => nav.navigate('Player', { title })}>
-        {playing ? <PauseIcon size={26} /> : <PlayIcon size={26} />}
-      </Pressable>
-      <View style={styles.playerBottom}>
-        <Text style={styles.time}>00:00</Text>
-        <View style={styles.track}><View style={styles.trackFill} /></View>
-        <Text style={styles.time}>01:05:06</Text>
-        <Pressable hitSlop={8} onPress={() => nav.navigate('Player', { title })}>
-          <FullscreenIcon size={19} />
-        </Pressable>
-      </View>
-    </View>
+    <VideoPlayer
+      title={title}
+      subtitle={`${title} S01 E01`}
+      onBack={() => nav.goBack()}
+      onGoAdFree={() => setSheet(true)}
+    />
   );
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { paddingTop: insets.top }]}>
+      {player}
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
-        {player}
 
         {/* Title + info */}
         <View style={styles.titleRow}>
@@ -188,19 +170,6 @@ export default function MovieViewScreen() {
         </LinearGradient>
       </Pressable>
 
-      {/* Fullscreen placeholder player */}
-      {fullscreen ? (
-        <View style={styles.fsRoot}>
-          {player}
-          <Pressable hitSlop={12} onPress={() => setFullscreen(false)} style={styles.fsClose}>
-            <CloseIcon size={22} />
-          </Pressable>
-          <View style={styles.fsCaption} pointerEvents="none">
-            <Text style={styles.hdText}>HD Previewing. Unlock HD</Text>
-            <Text style={styles.hdArrow}> ›</Text>
-          </View>
-        </View>
-      ) : null}
 
       {/* Download sheet */}
       <Modal visible={sheet} animationType="slide" transparent onRequestClose={() => setSheet(false)}>

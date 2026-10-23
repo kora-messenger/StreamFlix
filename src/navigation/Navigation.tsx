@@ -11,7 +11,6 @@ import EnterCodeScreen from '../screens/EnterCodeScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import MovieViewScreen from '../screens/MovieViewScreen';
-import VideoPlayerScreen from '../screens/VideoPlayerScreen';
 import { colors } from '../theme/tokens';
 
 const Stack = createNativeStackNavigator();
@@ -37,7 +36,6 @@ export default function Navigation() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="MovieView" component={MovieViewScreen} options={{ animation: 'slide_from_right' }} />
-      <Stack.Screen name="Player" component={VideoPlayerScreen} options={{ animation: 'fade', gestureEnabled: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

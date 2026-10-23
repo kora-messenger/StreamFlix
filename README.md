@@ -75,11 +75,15 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 All icons are professional SVG. No emoji in the UI. Hero artwork fades into the background with custom gradients. The brand lockup uses an alpha-keyed neon logo with its own glow.
 
 ## Video player
-- Real playback via `react-native-video` (native Media3/ExoPlayer core) — HLS (.m3u8) and MP4 sources, with `react-native-orientation-locker` forcing landscape while playing
-- MovieBox-style gesture layer: double-tap left/right = seek -10s/+10s with ripple feedback, vertical swipe on the left half = brightness (dim layer), right half = player volume, both with a centered HUD pill
-- Player overlay per the design mock: back arrow + StreamFlix lockup, cast / CC / three-dot top bar, rewind-10 / pause / forward-10 on a subtle dark pill, purple (#8A2BE2) seek bar with white glow knob, timestamps, fullscreen (contain/cover) toggle; controls auto-hide after ~3s, tap to resurface
-- Playback speed sheet (0.5x–2x) and subtitle sheet wired to the stream's real text tracks (CC badge lights cyan when active)
-- Movie view's big play button and fullscreen icon open the player; until per-title stream URLs are wired into the catalog it plays a public test HLS stream (Apple bipbop advanced, which includes real subtitle tracks)
+Rebuilt to mirror MovieBox's real player behavior (measured frame by frame from a screen recording):
+- **Inline player**: a pinned 16:9 slot directly under the status bar at the top of the movie page; the page (title, resources, episodes, For you / Comments) scrolls underneath it. Real playback via `react-native-video` (native Media3/ExoPlayer, HLS and MP4).
+- **Portrait controls**: back arrow (top-left), Help "?" (top-right), bottom row = pause/play, thin white seek bar with dot, `00:25/43:43` time, mini-window icon, fullscreen icon. Controls auto-hide after ~3s; single tap shows/hides them.
+- **Gestures**: double-tap left/right = seek -10s/+10s with a dim circle ripple labelled "10 seconds"; vertical swipe on the left half = brightness, right half = volume, each with a centered dark HUD pill with a white level bar.
+- **Fullscreen (landscape)**: tapping the fullscreen icon takes over the screen in landscape with: back arrow + episode title (top-left), Help and Setting (top-right), "Tap to Lock" chip (left-middle), rewind-10 / pause / forward-10 (center), current time + seek bar + total time, then pause, next-episode, and right-aligned **Fit / Language / 1x / Rotate**. Rotate returns to portrait.
+- **Lock mode**: "Tap to Lock" hides every control and ignores gestures; tapping the screen shows "Tap to Unlock".
+- **Pre-roll ad (free tier)**: black stage with an "AD" tag, countdown + gold "Go ad-free >" (top-right) and "Tap and skip the ad" (bottom-right); playback starts when it ends. Ad content is a placeholder slot until an ad network is connected.
+- **Sheets**: playback speed (0.5x-2x), Language (subtitle tracks from the stream), Setting.
+- Until per-title stream URLs are in the catalog it plays a public test HLS stream that includes real subtitle tracks.
 
 ## Tech stack
 
