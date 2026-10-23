@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import NetInfo from '@react-native-community/netinfo';
 import { useNavigation } from '@react-navigation/native';
 import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
 import { colors, gradients } from '../theme/tokens';
@@ -146,12 +147,23 @@ export default function DramasScreen() {
   const { width: W } = useWindowDimensions();
   const [chip, setChip] = useState('latest');
   const [loading, setLoading] = useState(true);
+  const [online, setOnline] = useState(true);
   const cardW = Math.round(W * 0.62);
-  /* placeholder feed fetch — replace with the real drama API call */
+  /* network-driven loading: offline = the skeleton stays up ("just loading");
+     once a connection is back the feed fetches and the content swaps in.
+     Replace the 1.2s placeholder timeout with the real drama API call. */
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1400);
-    return () => clearTimeout(t);
+    const unsub = NetInfo.addEventListener(state => {
+      const ok = state.isConnected === true && state.isInternetReachable !== false;
+      setOnline(ok);
+    });
+    return () => unsub();
   }, []);
+  useEffect(() => {
+    if (!online) return; // keep the skeleton while offline
+    const t = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, [online]);
   const newArrivals =
     chip === 'latest' ? dramasNew : chip === 'hottest' ? dramasTop : [...dramasNew, ...dramasTop].slice(0, 10);
   return (
