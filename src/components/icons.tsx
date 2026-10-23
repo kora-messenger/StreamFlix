@@ -355,3 +355,10 @@ export const DialIcon = ({ size = 17, color = '#fff' }: P) => (
     <Circle cx="12" cy="12" r="1.6" fill={color} />
   </Svg>
 );
+
+export const PadlockIcon = ({ size = 40, color = '#fff' }: P) => (
+  <Svg {...base(size)} fill="none">
+    <Path d="M7.5 10.5V7.5a4.5 4.5 0 0 1 9 0v3" {...st(color, 2)} />
+    <Path d="M5.5 10.5h13V20h-13z" {...st(color, 2)} />
+  </Svg>
+);

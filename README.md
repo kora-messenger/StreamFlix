@@ -51,6 +51,10 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 
 ## Screens
 ### DramaPlayer (opened from any Dramas card)
+MovieBox-style full-screen short-drama player, now matching the episode-feed recording:
+- Vertical episode paging: swiping up/down moves between episodes (EP01..EPn); the top EP label, subtitle, description and the EP01/EP67 pill track the active episode. Locked episodes keep the top bar, right icon column, bottom meta, episode pill and utility row visible over a dimmed frame.
+- Locked episodes for non-premium users: video dimmed (rgba black 75%), white padlock and a gold "Premium Pro Unlock" pill centered below it; locked episodes don't play. First 3 episodes are free, the rest premium-locked via a mock PREMIUM flag (swap for the real Paystack entitlement later; owner gets a permanent override). The unlock pill is a visual placeholder until the pay screen exists.
+
 MovieBox-style full-screen short-drama player measured from the reference screenshots. Interaction per Ijezie:
 - Every overlay — top back/EP bar, centered subtitle, right icon column (download, bookmark with count, share), bottom meta (thumbnail, title, description with a More/Less pill), the EP01/EP67 episode-selector pill, and the utility row (gold Premium Pro pill, speed dial opening a semi-transparent black rounded popup above the trigger with 0.5x–2x and the active speed highlighted in #00f2fe, HD 480P badge) — auto-hides after 3 seconds while playing.
 - Tap with overlays hidden brings everything back; tap while visible pauses (and resumes) the video, and while paused the overlays stay on screen. Paused state shows a translucent center play button.

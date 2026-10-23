@@ -1,27 +1,33 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, Animated, Image, PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions,
+  ActivityIndicator, Animated, FlatList, Image, PanResponder, Pressable, StyleSheet, Text, View,
+  useWindowDimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TEST_HLS } from '../components/VideoPlayer';
 import {
-  BookmarkRibbonIcon, ChevronDownIcon, CrownIcon, DialIcon, DownloadTrayIcon, ShareIcon, StackIcon,
+  BookmarkRibbonIcon, ChevronDownIcon, CrownIcon, DialIcon, DownloadTrayIcon, PadlockIcon,
+  ShareIcon, StackIcon,
 } from '../components/icons';
 
-/* Drama player — MovieBox-style full-screen short-drama player measured
-   from the reference screenshots. Behavior per Ijezie:
-   - every overlay (top EP bar, right icon column, bottom meta, episode
-     pill, utility row, seek line, subtitle) auto-hides after 3s
-   - tap with overlays hidden brings them back
-   - tap while overlays are visible pauses the video (and vice versa);
-     while paused the overlays stay put
-   - the thin line at the very bottom is the ONLY way to seek/forward
-     (no double-tap seeks, no hold-to-2x in this player) */
+/* Drama player — MovieBox-style full-screen short-drama player.
+   Per the reference recordings:
+   - vertical episode feed: swiping up/down pages between episodes (EP01..EPn)
+   - episodes beyond the free window are LOCKED for non-premium users:
+     dimmed video, white padlock, gold "Premium Pro Unlock" pill
+     (premium accounts see no lock at all)
+   - every overlay auto-hides after 3s while playing
+   - tap with overlays hidden brings them back; tap while visible pauses
+   - the thin line at the very bottom is the ONLY seek surface */
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const ACCENT = '#00f2fe';
+const FREE_EPS = 3; // first 3 episodes free; rest are premium-locked
+const PREMIUM = false; // mock account flag — replace with real entitlement once Paystack billing is wired (owner gets permanent override)
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
 
 const BackChev = ({ size = 26, color = '#fff' }: { size?: number; color?: string }) => (
   <Text style={{ color, fontSize: size, lineHeight: size + 2, fontWeight: '300' }}>{'\u2039'}</Text>
@@ -42,9 +48,10 @@ export default function DramaPlayerScreen() {
   const nav = useNavigation<any>();
   const route = useRoute<any>();
   const insets = useSafeAreaInsets();
-  const { width: W } = useWindowDimensions();
-  const { title, episodes = 32, poster, epLabel = 'EP01' } = route.params ?? {};
+  const { height: H } = useWindowDimensions();
+  const { title, episodes = 32, poster } = route.params ?? {};
 
+  const [active, setActive] = useState(0); // episode index 0-based
   const [paused, setPaused] = useState(false);
   const [controls, setControls] = useState(true);
   const [pos, setPos] = useState(0);
@@ -55,11 +62,12 @@ export default function DramaPlayerScreen() {
   const [expand, setExpand] = useState(false);
   const [speed, setSpeed] = useState(2); // 1x
   const [speedMenu, setSpeedMenu] = useState(false);
-  const player = useRef<any>(null);
+  const players = useRef<Record<number, any>>({});
   const hideT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fade = useRef(new Animated.Value(1)).current;
-  const posRef = useRef(0);
-  posRef.current = pos;
+
+  const epLabel = `EP${pad2(active + 1)}`;
+  const locked = !PREMIUM && active + 1 > FREE_EPS;
 
   /* ---- overlay auto-hide: 3s, only while playing ---- */
   const armHide = useCallback(() => {
@@ -70,7 +78,6 @@ export default function DramaPlayerScreen() {
     armHide();
     return () => { if (hideT.current) clearTimeout(hideT.current); };
   }, [armHide]);
-  /* paused = overlays stay visible */
   useEffect(() => {
     if (paused && hideT.current) clearTimeout(hideT.current);
     if (paused) setControls(true);
@@ -78,6 +85,21 @@ export default function DramaPlayerScreen() {
   useEffect(() => {
     Animated.timing(fade, { toValue: controls ? 1 : 0, duration: 240, useNativeDriver: true }).start();
   }, [controls, fade]);
+
+  /* ---- vertical episode paging ---- */
+  const onViewable = useRef(({ viewableItems }: { viewableItems: Array<{ isViewable: boolean; index?: number }> }) => {
+    const first = viewableItems.find(v => v.isViewable);
+    if (first && typeof first.index === 'number' && first.index !== active) {
+      setActive(first.index);
+      setPos(0);
+      setBuffering(true);
+      setPaused(false);
+      setControls(true);
+      armHide();
+    }
+  }).current;
+  const listRef = useRef<FlatList>(null);
+  const viewConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
   /* ---- single tap: hidden -> show overlays; visible -> pause/resume ---- */
   const onScreenTap = () => {
@@ -87,6 +109,13 @@ export default function DramaPlayerScreen() {
 
   /* ---- the bottom line is the only seek surface ---- */
   const startX = useRef(0);
+  const W = useWindowDimensions().width;
+  const seek = (ratio: number) => {
+    const r = Math.max(0, Math.min(0.999, ratio));
+    const t = r * (duration || 0);
+    setPos(t);
+    players.current[active]?.seek?.(t);
+  };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -101,43 +130,66 @@ export default function DramaPlayerScreen() {
       onPanResponderTerminate: () => setScrub(false),
     }),
   ).current;
-  const seek = (ratio: number) => {
-    const r = Math.max(0, Math.min(0.999, ratio));
-    const t = r * (duration || 0);
-    setPos(t);
-    player.current?.seek?.(t);
-  };
 
   const pct = duration > 0 ? Math.min(1, pos / duration) : 0;
+  const data = useRef(Array.from({ length: episodes }, (_, i) => i)).current;
 
   return (
     <View style={styles.root}>
-      <Video
-        ref={player}
-        source={{ uri: TEST_HLS }}
-        style={StyleSheet.absoluteFill}
-        paused={paused}
-        rate={SPEEDS[speed]}
-        resizeMode="cover"
-        onProgress={(e: any) => { if (!scrub) { setPos(e.currentTime); setBuffering(false); } }}
-        onLoad={(e: any) => { setDuration(e.duration); setBuffering(false); }}
-        onError={() => setBuffering(false)}
+      {/* vertical episode feed */}
+      <FlatList
+        ref={listRef}
+        data={data}
+        keyExtractor={i => String(i)}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        getItemLayout={(_, i) => ({ length: H, offset: H * i, index: i })}
+        onViewableItemsChanged={onViewable}
+        viewabilityConfig={viewConfig}
+        renderItem={({ item }) => {
+          const isActive = item === active;
+          const isLocked = !PREMIUM && item + 1 > FREE_EPS;
+          return (
+            <View style={{ width: '100%', height: H }}>
+              <Video
+                ref={r => { players.current[item] = r; }}
+                source={{ uri: TEST_HLS }}
+                style={StyleSheet.absoluteFill}
+                paused={!isActive || paused || isLocked}
+                rate={SPEEDS[speed]}
+                resizeMode="cover"
+                onProgress={isActive && !scrub ? (e: any) => { setPos(e.currentTime); setBuffering(false); } : undefined}
+                onLoad={(e: any) => { if (isActive) { setDuration(e.duration); setBuffering(false); } }}
+              />
+              {isLocked ? (
+                <>
+                  <View style={styles.lockDim} />
+                  <View style={styles.center} pointerEvents="none">
+                    <PadlockIcon size={44} />
+                    <Pressable style={styles.unlockPill} onPress={() => {}}>
+                      <CrownIcon size={11} color="#B8860B" />
+                      <Text style={styles.premiumTxt}>Premium Pro Unlock</Text>
+                    </Pressable>
+                  </View>
+                </>
+              ) : isActive && buffering ? (
+                <View style={styles.center} pointerEvents="none">
+                  <ActivityIndicator color="#fff" />
+                </View>
+              ) : isActive && paused && controls ? (
+                <View style={styles.center} pointerEvents="none">
+                  <View style={styles.playBtn}>
+                    <PlayTri size={30} />
+                  </View>
+                </View>
+              ) : null}
+            </View>
+          );
+        }}
       />
 
       {/* tap catcher */}
       <Pressable style={StyleSheet.absoluteFill} onPress={onScreenTap} />
-
-      {buffering ? (
-        <View style={styles.center} pointerEvents="none">
-          <ActivityIndicator color="#fff" />
-        </View>
-      ) : paused && controls ? (
-        <View style={styles.center} pointerEvents="none">
-          <View style={styles.playBtn}>
-            <PlayTri size={30} />
-          </View>
-        </View>
-      ) : null}
 
       {/* overlays */}
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade }]} pointerEvents="box-none">
@@ -196,11 +248,7 @@ export default function DramaPlayerScreen() {
           {speedMenu ? (
             <View style={styles.speedMenu}>
               {SPEEDS.map((v, i) => (
-                <Pressable
-                  key={v}
-                  style={styles.speedItem}
-                  onPress={() => { setSpeed(i); setSpeedMenu(false); }}
-                >
+                <Pressable key={v} style={styles.speedItem} onPress={() => { setSpeed(i); setSpeedMenu(false); }}>
                   <Text style={[styles.speedItemTxt, i === speed && { color: ACCENT }]}>{v}x</Text>
                 </Pressable>
               ))}
@@ -239,6 +287,11 @@ export default function DramaPlayerScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000' },
   center: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' },
+  lockDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.75)' },
+  unlockPill: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD700',
+    borderRadius: 16, height: 32, paddingHorizontal: 12, gap: 4, marginTop: 14,
+  },
   playBtn: {
     width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.25)',
     justifyContent: 'center', alignItems: 'center',
@@ -264,6 +317,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10, marginTop: 10, gap: 6,
   },
   epPillTxt: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  speedMenu: {
+    position: 'absolute', right: 104, bottom: 66, width: 84,
+    backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: 16, paddingVertical: 4,
+  },
+  speedItem: { alignItems: 'center', paddingVertical: 7 },
+  speedItemTxt: { color: '#fff', fontSize: 12.5, fontWeight: '600' },
   utilRow: { flexDirection: 'row', alignItems: 'center', marginTop: 12, marginBottom: 26 },
   premium: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD700',
@@ -271,12 +330,6 @@ const styles = StyleSheet.create({
   },
   premiumTxt: { color: '#111', fontSize: 11.5, fontWeight: '800' },
   speedWrap: { flexDirection: 'row', alignItems: 'center', marginRight: 10, gap: 4, paddingVertical: 4, paddingLeft: 4 },
-  speedMenu: {
-    position: 'absolute', right: 104, bottom: 66, width: 84,
-    backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: 16, paddingVertical: 4,
-  },
-  speedItem: { alignItems: 'center', paddingVertical: 7 },
-  speedItemTxt: { color: '#fff', fontSize: 12.5, fontWeight: '600' },
   speedTxt: { color: '#fff', fontSize: 12.5, fontWeight: '700' },
   qPill: {
     borderWidth: 1, borderColor: '#6B7180', borderRadius: 6,
