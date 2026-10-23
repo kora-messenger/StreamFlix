@@ -158,7 +158,7 @@ export default function HomeScreen() {
       {/* floating round bottom button bar */}
       <BottomNavBar
         active="home"
-        onPress={(id: BottomTabId) => { if (id === 'search') nav.navigate('Search'); }}
+        onPress={(id: BottomTabId) => { if (id === 'search') nav.navigate('Dramas'); }}
       />
 
       {/* Fixed top bar + tabs (overlay) */}

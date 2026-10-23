@@ -10,6 +10,7 @@ import NewPasswordScreen from '../screens/NewPasswordScreen';
 import EnterCodeScreen from '../screens/EnterCodeScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
+import DramasScreen from '../screens/DramasScreen';
 import MovieViewScreen from '../screens/MovieViewScreen';
 import { colors } from '../theme/tokens';
 
@@ -35,6 +36,7 @@ export default function Navigation() {
         <Stack.Screen name="EnterCode" component={EnterCodeScreen} options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="Dramas" component={DramasScreen} options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="MovieView" component={MovieViewScreen} options={{ animation: 'slide_from_right' }} />
       </Stack.Navigator>
     </NavigationContainer>

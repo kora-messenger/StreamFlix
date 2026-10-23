@@ -50,6 +50,15 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Ranked results list and community discovery
 
 ## Screens
+### Dramas (bottom-bar tab, replaces the old direct-to-search routing)
+MovieBox-style short-drama screen built from the reference recording, with the premium banner and error state explicitly excluded per Ijezie:
+- Snap hero carousel of tall portrait poster cards (62% screen width, 1.45 ratio) with neighbor cards peeking at the sides; each card carries a brand-gradient circular play button at the bottom-right and a title/meta/episode overlay.
+- Latest / Hottest / All chip row: dark rounded pills with small brand-gradient icon badges; Latest/Hottest/All swaps the New Arrivals shelf data.
+- Content shelves — New Arrivals, Top Searches, Asian Land — horizontal poster rows (104px cards) with two-line titles and episode counts.
+- All content is placeholder (mock titles with episode counts); tapping a card opens the existing MovieView screen.
+- The bar's Home button pops back to Home.
+
+
 
 | Screen | Purpose |
 | --- | --- |
