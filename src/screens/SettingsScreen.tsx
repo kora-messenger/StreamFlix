@@ -105,16 +105,12 @@ export default function SettingsScreen() {
   const soon = (name: string) => () => toast(`${name} is coming soon`, 'info');
 
   const toggleBgDownload = (v: boolean) => {
-    if (!v) { set('bgDownload', false); return; }
-    // MovieBox asks to stop battery optimisation before allowing background downloads.
-    Alert.alert(
-      'Stop optimizing battery usage?',
-      'StreamMax will be able to run in the background. Its battery usage won\'t be restricted.',
-      [
-        { text: 'Deny', style: 'cancel' },
-        { text: 'Allow', onPress: () => set('bgDownload', true) },
-      ],
-    );
+    /* MovieBox here shows the real Android system prompt
+       (ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) — a device dialog, not an
+       app dialog. That needs a small native module + real download jobs, so
+       for now the preference just persists and the true system prompt will be
+       raised when background downloads actually exist. */
+    set('bgDownload', v);
   };
 
   const watchOptions = () => {
