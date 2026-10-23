@@ -168,6 +168,13 @@ export default function EnterCodeScreen() {
       {/* errors pop up at the top */}
       <TopToast message={err} />
 
+      {/* designed bottom wave: same blue-violet glow as the login screen */}
+      <Image
+        source={require('../assets/img/login_bottom_glow.png')}
+        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.132 }}
+        resizeMode="stretch"
+      />
+
       {/* Next */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
         <GradientButton label={busy ? 'Verifying…' : 'Next'} height={Math.round(k * 68)} fontSize={Math.round(k * 20)} onPress={next} />
