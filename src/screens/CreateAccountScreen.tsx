@@ -9,6 +9,7 @@ import {
 import { AppleLogo, BackIcon, GoogleG, LockIcon, MailIcon, UserIcon } from '../components/icons';
 import { colors } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
+import { googleSignInEmail, isGoogleSdkReady } from '../core/auth/googleAuth';
 
 /**
  * FIXED layout (no scrolling). Every element is positioned as a percentage of the
@@ -50,9 +51,14 @@ export default function CreateAccountScreen() {
   };
 
   const googleCode = async () => {
-    const e = email.trim().toLowerCase();
+    let e = email.trim().toLowerCase();
+    if (isGoogleSdkReady()) {
+      const g = await googleSignInEmail();
+      if (!g.ok) { if (g.message) setBanner(g.message); return; }
+      e = (g.email || '').toLowerCase();
+    }
     if (!/^([^\s@]+@[^\s@]+\.[^\s@]{2,})$/.test(e)) {
-      setBanner('Enter your email address first — we send a Google sign-in code to it.');
+      setBanner(isGoogleSdkReady() ? 'That Google account has no usable email.' : 'Enter your email address first — we send a Google sign-in code to it.');
       setBad({ email: true });
       return;
     }
