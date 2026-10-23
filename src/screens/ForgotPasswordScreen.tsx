@@ -14,7 +14,7 @@ import * as auth from '../core/auth/authService';
  * the heading) with the StreamMax logo lockup over it (y 0.176H, centered),
  * then: "Forgot Password?" (white + blue-to-purple gradient),
  * two-line centered subtitle, tall email field, gradient pill button
- * "Send Reset Link" with arrow, footer "Remember your password? Sign In".
+ * "Send Reset Code" with arrow, footer "Remember your password? Sign In".
  */
 export default function ForgotPasswordScreen() {
   const nav = useNavigation<any>();
@@ -83,7 +83,7 @@ export default function ForgotPasswordScreen() {
         top: H * 0.545, left: (W - W * 0.655) / 2, width: W * 0.655,
         fontSize: 16, lineHeight: 24,
       }]}>
-        No worries! Enter your email address and we&apos;ll send you a link to reset your password.
+        No worries! Enter your email address and we&apos;ll send you a 6-digit code to reset your password.
       </Text>
 
       {/* email field — tall, rounded, dark navy with blue border */}
@@ -110,7 +110,7 @@ export default function ForgotPasswordScreen() {
 
       {/* gradient pill button with arrow */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
-        <GradientButton label="Send Reset Link" height={56} fontSize={16} onPress={send} />
+        <GradientButton label="Send Reset Code" height={56} fontSize={16} onPress={send} />
       </View>
 
       {/* footer */}

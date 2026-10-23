@@ -66,9 +66,9 @@ export default function WelcomeScreen() {
           Discover, stream and enjoy the best movies, TV shows and more — all in one place.
         </Text>
 
-        <View style={[styles.grid, { marginTop: H * 0.034, marginHorizontal: W * 0.102 }]}>
+        <View style={[styles.grid, { marginTop: H * 0.034, marginHorizontal: W * 0.030 }]}>
           {features.map((f, i) => (
-            <View key={i} style={[styles.cell, { width: W * 0.19 }]}>
+            <View key={i} style={[styles.cell, { width: W * 0.235 }]}>
               {f.icon}
               <Text style={[styles.cellText, { fontSize: labelSize, lineHeight: labelSize * 1.3, marginTop: Math.round(k * 13) }]}>
                 {f.label}
@@ -76,9 +76,9 @@ export default function WelcomeScreen() {
             </View>
           ))}
           {/* thin vertical separators between the four columns, like the reference */}
-          <View style={[styles.sep, { left: W * 0.25 - 0.5, top: '18%', height: '64%' }]} />
-          <View style={[styles.sep, { left: W * 0.50 - 0.5, top: '18%', height: '64%' }]} />
-          <View style={[styles.sep, { left: W * 0.75 - 0.5, top: '18%', height: '64%' }]} />
+          <View style={[styles.sep, { left: '25%', top: '18%', height: '64%' }]} />
+          <View style={[styles.sep, { left: '50%', top: '18%', height: '64%' }]} />
+          <View style={[styles.sep, { left: '75%', top: '18%', height: '64%' }]} />
         </View>
 
         <GradientButton
