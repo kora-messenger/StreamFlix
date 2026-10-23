@@ -8,8 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TEST_HLS } from '../components/VideoPlayer';
 import {
-  BookmarkRibbonIcon, ChevronDownIcon, CrownIcon, DialIcon, DownloadTrayIcon, PadlockIcon,
-  ShareIcon, StackIcon,
+  BookmarkRibbonIcon, ChevronDownIcon, CrownIcon, DialIcon, DownloadTrayIcon, ShareIcon, StackIcon,
 } from '../components/icons';
 
 /* Drama player — MovieBox-style full-screen short-drama player.
@@ -24,8 +23,11 @@ import {
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const ACCENT = '#00f2fe';
-const FREE_EPS = 3; // first 3 episodes free; rest are premium-locked
-const PREMIUM = false; // mock account flag — replace with real entitlement once Paystack billing is wired (owner gets permanent override)
+/* Future premium rules (not implemented yet, per Ijezie 2026-10-23):
+   - when Premium launches, only the first 10 episodes are free
+   - downloading a drama will require Premium
+   - watching complete episodes will require Premium
+   Nothing is gated until then — every episode plays for everyone. */
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -67,7 +69,6 @@ export default function DramaPlayerScreen() {
   const fade = useRef(new Animated.Value(1)).current;
 
   const epLabel = `EP${pad2(active + 1)}`;
-  const locked = !PREMIUM && active + 1 > FREE_EPS;
 
   /* ---- overlay auto-hide: 3s, only while playing ---- */
   const armHide = useCallback(() => {
@@ -148,31 +149,19 @@ export default function DramaPlayerScreen() {
         viewabilityConfig={viewConfig}
         renderItem={({ item }) => {
           const isActive = item === active;
-          const isLocked = !PREMIUM && item + 1 > FREE_EPS;
           return (
             <View style={{ width: '100%', height: H }}>
               <Video
                 ref={r => { players.current[item] = r; }}
                 source={{ uri: TEST_HLS }}
                 style={StyleSheet.absoluteFill}
-                paused={!isActive || paused || isLocked}
+                paused={!isActive || paused}
                 rate={SPEEDS[speed]}
                 resizeMode="cover"
                 onProgress={isActive && !scrub ? (e: any) => { setPos(e.currentTime); setBuffering(false); } : undefined}
                 onLoad={(e: any) => { if (isActive) { setDuration(e.duration); setBuffering(false); } }}
               />
-              {isLocked ? (
-                <>
-                  <View style={styles.lockDim} />
-                  <View style={styles.center} pointerEvents="none">
-                    <PadlockIcon size={44} />
-                    <Pressable style={styles.unlockPill} onPress={() => {}}>
-                      <CrownIcon size={11} color="#B8860B" />
-                      <Text style={styles.premiumTxt}>Premium Pro Unlock</Text>
-                    </Pressable>
-                  </View>
-                </>
-              ) : isActive && buffering ? (
+              {isActive && buffering ? (
                 <View style={styles.center} pointerEvents="none">
                   <ActivityIndicator color="#fff" />
                 </View>
@@ -287,11 +276,6 @@ export default function DramaPlayerScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000' },
   center: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' },
-  lockDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.75)' },
-  unlockPill: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD700',
-    borderRadius: 16, height: 32, paddingHorizontal: 12, gap: 4, marginTop: 14,
-  },
   playBtn: {
     width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(255,255,255,0.25)',
     justifyContent: 'center', alignItems: 'center',
