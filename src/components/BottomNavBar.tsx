@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DownloadsTabIcon, HomeTabIcon, MeTabIcon, SearchIcon } from './icons';
+import { DownloadsTabIcon, DramasTabIcon, HomeTabIcon, MeTabIcon } from './icons';
 import { GradientText } from './ui';
 
 /**
@@ -16,7 +16,7 @@ export type BottomTabId = 'home' | 'search' | 'downloads' | 'mine';
 
 const TABS: { id: BottomTabId; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
   { id: 'home', label: 'Home', Icon: HomeTabIcon as React.ComponentType<{ size?: number; color?: string }> },
-  { id: 'search', label: 'Dramas', Icon: SearchIcon },
+  { id: 'search', label: 'Dramas', Icon: DramasTabIcon as React.ComponentType<{ size?: number; color?: string }> },
   { id: 'downloads', label: 'Downloads', Icon: DownloadsTabIcon as React.ComponentType<{ size?: number; color?: string }> },
   { id: 'mine', label: 'Me', Icon: MeTabIcon as React.ComponentType<{ size?: number; color?: string }> },
 ];
@@ -51,6 +51,8 @@ export default function BottomNavBar({
             >
               {id === 'home' ? (
                 <HomeTabIcon size={22} active={on} />
+              ) : id === 'search' ? (
+                <DramasTabIcon size={22} active={on} />
               ) : id === 'mine' ? (
                 <MeTabIcon size={22} active={on} />
               ) : id === 'downloads' ? (

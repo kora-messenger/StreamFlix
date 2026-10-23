@@ -33,6 +33,34 @@ export const MeTabIcon = ({ size = 22, active = false, color = '#C1C4CC' }: { si
   </Svg>
 );
 
+/* Bottom-bar Dramas icon, built to match the MovieBox-style tab family:
+   a rounded screen with a play triangle inside (the same geometry language
+   as the Downloads square, so the bar reads as one set).
+   - untapped: rounded-rect outline + play triangle stroke in light grey
+   - tapped: the screen fills with the StreamMax gradient and the play
+     triangle becomes a solid dark shape (mirroring the Downloads arrow) */
+export const DramasTabIcon = ({ size = 22, active = false, color = '#C1C4CC' }: { size?: number; active?: boolean; color?: string }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Defs>
+      <SvgGrad id="dramasFill" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0" stopColor="#00d2ff" />
+        <Stop offset="1" stopColor="#9d50bb" />
+      </SvgGrad>
+    </Defs>
+    {active ? (
+      <G>
+        <Rect x={3.4} y={4.4} width={17.2} height={15.8} rx={4.6} fill="url(#dramasFill)" />
+        <Path d="M10.6 8.9v7.8L16.9 12.75Z" fill="#2D2D2D" />
+      </G>
+    ) : (
+      <G>
+        <Rect x={3.4} y={4.4} width={17.2} height={15.8} rx={4.6} stroke={color} strokeWidth={1.9} />
+        <Path d="M10.6 8.9v7.8L16.9 12.75Z" stroke={color} strokeWidth={1.9} strokeLinejoin="round" />
+      </G>
+    )}
+  </Svg>
+);
+
 /* Bottom-bar Downloads icon, measured from the MovieBox reference:
    - untapped: rounded-square outline with a downward arrow stroke, light grey,
      brand-gradient pill badge at the top-right corner with the paused-download count
