@@ -1,11 +1,38 @@
 import React from 'react';
-import Svg, { Path, Rect, Circle, Defs, LinearGradient as SvgGrad, Stop, G, Text as SvgText } from 'react-native-svg';
+import Svg, { Path, Rect, Circle, Ellipse, Defs, LinearGradient as SvgGrad, Stop, G, Text as SvgText } from 'react-native-svg';
 
 type P = { size?: number; color?: string; stroke?: number };
 const base = (size = 22) => ({ width: size, height: size, viewBox: '0 0 24 24', fill: 'none' });
 const st = (color = '#fff', w = 1.8) => ({ stroke: color, strokeWidth: w, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const });
 
 // Message bubble with a padlock and three asterisks (reset-code screen)
+/* Bottom-bar Me icon, measured from the MovieBox reference: a big circle
+   head floating above a wide horizontal oval body.
+   - untapped: both shapes stroked in light grey
+   - tapped: both shapes filled with the StreamMax gradient
+     (cyan at the top to purple at the bottom, in place of MovieBox's green) */
+export const MeTabIcon = ({ size = 22, active = false, color = '#C1C4CC' }: { size?: number; active?: boolean; color?: string }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Defs>
+      <SvgGrad id="meFill" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0" stopColor="#00d2ff" />
+        <Stop offset="1" stopColor="#9d50bb" />
+      </SvgGrad>
+    </Defs>
+    {active ? (
+      <G>
+        <Circle cx={12} cy={5.9} r={5.9} fill="url(#meFill)" />
+        <Ellipse cx={12} cy={18.7} rx={10.6} ry={4.8} fill="url(#meFill)" />
+      </G>
+    ) : (
+      <G>
+        <Circle cx={12} cy={5.9} r={5} stroke={color} strokeWidth={1.9} />
+        <Ellipse cx={12} cy={18.7} rx={9.7} ry={3.9} stroke={color} strokeWidth={1.9} />
+      </G>
+    )}
+  </Svg>
+);
+
 /* Bottom-bar Downloads icon, measured from the MovieBox reference:
    - untapped: rounded-square outline with a downward arrow stroke, light grey,
      brand-gradient pill badge at the top-right corner with the paused-download count
