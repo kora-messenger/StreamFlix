@@ -106,6 +106,12 @@ export async function logout() {
   await AsyncStorage.removeItem(SESSION_KEY);
 }
 
+/** Does an account exist for this email? */
+export async function emailExists(email: string): Promise<boolean> {
+  const e = email.trim().toLowerCase();
+  return (await loadAccounts()).some(a => a.email === e);
+}
+
 /** Device-local password reset by email (no mail infrastructure yet). */
 export async function resetPassword(input: { email: string; password: string; confirm: string }): Promise<AuthResult> {
   const email = input.email.trim().toLowerCase();
