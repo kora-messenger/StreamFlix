@@ -62,7 +62,8 @@ MovieBox-style full-screen short-drama player measured from the reference screen
 MovieBox-style short-drama screen built from the reference recording, with the premium banner and error state explicitly excluded per Ijezie:
 - Snap hero carousel of tall portrait poster cards (62% screen width, 1.45 ratio) with neighbor cards peeking at the sides; each card carries a brand-gradient circular play button at the bottom-right and a title/meta/episode overlay.
 - Latest / Hottest / All chip row: dark rounded pills with small brand-gradient icon badges; Latest/Hottest/All swaps the New Arrivals shelf data.
-- Loading state: pulsing dark skeleton placeholders (hero cards, chip pills, shelf posters with title/meta bars) shown while the drama feed loads; the load is network-driven via NetInfo: while the device is offline the skeleton stays up indefinitely (no error screen), and as soon as connectivity returns the feed fetches and the skeleton swaps out for the real layout (~1.2s placeholder fetch; swap in the real drama API call).
+- Home screen loading state: same network-driven skeleton (NetInfo) — the full-height hero banner placeholder plus the poster-card rows pulse while loading, and offline keeps them loading indefinitely.
+- Dramas loading state: pulsing dark skeleton placeholders (hero cards, chip pills, shelf posters with title/meta bars) shown while the drama feed loads; the load is network-driven via NetInfo: while the device is offline the skeleton stays up indefinitely (no error screen), and as soon as connectivity returns the feed fetches and the skeleton swaps out for the real layout (~1.2s placeholder fetch; swap in the real drama API call).
 - Content shelves — New Arrivals, Top Searches, Asian Land — horizontal poster rows (104px cards) with two-line titles and episode counts.
 - All content is placeholder (mock titles with episode counts); tapping a card opens the existing MovieView screen.
 - The bar's Home button pops back to Home.

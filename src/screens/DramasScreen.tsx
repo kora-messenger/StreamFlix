@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Animated, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions,
+  FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import NetInfo from '@react-native-community/netinfo';
+import Skeleton from '../components/Skeleton';
 import { useNavigation } from '@react-navigation/native';
 import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
 import { colors, gradients } from '../theme/tokens';
@@ -19,62 +20,6 @@ import { Drama, dramaChips, dramaHero, dramasAsian, dramasNew, dramasTop } from 
      poster rows with a two-line title and episode count
    Placeholder episodes per Ijezie; premium banner and error state were
    explicitly removed from the spec. */
-
-/* Skeleton loader — MovieBox-style dark placeholder cards shown while the
-   drama feed loads (mock data resolves after ~1.4s; swap for the real
-   backend fetch later). */
-function usePulse() {
-  const v = useRef(new Animated.Value(0.45)).current;
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(v, { toValue: 1, duration: 650, useNativeDriver: true }),
-        Animated.timing(v, { toValue: 0.45, duration: 650, useNativeDriver: true }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [v]);
-  return v;
-}
-
-function Skeleton({ style }: { style: any }) {
-  const pulse = usePulse();
-  return <Animated.View style={[style, { backgroundColor: '#141826', opacity: pulse }]} />;
-}
-
-function LoadingState({ cardW }: { cardW: number }) {
-  const cardH = Math.round(cardW * 1.45);
-  return (
-    <View>
-      <View style={{ paddingHorizontal: 16, marginTop: 6 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Skeleton style={{ width: cardW, height: cardH, borderRadius: 14 }} />
-          <View style={{ flex: 1, alignItems: 'flex-end' }}>
-            <Skeleton style={{ width: cardW * 0.78, height: cardH, borderRadius: 14, opacity: 0.5 }} />
-          </View>
-        </View>
-      </View>
-      <View style={styles.chipRow}>
-        {[0, 1, 2].map(i => <Skeleton key={i} style={{ width: 92, height: 32, borderRadius: 16, marginRight: 8 }} />)}
-      </View>
-      {[0, 1].map(sec => (
-        <View key={sec} style={{ marginTop: 22, paddingLeft: 16 }}>
-          <Skeleton style={{ width: 120, height: 15, borderRadius: 4, marginBottom: 12 }} />
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            {[0, 1, 2].map(i => (
-              <View key={i}>
-                <Skeleton style={{ width: 104, height: 148, borderRadius: 8 }} />
-                <Skeleton style={{ width: 72, height: 11, borderRadius: 3, marginTop: 8 }} />
-                <Skeleton style={{ width: 48, height: 10, borderRadius: 3, marginTop: 6 }} />
-              </View>
-            ))}
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-}
 
 const ChipIcon = ({ i }: { i: number }) => {
   // Latest: clock · Hottest: spark · All: grid
@@ -137,6 +82,39 @@ function Shelf({ heading, data }: { heading: string; data: Drama[] }) {
         ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
         renderItem={({ item }) => <DramaCard item={item} />}
       />
+    </View>
+  );
+}
+
+function LoadingState({ cardW }: { cardW: number }) {
+  const cardH = Math.round(cardW * 1.45);
+  return (
+    <View>
+      <View style={{ paddingHorizontal: 16, marginTop: 6 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Skeleton style={{ width: cardW, height: cardH, borderRadius: 14 }} />
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            <Skeleton style={{ width: cardW * 0.78, height: cardH, borderRadius: 14, opacity: 0.5 }} />
+          </View>
+        </View>
+      </View>
+      <View style={styles.chipRow}>
+        {[0, 1, 2].map(i => <Skeleton key={i} style={{ width: 92, height: 32, borderRadius: 16, marginRight: 8 }} />)}
+      </View>
+      {[0, 1].map(sec => (
+        <View key={sec} style={{ marginTop: 22, paddingLeft: 16 }}>
+          <Skeleton style={{ width: 120, height: 15, borderRadius: 4, marginBottom: 12 }} />
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {[0, 1, 2].map(i => (
+              <View key={i}>
+                <Skeleton style={{ width: 104, height: 148, borderRadius: 8 }} />
+                <Skeleton style={{ width: 72, height: 11, borderRadius: 3, marginTop: 8 }} />
+                <Skeleton style={{ width: 48, height: 10, borderRadius: 3, marginTop: 6 }} />
+              </View>
+            ))}
+          </View>
+        </View>
+      ))}
     </View>
   );
 }

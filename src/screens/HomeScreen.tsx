@@ -11,6 +11,8 @@ import { DownloadIcon, SearchIcon } from '../components/icons';
 import { Alert } from 'react-native';
 import { getCurrentUser, logout, AuthUser } from '../core/auth/authService';
 import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
+import Skeleton from '../components/Skeleton';
+import NetInfo from '@react-native-community/netinfo';
 import { colors, gradients } from '../theme/tokens';
 
 const BAR_H = 52;
@@ -83,7 +85,21 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState(1);
   const [me, setMe] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [online, setOnline] = useState(true);
   useEffect(() => { getCurrentUser().then(setMe); }, []);
+  /* network-driven loading — same as Dramas: offline keeps the skeleton up */
+  useEffect(() => {
+    const unsub = NetInfo.addEventListener(state => {
+      setOnline(state.isConnected === true && state.isInternetReachable !== false);
+    });
+    return () => unsub();
+  }, []);
+  useEffect(() => {
+    if (!online) return;
+    const tm = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(tm);
+  }, [online]);
 
   const signOut = () => {
     if (!me) return;
@@ -107,6 +123,44 @@ export default function HomeScreen() {
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }} stickyHeaderIndices={[]}>
+        {loading ? (
+          <View>
+            <Skeleton style={{ width, height: heroH }} />
+            <View style={{ marginTop: 22 }}>
+              <Skeleton style={{ width: 140, height: 19, borderRadius: 5, marginLeft: 16, marginBottom: 14 }} />
+              <View style={{ flexDirection: 'row', gap: 12, paddingLeft: 16 }}>
+                {[0, 1, 2].map(i => (
+                  <View key={i} style={styles.card}>
+                    <Skeleton style={styles.cardImg} />
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      <Skeleton style={{ width: 110, height: 15, borderRadius: 3 }} />
+                      <Skeleton style={{ width: 70, height: 12, borderRadius: 3, marginTop: 7 }} />
+                    </View>
+                    <Skeleton style={styles.dl} />
+                  </View>
+                ))}
+              </View>
+            </View>
+            {[0, 1].map(sec => (
+              <View key={sec} style={{ marginTop: 22 }}>
+                <Skeleton style={{ width: 140, height: 19, borderRadius: 5, marginLeft: 16, marginBottom: 14 }} />
+                <View style={{ flexDirection: 'row', gap: 12, paddingLeft: 16 }}>
+                  {[0, 1, 2].map(i => (
+                    <View key={i} style={styles.card}>
+                      <Skeleton style={styles.cardImg} />
+                      <View style={{ flex: 1, marginLeft: 12 }}>
+                        <Skeleton style={{ width: 96, height: 14, borderRadius: 3 }} />
+                        <Skeleton style={{ width: 64, height: 12, borderRadius: 3, marginTop: 7 }} />
+                      </View>
+                      <Skeleton style={styles.dl} />
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ))}
+          </View>
+        ) : (
+        <>
         {/* Hero banner sits behind the bar + tabs */}
         <View style={{ height: heroH }}>
           <FlatList
@@ -153,6 +207,8 @@ export default function HomeScreen() {
           <Section heading="Popular Movies" data={titles.slice(4, 12)} />
           <Section heading="New Releases" data={[...titles].reverse().slice(0, 8)} />
         </View>
+        </>
+        )}
       </ScrollView>
 
       {/* floating round bottom button bar */}
