@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
+  Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -12,15 +12,17 @@ import * as auth from '../core/auth/authService';
 import { googleSignInToken, isGoogleSdkReady } from '../core/auth/googleAuth';
 
 /**
- * FIXED layout (no scrolling). Every element is positioned as a percentage of the
- * screen height, taken from the 512x1024 design reference.
+ * Create Account — rebuilt on a flowing flex column inside a ScrollView.
+ * Same StreamMax design language (corner hero art fading to black, gradient
+ * heading, pill CTA) but content flows with a fixed spacing rhythm, so the
+ * button, socials, sign-in row and legal footer can never drift or clip —
+ * the screen simply scrolls when the keyboard is open.
  */
 export default function CreateAccountScreen() {
   const nav = useNavigation<any>();
   const toast = useToast();
-  const { width: W, height: H } = useWindowDimensions();
+  const { width: W } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const k = W / 512;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
@@ -85,93 +87,83 @@ export default function CreateAccountScreen() {
     if (!r.ok) { setBanner(r.message || 'Could not send the code'); return; }
     toast('Google sign-in code sent to your email.', 'info');
     nav.navigate('EnterCode', { email: e, purpose: 'google' });
-  };;
+  };
 
-  const padX = W * 0.102;
-  // professional app sizes (dp/sp), mock used for layout only
-  const fieldH = 50;
-  const fieldGap = 12;
-  const fieldFs = 16;
-  const btnH = 52;
-  const socialH = 48;
-
-  /* compact vertical chain: the button sits directly under the field stack
-     and everything below follows sequentially, so the legal footer never
-     gets pushed off-screen. */
-  const fieldsTop = H * 0.314;
-  const stackH = 4 * fieldH + 3 * fieldGap;
-  const btnTop = fieldsTop + stackH + H * 0.022;
-  const orTop = btnTop + btnH + H * 0.024;
-  const soc1Top = orTop + H * 0.026;
-  const soc2Top = soc1Top + socialH + H * 0.03;
-  const legalLH = 18;
-  const legalBottom = insets.bottom + 10;
-  const signBottom = legalBottom + legalLH * 2 + 12;
+  const gutter = Math.min(44, Math.max(24, Math.round(W * 0.066)));
 
   return (
     <View style={styles.root}>
-      {/* Spider-Man corner graphic, top-right, fading into the black bg */}
+      {/* corner graphic, top-right, fading into the black bg */}
       <Image
         source={require('../assets/img/create_hero_corner.png')}
-        style={[styles.hero, { width: W * 0.45, height: W * 0.39, top: -W * 0.062 }]}
+        style={{ position: 'absolute', top: -W * 0.062, right: 0, width: W * 0.45, height: W * 0.39 }}
         resizeMode="cover"
       />
 
-      <Pressable hitSlop={14} onPress={() => nav.goBack()} style={[styles.back, { top: insets.top + H * 0.008, left: padX * 0.55 }]}>
-        <BackIcon />
-      </Pressable>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
+          <View style={[styles.content, { paddingHorizontal: gutter, paddingTop: insets.top + 18, paddingBottom: insets.bottom + 14 }]}>
 
-      {/* lockup + tagline */}
-      <View style={{ position: 'absolute', top: H * 0.075, left: 0, right: 0, alignItems: 'center' }}>
-        <Lockup scale={1.05} />
-      </View>
+            <Lockup scale={1.05} />
 
-      {/* heading + sub */}
-      <View style={[styles.titleRow, { top: H * 0.202, left: padX }]}>
-        <Text style={[styles.title, { fontSize: 32 }]}>Create Your </Text>
-        <GradientText text="Account" size={32} width={175} height={40} weight="800" />
-      </View>
-      <Text style={[styles.sub, { top: H * 0.257, left: padX, width: W * 0.8, fontSize: 15, lineHeight: 22 }]}>
-        Join StreamMax and get unlimited access to your favorite movies, TV shows and more.
-      </Text>
+            {/* heading + sub */}
+            <View style={styles.titleRow}>
+              <Text style={styles.title}>Create Your </Text>
+              <GradientText text="Account" size={32} width={175} height={40} weight="800" />
+            </View>
+            <Text style={styles.sub}>
+              Join StreamMax and get unlimited access to your favorite movies, TV shows and more.
+            </Text>
 
-      {/* fields */}
-      <View style={{ position: 'absolute', top: fieldsTop, left: padX, right: padX, gap: fieldGap }}>
-        <Field h={fieldH} fs={fieldFs} error={bad.name} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={v => { setName(v); fix('name')(); }}  />
-        <Field h={fieldH} fs={fieldFs} error={bad.email} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={v => { setEmail(v); fix('email')(); }} keyboardType="email-address" autoCapitalize="none" />
-        <Field h={fieldH} fs={fieldFs} error={bad.password} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={v => { setPw(v); fix('password')(); }} secure />
-        <Field h={fieldH} fs={fieldFs} error={bad.confirm} icon={<LockIcon />} placeholder="Confirm password" value={pw2} onChangeText={v => { setPw2(v); fix('confirm')(); }} secure />
-      </View>
+            {/* fields */}
+            <View style={styles.fieldStack}>
+              <Field h={50} fs={16} error={bad.name} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={v => { setName(v); fix('name')(); }} />
+              <Field h={50} fs={16} error={bad.email} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={v => { setEmail(v); fix('email')(); }} keyboardType="email-address" autoCapitalize="none" />
+              <Field h={50} fs={16} error={bad.password} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={v => { setPw(v); fix('password')(); }} secure />
+              <Field h={50} fs={16} error={bad.confirm} icon={<LockIcon />} placeholder="Confirm password" value={pw2} onChangeText={v => { setPw2(v); fix('confirm')(); }} secure />
+            </View>
 
-      {/* primary button */}
-      <View style={{ position: 'absolute', top: btnTop, left: padX, right: padX }}>
-        <GradientButton label="Create Account" arrow={false} height={btnH} fontSize={16} onPress={createAccount} />
-      </View>
+            {/* primary button directly under the field stack */}
+            <GradientButton
+              label="Create Account"
+              arrow={false}
+              height={52}
+              fontSize={16}
+              onPress={createAccount}
+              style={{ marginTop: 22 }}
+            />
 
-      {/* or divider */}
-      <View style={{ position: 'absolute', top: orTop, left: padX, right: padX }}>
-        <OrDivider compact />
-      </View>
+            {/* or + social */}
+            <View style={{ marginTop: 20 }}>
+              <OrDivider compact />
+            </View>
+            <View style={{ marginTop: 16 }}>
+              <OutlineButton label="Continue with Google" icon={<GoogleG />} loading={gBusy} height={48} fontSize={15} onPress={googleCode} />
+            </View>
+            <View style={{ marginTop: 12 }}>
+              <OutlineButton label="Continue with Apple" icon={<AppleLogo />} loading={aBusy} height={48} fontSize={15} onPress={appleSoon} />
+            </View>
 
-      {/* social */}
-      <View style={{ position: 'absolute', top: soc1Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} loading={gBusy} height={socialH} fontSize={15} onPress={googleCode} />
-      </View>
-      <View style={{ position: 'absolute', top: soc2Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} loading={aBusy} height={socialH} fontSize={15} onPress={appleSoon} />
-      </View>
-
-      {/* sign in + legal */}
-      <View style={[styles.signRow, { bottom: signBottom }]}>
-        <Text style={[styles.signText, { fontSize: 15 }]}>Already have an account? </Text>
-        <Pressable onPress={() => nav.navigate('Login')}>
-          <Text style={[styles.signLink, { fontSize: 16 }]}>Sign In</Text>
-        </Pressable>
-      </View>
-      <Text style={[styles.legal, { bottom: legalBottom, fontSize: 13, lineHeight: legalLH }]}>
-        By creating an account, you agree to our{'\n'}
-        <Text style={styles.legalLink}>Terms of Service</Text>  •  <Text style={styles.legalLink}>Privacy Policy</Text>
-      </Text>
+            {/* sign in + legal anchored to the bottom of whatever space is left */}
+            <View style={{ flexGrow: 1 }} />
+            <View style={styles.signRow}>
+              <Text style={styles.signText}>Already have an account? </Text>
+              <Pressable onPress={() => nav.navigate('Login')} hitSlop={10}>
+                <Text style={styles.signLink}>Sign In</Text>
+              </Pressable>
+            </View>
+            <Text style={styles.legal}>
+              By creating an account, you agree to our{'\n'}
+              <Text style={styles.legalLink}>Terms of Service</Text>  •  <Text style={styles.legalLink}>Privacy Policy</Text>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* errors pop up at the top */}
       <TopToast message={banner} />
@@ -181,14 +173,14 @@ export default function CreateAccountScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  hero: { position: 'absolute', top: 0, right: 0 },
-  back: { position: 'absolute', width: 36, height: 36, justifyContent: 'center' },
-  titleRow: { position: 'absolute', flexDirection: 'row', alignItems: 'center' },
-  title: { color: '#fff', fontWeight: '800', letterSpacing: -0.3 },
-  sub: { position: 'absolute', color: '#94a3b8' },
-  signRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
-  signText: { color: '#d7d9ea' },
-  signLink: { color: '#3b82f6', fontWeight: '600' },
-  legal: { position: 'absolute', left: 0, right: 0, color: '#8a90a5', textAlign: 'center' },
+  content: { flex: 1 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', marginTop: 28 },
+  title: { color: '#fff', fontSize: 32, fontWeight: '800', letterSpacing: -0.3 },
+  sub: { color: '#94a3b8', fontSize: 15, lineHeight: 22, marginTop: 10 },
+  fieldStack: { marginTop: 26, gap: 12 },
+  signRow: { flexDirection: 'row', justifyContent: 'center', minHeight: 36, alignItems: 'center' },
+  signText: { color: '#d7d9ea', fontSize: 15 },
+  signLink: { color: '#3b82f6', fontSize: 16, fontWeight: '600' },
+  legal: { color: '#8a90a5', fontSize: 13, lineHeight: 18, textAlign: 'center', marginTop: 6 },
   legalLink: { color: '#3b82f6' },
 });
