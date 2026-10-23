@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
-  Animated, Easing, Image, Pressable, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle,
-} from 'react-native';
+  Animated, Easing, Image, Pressable, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Defs, LinearGradient as SvgGrad, Stop, Text as SvgText, Circle } from 'react-native-svg';
 import { colors, gradients } from '../theme/tokens';
@@ -24,10 +23,14 @@ export const GradientButton = ({
 );
 
 export const OutlineButton = ({
-  label, icon, onPress, height, fontSize,
-}: { label: string; icon: React.ReactNode; onPress?: () => void; height?: number; fontSize?: number }) => (
-  <Pressable onPress={onPress} style={({ pressed }) => [s.outlineBtn, height ? { height, borderRadius: height / 2 } : null, { opacity: pressed ? 0.8 : 1 }]}>
-    <View style={s.outlineIcon}>{icon}</View>
+  label, icon, onPress, height, fontSize, loading,
+}: { label: string; icon: React.ReactNode; onPress?: () => void; height?: number; fontSize?: number; loading?: boolean }) => (
+  <Pressable
+    disabled={loading}
+    onPress={onPress}
+    style={({ pressed }) => [s.outlineBtn, height ? { height, borderRadius: height / 2 } : null, { opacity: loading ? 0.7 : pressed ? 0.8 : 1 }]}>
+    {/* while loading the brand icon is replaced by a spinner (MarketScope AI behaviour) */}
+    <View style={s.outlineIcon}>{loading ? <ActivityIndicator size="small" color="#ffffff" /> : icon}</View>
     <Text style={[s.outlineText, fontSize ? { fontSize } : null]}>{label}</Text>
   </Pressable>
 );

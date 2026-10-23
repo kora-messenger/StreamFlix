@@ -49,13 +49,20 @@ export default function LoginScreen() {
     nav.navigate('EnterCode', { email: email.trim().toLowerCase(), purpose: 'login', password: pw, remember });
   };
 
+  const [gBusy, setGBusy] = useState(false);
   const googleCode = async () => {
+    if (gBusy) return;
     if (isGoogleSdkReady()) {
-      const g = await googleSignInToken();
-      if (!g.ok) { if (g.message) setBanner(g.message); return; }
-      const r = await auth.googleTokenLogin(g.idToken!);
-      if (!r.ok) { setBanner(r.message || 'Google sign-in failed. Try again.'); return; }
-      nav.reset({ index: 0, routes: [{ name: 'Home' }] });
+      setGBusy(true);   // logo -> spinner until the picker + verification finish
+      try {
+        const g = await googleSignInToken();
+        if (!g.ok) { if (g.message) setBanner(g.message); return; }
+        const r = await auth.googleTokenLogin(g.idToken!);
+        if (!r.ok) { setBanner(r.message || 'Google sign-in failed. Try again.'); return; }
+        nav.reset({ index: 0, routes: [{ name: 'Home' }] });
+      } finally {
+        setGBusy(false);
+      }
       return;
     }
     // SDK not configured: fall back to the emailed Google code
@@ -142,10 +149,10 @@ export default function LoginScreen() {
 
       {/* social */}
       <View style={{ position: 'absolute', top: H * 0.70, left: fieldPad, right: fieldPad }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={15} onPress={googleCode} />
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} loading={gBusy} height={socialH} fontSize={15} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: H * 0.77, left: fieldPad, right: fieldPad }}>
-        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
+        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={15} />
       </View>
 
       {/* sign up row */}

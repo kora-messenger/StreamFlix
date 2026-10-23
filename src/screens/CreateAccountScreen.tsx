@@ -50,13 +50,20 @@ export default function CreateAccountScreen() {
     nav.navigate('EnterCode', { email: email.trim().toLowerCase(), purpose: 'signup', fullName: name, password: pw, confirm: pw2 });
   };
 
+  const [gBusy, setGBusy] = useState(false);
   const googleCode = async () => {
+    if (gBusy) return;
     if (isGoogleSdkReady()) {
-      const g = await googleSignInToken();
-      if (!g.ok) { if (g.message) setBanner(g.message); return; }
-      const r = await auth.googleTokenLogin(g.idToken!);
-      if (!r.ok) { setBanner(r.message || 'Google sign-in failed. Try again.'); return; }
-      nav.reset({ index: 0, routes: [{ name: 'Home' }] });
+      setGBusy(true);   // logo -> spinner until the picker + verification finish
+      try {
+        const g = await googleSignInToken();
+        if (!g.ok) { if (g.message) setBanner(g.message); return; }
+        const r = await auth.googleTokenLogin(g.idToken!);
+        if (!r.ok) { setBanner(r.message || 'Google sign-in failed. Try again.'); return; }
+        nav.reset({ index: 0, routes: [{ name: 'Home' }] });
+      } finally {
+        setGBusy(false);
+      }
       return;
     }
     // SDK not configured: fall back to the emailed Google code
@@ -140,10 +147,10 @@ export default function CreateAccountScreen() {
 
       {/* social */}
       <View style={{ position: 'absolute', top: soc1Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={15} onPress={googleCode} />
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} loading={gBusy} height={socialH} fontSize={15} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: soc2Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
+        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={15} />
       </View>
 
       {/* sign in + legal */}
