@@ -167,6 +167,7 @@ export default function VideoPlayer({
   const hideT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tapT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hudT = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unlockT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rippleA = useRef(new Animated.Value(0)).current;
   const hudA = useRef(new Animated.Value(1)).current;
   const posRef = useRef(0);
@@ -186,7 +187,15 @@ export default function VideoPlayer({
     hideT.current = setTimeout(() => { setControls(false); setSheet(null); }, 3200);
   }, []);
   const showControls = useCallback(() => { setControls(true); armHide(); }, [armHide]);
+  /* MovieBox Layer 2C: the "Tap to Unlock" chip behaves like the controls —
+     appears on tap, then auto-hides after ~3s; a tap brings it back. */
+  const showUnlockChip = useCallback(() => {
+    setShowUnlock(true);
+    if (unlockT.current) clearTimeout(unlockT.current);
+    unlockT.current = setTimeout(() => setShowUnlock(false), 3200);
+  }, []);
   useEffect(() => { armHide(); return () => { if (hideT.current) clearTimeout(hideT.current); }; }, [armHide]);
+  useEffect(() => () => { if (unlockT.current) clearTimeout(unlockT.current); }, []);
 
   /* ---- orientation: fullscreen = landscape, inline = portrait ---- */
   const enterFull = () => { Orientation.lockToLandscape(); StatusBar.setHidden(true); setFull(true); showControls(); };
@@ -240,7 +249,7 @@ export default function VideoPlayer({
         return;
       }
       if (Math.abs(s.dx) > 10 || Math.abs(s.dy) > 10) return;
-      if (locked) { setShowUnlock(u => !u); return; }
+      if (locked) { showUnlockChip(); return; }
       const now = Date.now();
       const side = g.current.x0 < g.current.w / 2 ? 'l' : 'r';
       if (now - g.current.lastTap < 300 && side === g.current.side) {
@@ -258,7 +267,7 @@ export default function VideoPlayer({
         }, 290);
       }
     },
-  }), [dim, volume, locked, flash, seekBy, armHide]);
+  }), [dim, volume, locked, flash, seekBy, armHide, showUnlockChip]);
 
   /* ---- seek bar ---- */
   const barW = useRef(1);
@@ -390,7 +399,13 @@ export default function VideoPlayer({
 
         {/* locked: only the lock chip, tap screen to show it */}
         {!adActive && locked && showUnlock && (
-          <Pressable onPress={() => { setLocked(false); setShowUnlock(false); showControls(); }} style={[styles.lockChip, { top: h * 0.45 }]}>
+          <Pressable
+            onPress={() => {
+              if (unlockT.current) clearTimeout(unlockT.current);
+              setLocked(false); setShowUnlock(false); showControls();
+            }}
+            style={[styles.lockChip, styles.plainChip, { top: h * 0.45, left: w * 0.02 }]}
+          >
             <LockOpenIcon size={18} locked />
             <Text style={styles.lockText}>Tap to Unlock</Text>
           </Pressable>
@@ -449,8 +464,8 @@ export default function VideoPlayer({
 
       {/* left-middle: Tap to Lock */}
       <Pressable
-        onPress={() => { setLocked(true); setShowUnlock(true); setControls(false); }}
-        style={[styles.lockChip, { top: h * 0.45, left: w * 0.015 }]}
+        onPress={() => { setLocked(true); setControls(false); showUnlockChip(); }}
+        style={[styles.lockChip, styles.plainChip, { top: h * 0.45, left: w * 0.015 }]}
       >
         <LockOpenIcon size={18} />
         <Text style={styles.lockText}>Tap to Lock</Text>
@@ -581,6 +596,7 @@ const styles = StyleSheet.create({
   lTitle: { color: '#fff', fontSize: 13.5, fontWeight: '500', maxWidth: '55%' },
   lTopBtn: { alignItems: 'center', marginLeft: 16 },
   lockChip: { position: 'absolute', flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(20,20,24,0.55)', borderRadius: 18, paddingHorizontal: 12, paddingVertical: 7 },
+  plainChip: { backgroundColor: 'transparent', borderRadius: 0, paddingHorizontal: 0, paddingVertical: 10 },
   lockText: { color: '#fff', fontSize: 12 },
   lCenter: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 70 },
   lBottom: { position: 'absolute', left: 0, right: 0 },
