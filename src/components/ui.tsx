@@ -59,13 +59,13 @@ export const GradientText = ({
 };
 
 export const Field = ({
-  icon, secure, style, focused, h, fs, error, ...rest
-}: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle; h?: number; fs?: number; error?: boolean }) => {
+  icon, secure, style, focused, h, fs, error, radius, ...rest
+}: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle; h?: number; fs?: number; error?: boolean; radius?: number }) => {
   const [hidden, setHidden] = useState(!!secure);
   const [isFocus, setFocus] = useState(false);
   const active = focused || isFocus;
   const inner = (
-    <View style={[s.field, active ? s.fieldActive : null, h ? { height: h, borderRadius: Math.min(15, h / 3) } : null]}>
+    <View style={[s.field, active ? s.fieldActive : null, h ? { height: h, borderRadius: radius ?? Math.min(15, h / 3) } : null]}>
       <View style={s.fieldIcon}>{icon}</View>
       <TextInput
         {...rest}
