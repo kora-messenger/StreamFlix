@@ -9,7 +9,7 @@ import {
 import { AppleLogo, BackIcon, GoogleG, LockIcon, MailIcon, UserIcon } from '../components/icons';
 import { colors } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
-import { googleSignInEmail, isGoogleSdkReady } from '../core/auth/googleAuth';
+import { googleSignInToken, isGoogleSdkReady } from '../core/auth/googleAuth';
 
 /**
  * FIXED layout (no scrolling). Every element is positioned as a percentage of the
@@ -51,14 +51,18 @@ export default function CreateAccountScreen() {
   };
 
   const googleCode = async () => {
-    let e = email.trim().toLowerCase();
     if (isGoogleSdkReady()) {
-      const g = await googleSignInEmail();
+      const g = await googleSignInToken();
       if (!g.ok) { if (g.message) setBanner(g.message); return; }
-      e = (g.email || '').toLowerCase();
+      const r = await auth.googleTokenLogin(g.idToken!);
+      if (!r.ok) { setBanner(r.message || 'Google sign-in failed. Try again.'); return; }
+      nav.reset({ index: 0, routes: [{ name: 'Home' }] });
+      return;
     }
+    // SDK not configured: fall back to the emailed Google code
+    const e = email.trim().toLowerCase();
     if (!/^([^\s@]+@[^\s@]+\.[^\s@]{2,})$/.test(e)) {
-      setBanner(isGoogleSdkReady() ? 'That Google account has no usable email.' : 'Enter your email address first — we send a Google sign-in code to it.');
+      setBanner('Enter your email address first — we send a Google sign-in code to it.');
       setBad({ email: true });
       return;
     }
@@ -66,7 +70,7 @@ export default function CreateAccountScreen() {
     if (!r.ok) { setBanner(r.message || 'Could not send the code'); return; }
     toast('Google sign-in code sent to your email.', 'info');
     nav.navigate('EnterCode', { email: e, purpose: 'google' });
-  };
+  };;
 
   const padX = W * 0.102;
   // professional app sizes (dp/sp), mock used for layout only

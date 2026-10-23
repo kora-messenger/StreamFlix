@@ -31,18 +31,21 @@ function configure() {
 }
 
 /**
- * Open the Google account picker and return the picked account's email.
+ * Open the Google account picker and return a signed ID token for the picked
+ * account (plus its email/name for immediate UI use). The backend verifies
+ * the token with Google — so any account on the device can sign in directly.
  * Returns { ok: false } with an empty message if the user cancels.
  */
-export async function googleSignInEmail(): Promise<{ ok: boolean; email?: string; message?: string }> {
+export async function googleSignInToken(): Promise<{ ok: boolean; idToken?: string; email?: string; name?: string; message?: string }> {
   configure();
   try {
     await GoogleSignin.hasPlayServices();
     const result = (await GoogleSignin.signIn()) as any;
     const user = result?.user ?? result;
-    const email = user?.email;
-    if (!email) return { ok: false, message: 'That Google account has no email. Pick another one.' };
-    return { ok: true, email };
+    if (!user?.email) return { ok: false, message: 'That Google account has no email. Pick another one.' };
+    const idToken = result?.idToken ?? result?.id_token;
+    if (!idToken) return { ok: false, message: 'Google did not return a sign-in token. Try again.' };
+    return { ok: true, idToken, email: user.email, name: user.name || '' };
   } catch (err: any) {
     if (err?.code === '-5' || err?.code === 'SIGN_IN_CANCELLED' || String(err?.message || '').includes('cancel')) {
       return { ok: false, message: '' };

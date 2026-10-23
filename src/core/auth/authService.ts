@@ -109,8 +109,33 @@ export async function checkPassword(email: string, password: string): Promise<Au
   return { ok: true, user: { id: account.id, fullName: account.fullName, email: account.email } };
 }
 
+/**
+ * Google direct sign-in (MarketScope AI pattern): the backend verifies the
+ * Google ID token with Google itself and returns the confirmed email/name;
+ * then we open the existing account or create one keyed to that email.
+ * No emailed code is involved.
+ */
+export async function googleTokenLogin(idToken: string): Promise<AuthResult> {
+  try {
+    const res = await fetch(AUTH_FN, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'googleVerify', idToken }),
+    });
+    const v = await res.json();
+    if (!res.ok || !v.ok) return { ok: false, message: v.message || 'Google could not verify that sign-in. Try again.' };
+    return googleVerifiedVerified(v.email, v.name || '');
+  } catch {
+    return { ok: false, message: 'Could not reach the sign-in service. Check your connection.' };
+  }
+}
+
 /** Finish a Google email-code sign-in: open the existing account, or create one keyed to the email. */
 export async function googleVerified(email: string): Promise<AuthResult> {
+  return googleVerifiedVerified(email, '');
+}
+
+async function googleVerifiedVerified(email: string, googleName: string): Promise<AuthResult> {
   const e = email.trim().toLowerCase();
   if (!emailOk(e)) return { ok: false, field: 'email', message: 'Enter a valid email address' };
   const list = await loadAccounts();
@@ -119,7 +144,7 @@ export async function googleVerified(email: string): Promise<AuthResult> {
     const salt = randomHex(16);
     // random local password the user never sees — they own the email and can reset anytime
     const generated = randomHex(12);
-    account = { id: randomHex(12), fullName: e.split('@')[0], email: e, salt, hash: hashPassword(generated, salt), createdAt: Date.now() };
+    account = { id: randomHex(12), fullName: (googleName || e.split('@')[0]).trim(), email: e, salt, hash: hashPassword(generated, salt), createdAt: Date.now() };
     list.push(account);
     await persist(list);
   }
