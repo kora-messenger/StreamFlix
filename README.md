@@ -63,6 +63,7 @@ MovieBox-style full-screen short-drama player measured from the reference screen
 
 
 ### Dramas (bottom-bar tab, replaces the old direct-to-search routing)
+- Inline search bar at the top: dark rounded pill (#1A1B24, 42dp) with magnifier icon, live filter across every drama on the screen (hero + all shelves, deduped) matching title or genre; typing swaps the feed for a results grid with a result count (or "No results"), a ✕ clears the field and restores the normal layout.
 MovieBox-style short-drama screen built from the reference recording, with the premium banner and error state explicitly excluded per Ijezie:
 - Snap hero carousel of tall portrait poster cards (62% screen width, 1.45 ratio) with neighbor cards peeking at the sides; each card carries a brand-gradient circular play button at the bottom-right and a title/meta/episode overlay.
 - Latest / Hottest / All chip row: dark rounded pills with small brand-gradient icon badges; Latest/Hottest/All swaps the New Arrivals shelf data.

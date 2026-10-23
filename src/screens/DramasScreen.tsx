@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
@@ -10,6 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
 import { colors, gradients } from '../theme/tokens';
 import { Drama, dramaChips, dramaHero, dramasAsian, dramasNew, dramasTop } from '../data/mock';
+import { SearchIcon } from '../components/icons';
+import { TextInput } from 'react-native';
 
 /* Dramas screen — MovieBox-style short-drama layout measured from the
    reference recording:
@@ -124,6 +126,7 @@ export default function DramasScreen() {
   const nav = useNavigation<any>();
   const { width: W } = useWindowDimensions();
   const [chip, setChip] = useState('latest');
+  const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
   const [online, setOnline] = useState(true);
   const cardW = Math.round(W * 0.62);
@@ -144,10 +147,55 @@ export default function DramasScreen() {
   }, [online]);
   const newArrivals =
     chip === 'latest' ? dramasNew : chip === 'hottest' ? dramasTop : [...dramasNew, ...dramasTop].slice(0, 10);
+
+  /* inline search across every drama on the screen */
+  const all = useMemo(() => {
+    const seen = new Set<string>();
+    return [dramaHero, dramasNew, dramasTop, dramasAsian]
+      .flat()
+      .filter(d => { if (seen.has(d.id)) return false; seen.add(d.id); return true; });
+  }, []);
+  const query = q.trim().toLowerCase();
+  const results = query
+    ? all.filter(d => (d.title + ' ' + (d.meta ?? '')).toLowerCase().includes(query))
+    : [];
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
-        {loading ? <LoadingState cardW={cardW} /> : (
+      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 110 }}>
+        {/* inline search bar */}
+        <View style={styles.searchWrap}>
+          <SearchIcon size={18} />
+          <TextInput
+            value={q}
+            onChangeText={setQ}
+            placeholder="Search dramas"
+            placeholderTextColor="#8a8ea3"
+            style={styles.searchInput}
+            returnKeyType="search"
+          />
+          {q.length > 0 ? (
+            <Pressable hitSlop={10} onPress={() => setQ('')} style={styles.searchClear}>
+              <Text style={styles.searchClearTxt}>✕</Text>
+            </Pressable>
+          ) : null}
+        </View>
+        {loading ? <LoadingState cardW={cardW} /> : query ? (
+          <View style={{ paddingHorizontal: 16 }}>
+            <Text style={styles.shelfHead}>
+              {results.length > 0 ? `${results.length} result${results.length > 1 ? 's' : ''}` : 'No results'}
+            </Text>
+            {results.length > 0 ? (
+              <View style={styles.resultGrid}>
+                {results.map(d => (
+                  <DramaCard key={d.id} item={d} />
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.noResultSub}>Try a different title or genre</Text>
+            )}
+          </View>
+        ) : (
         <>
         {/* hero carousel */}
         <FlatList
@@ -190,6 +238,16 @@ export default function DramasScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
+  searchWrap: {
+    flexDirection: 'row', alignItems: 'center', marginHorizontal: 16, marginTop: 4, marginBottom: 12,
+    backgroundColor: '#1A1B24', borderRadius: 12, height: 42, paddingHorizontal: 12, gap: 8,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+  },
+  searchInput: { flex: 1, color: '#fff', fontSize: 14, paddingVertical: 0 },
+  searchClear: { padding: 4 },
+  searchClearTxt: { color: '#8a8ea3', fontSize: 14 },
+  resultGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14, marginTop: 14 },
+  noResultSub: { color: '#8a8ea3', fontSize: 12.5, marginTop: 10 },
   heroImg: { borderRadius: 14 },
   play: {
     position: 'absolute', right: 10, bottom: 46, width: 38, height: 38, borderRadius: 19,
