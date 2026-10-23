@@ -4,14 +4,15 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Field, GradientButton, GradientText, TopToast } from '../components/ui';
+import { Field, GradientButton, GradientText, Lockup, TopToast } from '../components/ui';
 import { BackIcon, MailIcon } from '../components/icons';
 import * as auth from '../core/auth/authService';
 
 /**
  * Forgot Password — fixed layout (no scrolling), measured from the 683x1024
  * design mock. Same login poster collage at the top (fading to black before
- * the heading), then: "Forgot Password?" (white + blue-to-purple gradient),
+ * the heading) with the StreamMax logo lockup over it (y 0.176H, centered),
+ * then: "Forgot Password?" (white + blue-to-purple gradient),
  * two-line centered subtitle, tall email field, gradient pill button
  * "Send Reset Link" with arrow, footer "Remember your password? Sign In".
  */
@@ -50,6 +51,11 @@ export default function ForgotPasswordScreen() {
         style={{ position: 'absolute', top: 0, width: W, height: H * 0.465 }}
         resizeMode="cover"
       />
+
+      {/* logo + app name + tagline over the poster (mock: block at y 180/1024, centered) */}
+      <View style={{ position: 'absolute', top: H * 0.176, left: 0, right: 0, alignItems: 'center' }}>
+        <Lockup scale={1.05} />
+      </View>
 
       {/* back arrow over the poster */}
       <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 8, left: W * 0.059 }}>
