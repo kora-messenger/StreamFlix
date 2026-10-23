@@ -13,7 +13,7 @@ export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
 
   // Measured from the reference mockup (512x1024): logo at 33% height,
-  // wordmark ~55%, tagline ~62%, desc ~66%, icons ~74%, button ~85%, dots ~94%.
+  // wordmark ~55%, tagline ~62%, desc ~66%, icons ~74%, button ~85%.
   const k = W / 512;
   const logoSize = Math.round(k * 99);
   const wordmarkSize = Math.round(k * 56);
@@ -87,13 +87,6 @@ export default function WelcomeScreen() {
           fontSize={btnText}
           style={{ marginTop: H * 0.036, alignSelf: 'stretch', marginHorizontal: W * 0.086 }}
         />
-
-        <View style={[styles.dots, { marginTop: H * 0.026 }]}>
-          <View style={[styles.dotActive, { width: W * 0.014, height: W * 0.015 }]} />
-          <View style={styles.dot} />
-          <View style={styles.dot} />
-          <View style={styles.dot} />
-        </View>
       </View>
     </View>
   );
@@ -108,7 +101,4 @@ const styles = StyleSheet.create({
   cell: { alignItems: 'center' },
   cellText: { color: 'rgba(255,255,255,0.82)', textAlign: 'center', fontWeight: '500' },
   sep: { position: 'absolute', width: 1, backgroundColor: 'rgba(255,255,255,0.10)' },
-  dots: { flexDirection: 'row', alignItems: 'center' },
-  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#2e3346', marginHorizontal: 5 },
-  dotActive: { borderRadius: 4, backgroundColor: '#5E24ED', marginHorizontal: 5 },
 });
