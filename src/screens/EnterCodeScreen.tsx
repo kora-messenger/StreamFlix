@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert, Image, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions,
+  Image, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GradientButton, GradientText, Lockup, TopToast } from '../components/ui';
+import { GradientButton, GradientText, Lockup, TopToast, useToast } from '../components/ui';
 import { BackIcon, ClockIcon, MessageLockIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
@@ -20,6 +20,7 @@ const RESEND_SECONDS = 83; // mock shows 01:23
 
 export default function EnterCodeScreen() {
   const nav = useNavigation<any>();
+  const toast = useToast();
   const route = useRoute<any>();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -56,7 +57,7 @@ export default function EnterCodeScreen() {
     const c = await auth.sendResetCode(email);
     setCode(''); setErr('');
     setLeft(RESEND_SECONDS);
-    Alert.alert('Your reset code', `${c}\n\nThis code expires in 10 minutes.`);
+    toast(`Your reset code: ${c}. It expires in 10 minutes.`, 'info');
   };
 
   const boxW = Math.round(k * 71);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   Animated, Easing, Image, Pressable, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle,
 } from 'react-native';
@@ -106,6 +106,31 @@ export const OrDivider = ({ compact }: { compact?: boolean }) => (
 );
 
 /** Veltravia-style toast: dark pill below the status bar, slides in, auto-dismisses. */
+/* App-wide toast: wrap the navigator once; any screen can call useToast()(...).
+   Same dark pill + white text everywhere (error and info). */
+type ToastFn = (message: string, kind?: 'error' | 'info') => void;
+const ToastCtx = createContext<ToastFn>(() => {});
+export const useToast = () => useContext(ToastCtx);
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<{ message: string; kind: 'error' | 'info'; id: number } | null>(null);
+  const show = useCallback<ToastFn>((message, kind = 'error') => {
+    setState({ message, kind, id: Date.now() });
+  }, []);
+  useEffect(() => {
+    if (!state) return;
+    const t = setTimeout(() => setState(null), 3600);
+    return () => clearTimeout(t);
+  }, [state]);
+  return (
+    <ToastCtx.Provider value={show}>
+      <View style={{ flex: 1 }}>
+        {children}
+        {state ? <TopToast key={state.id} message={state.message} kind={state.kind} /> : null}
+      </View>
+    </ToastCtx.Provider>
+  );
+}
+
 export const TopToast = ({ message, kind = 'error' }: { message: string; kind?: 'error' | 'info' }) => {
   const insets = useSafeAreaInsets();
   const a = useRef(new Animated.Value(0)).current;

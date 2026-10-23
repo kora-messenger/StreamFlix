@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Alert, Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
+  Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Field, GradientButton, GradientText, Lockup, TopToast } from '../components/ui';
+import { Field, GradientButton, GradientText, Lockup, TopToast, useToast } from '../components/ui';
 import { BackIcon, MailIcon } from '../components/icons';
 import * as auth from '../core/auth/authService';
 
@@ -18,6 +18,7 @@ import * as auth from '../core/auth/authService';
  */
 export default function ForgotPasswordScreen() {
   const nav = useNavigation<any>();
+  const toast = useToast();
   const route = useRoute<any>();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -39,7 +40,7 @@ export default function ForgotPasswordScreen() {
     }
     const code = await auth.sendResetCode(e);
     // email delivery lands with the backend mail service; until then the code is shown directly
-    Alert.alert('Your reset code', `${code}\n\nThis code expires in 10 minutes.`);
+    toast(`Your reset code: ${code}. It expires in 10 minutes.`, 'info');
     nav.navigate('EnterCode', { email: e });
   };
 

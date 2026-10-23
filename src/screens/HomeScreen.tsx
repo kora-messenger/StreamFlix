@@ -12,6 +12,7 @@ import { Alert } from 'react-native';
 import { getCurrentUser, logout, AuthUser } from '../core/auth/authService';
 import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
 import Skeleton from '../components/Skeleton';
+import { useToast } from '../components/ui';
 import NetInfo from '@react-native-community/netinfo';
 import { colors, gradients } from '../theme/tokens';
 
@@ -81,6 +82,7 @@ export default function HomeScreen() {
     return { id: h.id, title: h.title, year, genre, poster: h.image };
   });
   const nav = useNavigation<any>();
+  const toast = useToast();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState(1);
@@ -105,7 +107,7 @@ export default function HomeScreen() {
     if (!me) return;
     Alert.alert('Sign out', `Sign out of ${me.email}?`, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: async () => { await logout(); nav.reset({ index: 0, routes: [{ name: 'Welcome' }] }); } },
+      { text: 'Sign out', style: 'destructive', onPress: async () => { await logout(); toast('Signed out. See you soon!', 'info'); nav.reset({ index: 0, routes: [{ name: 'Welcome' }] }); } },
     ]);
   };
   const listRef = useRef<FlatList>(null);

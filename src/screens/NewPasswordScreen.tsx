@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Alert, Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
+  Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GradientButton, GradientText, Lockup, TopToast, Field } from '../components/ui';
+import { GradientButton, GradientText, Lockup, TopToast, Field, useToast } from '../components/ui';
 import { BackIcon, CheckIcon, LockIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
@@ -18,6 +18,7 @@ import * as auth from '../core/auth/authService';
  */
 export default function NewPasswordScreen() {
   const nav = useNavigation<any>();
+  const toast = useToast();
   const route = useRoute<any>();
   const { width: W, height: H } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -55,9 +56,8 @@ export default function NewPasswordScreen() {
       setErr(r.message || 'Something went wrong');
       return;
     }
-    Alert.alert('Password reset', 'Your new password is ready — log in with it.', [
-      { text: 'OK', onPress: () => nav.reset({ index: 0, routes: [{ name: 'Login' }] }) },
-    ]);
+    toast('Your new password is ready — log in with it.', 'info');
+    nav.reset({ index: 0, routes: [{ name: 'Login' }] });
   };
 
   const circleSize = Math.round(k * 124);
