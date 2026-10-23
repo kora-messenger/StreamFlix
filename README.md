@@ -74,6 +74,13 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 
 All icons are professional SVG. No emoji in the UI. Hero artwork fades into the background with custom gradients. The brand lockup uses an alpha-keyed neon logo with its own glow.
 
+## Video player
+- Real playback via `react-native-video` (native Media3/ExoPlayer core) — HLS (.m3u8) and MP4 sources, with `react-native-orientation-locker` forcing landscape while playing
+- MovieBox-style gesture layer: double-tap left/right = seek -10s/+10s with ripple feedback, vertical swipe on the left half = brightness (dim layer), right half = player volume, both with a centered HUD pill
+- Player overlay per the design mock: back arrow + StreamFlix lockup, cast / CC / three-dot top bar, rewind-10 / pause / forward-10 on a subtle dark pill, purple (#8A2BE2) seek bar with white glow knob, timestamps, fullscreen (contain/cover) toggle; controls auto-hide after ~3s, tap to resurface
+- Playback speed sheet (0.5x–2x) and subtitle sheet wired to the stream's real text tracks (CC badge lights cyan when active)
+- Movie view's big play button and fullscreen icon open the player; until per-title stream URLs are wired into the catalog it plays a public test HLS stream (Apple bipbop advanced, which includes real subtitle tracks)
+
 ## Tech stack
 
 - **React Native 0.87** with React 19 and TypeScript

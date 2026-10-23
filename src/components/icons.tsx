@@ -1,5 +1,5 @@
 import React from 'react';
-import Svg, { Path, Rect, Circle, Defs, LinearGradient as SvgGrad, Stop, G } from 'react-native-svg';
+import Svg, { Path, Rect, Circle, Defs, LinearGradient as SvgGrad, Stop, G, Text as SvgText } from 'react-native-svg';
 
 type P = { size?: number; color?: string; stroke?: number };
 const base = (size = 22) => ({ width: size, height: size, viewBox: '0 0 24 24', fill: 'none' });
@@ -138,4 +138,58 @@ export const StarIcon = ({ size = 14, color = '#f6b73c' }: P) => (
 );
 export const CrownIcon = ({ size = 12, color = '#f6b73c' }: P) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none"><Path d="M3 18h18l1.5-11-6 4.5L12 4 7.5 11.5l-6-4.5L3 18z" fill={color} /></Svg>
+);
+
+// ---------- video player icons ----------
+export const Rewind10Icon = ({ size = 44, color = '#fff' }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <Path d="M14.5 10.5A16 16 0 1 1 8 24" stroke={color} strokeWidth="2.6" strokeLinecap="round" fill="none" />
+    <Path d="M15 4.5v6.5h-6.5" stroke={color} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <SvgText x="24" y="30" fontSize="14" fontWeight="700" fill={color} textAnchor="middle">10</SvgText>
+  </Svg>
+);
+export const Forward10Icon = ({ size = 44, color = '#fff' }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <Path d="M33.5 10.5A16 16 0 1 0 40 24" stroke={color} strokeWidth="2.6" strokeLinecap="round" fill="none" />
+    <Path d="M33 4.5v6.5h6.5" stroke={color} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <SvgText x="24" y="30" fontSize="14" fontWeight="700" fill={color} textAnchor="middle">10</SvgText>
+  </Svg>
+);
+export const CastIcon = ({ size = 20, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Path d="M3.5 15.5v3a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-3" {...st(color, 1.8)} fill="none" />
+    <Path d="M3 3h18v12H3z" transform="translate(0,0)" {...st(color, 1.8)} fill="none" opacity="0" />
+    <Rect x="3.5" y="3.5" width="17" height="11" rx="1.8" {...st(color, 1.8)} />
+    <Path d="M2 8.5a9.5 9.5 0 0 1 7 7M2 12.5a5.5 5.5 0 0 1 4 4" {...st(color, 1.7)} />
+    <Circle cx="2.6" cy="20.6" r="1.1" fill={color} />
+  </Svg>
+);
+export const CcIcon = ({ size = 20, color = '#fff' }: P) => (
+  <Svg width={size} height={size * 0.72} viewBox="0 0 26 19" fill="none">
+    <Rect x="1" y="1" width="24" height="17" rx="4" stroke={color} strokeWidth="1.6" />
+    <SvgText x="13" y="13.2" fontSize="9" fontWeight="700" fill={color} textAnchor="middle" fontFamily="sans-serif">CC</SvgText>
+  </Svg>
+);
+export const DotsIcon = ({ size = 20, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Circle cx="12" cy="5" r="1.5" fill={color} /><Circle cx="12" cy="12" r="1.5" fill={color} /><Circle cx="12" cy="19" r="1.5" fill={color} />
+  </Svg>
+);
+export const SpeedIcon = ({ size = 20, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Path d="M4.5 17a8.5 8.5 0 1 1 15 0" {...st(color, 1.8)} />
+    <Path d="M12 13.5l4-4.5" {...st(color, 1.8)} /><Circle cx="12" cy="15" r="1.4" fill={color} />
+  </Svg>
+);
+export const BrightnessIcon = ({ size = 22, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Circle cx="12" cy="12" r="4" {...st(color, 1.8)} />
+    <Path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19" {...st(color, 1.7)} />
+  </Svg>
+);
+export const VolumeIcon = ({ size = 22, color = '#fff' }: P) => (
+  <Svg {...base(size)}>
+    <Path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4z" fill={color} />
+    <Path d="M15 9a4.5 4.5 0 0 1 0 6M17.5 6.5a8 8 0 0 1 0 11" {...st(color, 1.7)} />
+  </Svg>
 );

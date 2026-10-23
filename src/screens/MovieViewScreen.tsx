@@ -70,14 +70,14 @@ export default function MovieViewScreen() {
         <Text style={styles.hdText}>HD Previewing. Unlock HD</Text>
         <Text style={styles.hdArrow}> ›</Text>
       </View>
-      <Pressable style={styles.playBtn} onPress={() => setPlaying(p => !p)}>
+      <Pressable style={styles.playBtn} onPress={() => nav.navigate('Player', { title })}>
         {playing ? <PauseIcon size={26} /> : <PlayIcon size={26} />}
       </Pressable>
       <View style={styles.playerBottom}>
         <Text style={styles.time}>00:00</Text>
         <View style={styles.track}><View style={styles.trackFill} /></View>
         <Text style={styles.time}>01:05:06</Text>
-        <Pressable hitSlop={8} onPress={() => setFullscreen(true)}>
+        <Pressable hitSlop={8} onPress={() => nav.navigate('Player', { title })}>
           <FullscreenIcon size={19} />
         </Pressable>
       </View>
