@@ -178,9 +178,9 @@ export default function SettingsScreen() {
           <View style={styles.group}>
             <NavRow title="Check update" onPress={() => toast('You\'re on the latest version (v1.0.0)', 'info')} />
             <Sep />
-            <NavRow title="Privacy Policy" onPress={soon('Privacy Policy')} />
+            <NavRow title="Privacy Policy" onPress={() => nav.navigate('Browser', { doc: 'privacy' })} />
             <Sep />
-            <NavRow title="Terms of Service" onPress={soon('Terms of Service')} />
+            <NavRow title="Terms of Service" onPress={() => nav.navigate('Browser', { doc: 'terms' })} />
             <Sep />
             <NavRow title="Log out" onPress={onLogout} />
           </View>

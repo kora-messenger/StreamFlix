@@ -3,7 +3,6 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { BackIcon } from '../components/icons';
-import { useToast } from '../components/ui';
 
 /* About us screen — cloned from the MovieBox reference recording:
    fixed top bar (back chevron, centered bold "About us"), the app logo and
@@ -16,9 +15,8 @@ const APP_VERSION = 'v1.0.0';
 export default function AboutScreen() {
   const insets = useSafeAreaInsets();
   const nav = useNavigation<any>();
-  const toast = useToast();
 
-  const soon = (name: string) => () => toast(`${name} is coming soon`, 'info');
+  const open = (doc: string) => () => nav.navigate('Browser', { doc });
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -41,9 +39,9 @@ export default function AboutScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + 18 }]}>
         <Text style={styles.disclaimer}>
           By continuing, you agree to our{' '}
-          <Text style={styles.link} onPress={soon('Terms of Service')}>Terms of Service</Text>
+          <Text style={styles.link} onPress={open('terms')}>Terms of Service</Text>
           {' '}and{' '}
-          <Text style={styles.link} onPress={soon('Privacy Policy')}>Privacy Policy</Text>.
+          <Text style={styles.link} onPress={open('privacy')}>Privacy Policy</Text>.
         </Text>
       </View>
     </View>

@@ -59,11 +59,16 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 ### Settings (opened from the gear on the Me screen)
 - Layout measured from the MovieBox settings recording: centered "Settings" header with back chevron, then two rounded dark groups under the labels "Your app and preferences" and "More info and support".
 - Group 1: Notifications >, Language >, Watch Options (value Download/Stream, picker) >, Family Mode (switch + helper text), Download in background (switch; in MovieBox this raises the real Android battery-optimization system prompt — that prompt will be triggered via a native module once real background downloads exist, no app-made replica), Auto activate Miniplayer (switch + helper, on by default), Privacy Settings >.
-- Group 2: Check update (toast: latest version), Privacy Policy, Terms of Service, Log out (confirm, clears session, back to Welcome).
+- Group 2: Check update (toast: latest version), Privacy Policy and Terms of Service (both open the in-app browser), Log out (confirm, clears session, back to Welcome).
 - Switches are StreamMax-branded (cyan→purple gradient track when on, grey when off) and persist locally via AsyncStorage (`streammax.settings.v1`). Rows without a destination yet show the dark pill toast.
 
 ### About us (opened from the About row on the Me screen)
 - MovieBox-clone layout: top bar with back chevron and centered bold "About us", StreamMax logo with the version number (v1.0.0) vertically centered in the body, and the footer disclaimer pinned to the bottom — "By continuing, you agree to our Terms of Service and Privacy Policy." with both links in the StreamMax purple accent (placeholder toasts until the documents exist).
+
+### In-app browser (ChatGPT-style, for Terms of Service / Privacy Policy)
+- White chrome cloned from the OpenAI/ChatGPT in-app browser: X to close, down-chevron (placeholder toast), centered URL text ("streammax.app"), line-art share icon (opens the system share sheet), vertical ellipsis (placeholder toast), faint #D3D3D3 divider under the bar.
+- Content renders in a white WebView. Until the real .com URLs exist, Terms of Service and Privacy Policy load as locally rendered white document pages (bold centered title, "Updated:" stamp, left-aligned body) — swap the local HTML for live URLs later via the `url` param.
+- Opened from Settings > Privacy Policy / Terms of Service and the About us footer links.
 
 ### DramaPlayer (opened from any Dramas card)
 MovieBox-style full-screen short-drama player, now matching the episode-feed recording:
