@@ -8,14 +8,16 @@ import Orientation from 'react-native-orientation-locker';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path, Rect, Circle } from 'react-native-svg';
 import {
-  BackIcon, BrightnessIcon, FullscreenIcon, PauseIcon, PlayIcon, Rewind10Icon,
-  Forward10Icon, VolumeIcon,
+  BackIcon, FullscreenIcon, PauseIcon, PlayIcon, Rewind10Icon, Forward10Icon,
 } from './icons';
 
 const TEST_HLS =
   'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8';
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const ACCENT = '#00D2FF';
+/* MovieBox volume/brightness HUD — exact colors sampled from the reference build */
+const HUD_GREEN = '#0FA64C';   /* boost (100–200%) fill */
+const HUD_WHITE = '#FFFFFF';   /* normal (0–100%) fill + boost track */
 
 const fmt = (s: number) => {
   if (!Number.isFinite(s) || s < 0) s = 0;
@@ -88,6 +90,33 @@ const RotateIcon = ({ size = 20 }: { size?: number }) => (
   </Svg>
 );
 
+/* ---- MovieBox-style quantized gesture HUD icons ----
+   Volume: 4 states (mute / low 33 / high 66 / max 100), Brightness: 3 states.
+   Icon swaps by level band exactly like MovieBox's
+   ls_ic_player_feedback_volume_0/33/66/100 + brightness_33/66/100 drawables. */
+const VolumeLevelIcon = ({ level, size = 20 }: { level: 0 | 1 | 2 | 3; size?: number }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M4 9.4v5.2h3l4.1 3.3V6.1L7 9.4H4z" fill="#fff" />
+    {level === 0 ? (
+      <Path d="M14.6 9.2l4.6 5.6M19.2 9.2l-4.6 5.6" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" />
+    ) : (
+      <>
+        {level >= 1 && <Path d="M14.4 9.3a4.2 4.2 0 0 1 0 5.4" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" />}
+        {level >= 2 && <Path d="M16.8 7.2a7.4 7.4 0 0 1 0 9.6" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" />}
+        {level >= 3 && <Path d="M19.2 5.1a10.6 10.6 0 0 1 0 13.8" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" />}
+      </>
+    )}
+  </Svg>
+);
+const SunLevelIcon = ({ level, size = 20 }: { level: 1 | 2 | 3; size?: number }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx="12" cy="12" r="4.1" stroke="#fff" strokeWidth="1.7" />
+    {level >= 1 && <Path d="M12 3.4v2.4M12 18.2v2.4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />}
+    {level >= 2 && <Path d="M5.7 5.7l1.7 1.7M16.6 16.6l1.7 1.7M18.3 5.7l-1.7 1.7M7.4 16.6l-1.7 1.7" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />}
+    {level >= 3 && <Path d="M3.4 12h2.4M18.2 12h2.4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />}
+  </Svg>
+);
+
 type Sheet = null | 'speed' | 'lang' | 'setting';
 
 type Props = {
@@ -130,7 +159,7 @@ export default function VideoPlayer({
   const [tracks, setTracks] = useState<TextTrack[]>([]);
   const [trackIdx, setTrackIdx] = useState(-1);
   const [scrubbing, setScrubbing] = useState(false);
-  const [hud, setHud] = useState<null | { kind: 'b' | 'v'; value: number }>(null);
+  const [hud, setHud] = useState<null | { kind: 'b' | 'v'; value: number }>(null); // v: 0..2 (1 = 100%, >1 = boost)
   const [ripple, setRipple] = useState<null | { side: 'l' | 'r'; key: number }>(null);
   const [adLeft, setAdLeft] = useState(preRoll ? 30 : 0);
 
@@ -139,6 +168,7 @@ export default function VideoPlayer({
   const tapT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hudT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rippleA = useRef(new Animated.Value(0)).current;
+  const hudA = useRef(new Animated.Value(1)).current;
   const posRef = useRef(0);
   posRef.current = pos;
 
@@ -171,6 +201,8 @@ export default function VideoPlayer({
   }, [duration]);
   const seekBy = useCallback((d: number) => seekTo(posRef.current + d), [seekTo]);
 
+  useEffect(() => { if (hud) hudA.setValue(1); }, [hud, hudA]);
+
   const flash = useCallback((side: 'l' | 'r') => {
     setRipple({ side, key: Date.now() });
     rippleA.setValue(1);
@@ -193,14 +225,18 @@ export default function VideoPlayer({
         const d = Math.max(0, Math.min(0.75, g.current.b0 + s.dy / (g.current.h * 1.1)));
         setDim(d); setHud({ kind: 'b', value: 1 - d / 0.75 });
       } else if (g.current.mode === 'v') {
-        const v = Math.max(0, Math.min(1, g.current.v0 - s.dy / (g.current.h * 1.1)));
+        /* MovieBox two-stage volume: 0–1 = system range (white), 1–2 = boost (green) */
+        const v = Math.max(0, Math.min(2, g.current.v0 - s.dy / (g.current.h * 0.62)));
         setVolume(v); setHud({ kind: 'v', value: v });
       }
     },
     onPanResponderRelease: (_e, s) => {
       if (g.current.mode) {
         if (hudT.current) clearTimeout(hudT.current);
-        hudT.current = setTimeout(() => setHud(null), 700);
+        hudT.current = setTimeout(() => {
+          Animated.timing(hudA, { toValue: 0, duration: 380, useNativeDriver: true })
+            .start(({ finished }) => { if (finished) setHud(null); });
+        }, 720);
         return;
       }
       if (Math.abs(s.dx) > 10 || Math.abs(s.dy) > 10) return;
@@ -286,12 +322,41 @@ export default function VideoPlayer({
           </Animated.View>
         )}
 
-        {/* brightness / volume HUD pill */}
+        {/* brightness / volume HUD pill — MovieBox two-stage volume:
+            0–100% fills white left→right; past 100% the track turns full white
+            and a green boost segment grows over it. Icon swaps in quantized
+            bands (volume: mute/33/66/100, brightness: 33/66/100). */}
         {hud && (
-          <View pointerEvents="none" style={[styles.hud, { top: isFull ? h * 0.14 : h * 0.08 }]}>
-            {hud.kind === 'b' ? <BrightnessIcon size={18} /> : <VolumeIcon size={18} />}
-            <View style={styles.hudTrack}><View style={[styles.hudFill, { width: `${Math.round(hud.value * 100)}%` }]} /></View>
-          </View>
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.hud, { top: isFull ? h * 0.14 : h * 0.08, opacity: hudA }]}
+          >
+            {hud.kind === 'b' ? (
+              <>
+                <SunLevelIcon level={hud.value <= 0.33 ? 1 : hud.value <= 0.66 ? 2 : 3} size={18} />
+                <View style={styles.hudTrack}>
+                  <View style={[styles.hudFill, { width: `${Math.round(hud.value * 100)}%` }]} />
+                </View>
+              </>
+            ) : hud.value > 1 ? (
+              <>
+                <VolumeLevelIcon level={3} size={18} />
+                <View style={[styles.hudTrack, styles.hudTrackBoost]}>
+                  <View style={[styles.hudFill, styles.hudFillBoost, { width: `${Math.round((Math.min(hud.value, 2) - 1) * 100)}%` }]} />
+                </View>
+              </>
+            ) : (
+              <>
+                <VolumeLevelIcon
+                  level={hud.value <= 0.001 ? 0 : hud.value <= 0.33 ? 1 : hud.value <= 0.66 ? 2 : 3}
+                  size={18}
+                />
+                <View style={styles.hudTrack}>
+                  <View style={[styles.hudFill, { width: `${Math.round(hud.value * 100)}%` }]} />
+                </View>
+              </>
+            )}
+          </Animated.View>
         )}
 
         {/* subtitle-style caption area is rendered natively by the video track */}
@@ -531,7 +596,9 @@ const styles = StyleSheet.create({
   rippleText: { color: '#fff', fontSize: 11 },
   hud: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(15,15,18,0.82)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 10, width: 220 },
   hudTrack: { flex: 1, height: 9, borderRadius: 5, backgroundColor: 'rgba(255,255,255,0.22)', overflow: 'hidden' },
-  hudFill: { height: '100%', backgroundColor: '#fff' },
+  hudTrackBoost: { backgroundColor: HUD_WHITE },
+  hudFill: { height: '100%', backgroundColor: HUD_WHITE },
+  hudFillBoost: { backgroundColor: HUD_GREEN },
 
   /* ad */
   adTag: { position: 'absolute', left: 14, top: '45%' },
