@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Field, GradientButton, GradientText } from '../components/ui';
+import { Field, GradientButton, GradientText, TopToast } from '../components/ui';
 import { BackIcon, LockIcon, MailIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
@@ -108,8 +108,8 @@ export default function ForgotPasswordScreen() {
         />
       </View>
 
-      {/* error line */}
-      <Text style={[styles.errorLine, { top: H * 0.709, left: padX, right: padX, fontSize: Math.round(k * 12.5) }]} numberOfLines={1}>{err}</Text>
+      {/* errors pop up at the top */}
+      <TopToast message={err} />
 
       {/* Send Reset Link */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
   titleWhite: { color: '#fff', fontWeight: '800' },
   sub: { position: 'absolute', color: '#b0b0b0', textAlign: 'center' },
   fieldBox: { backgroundColor: '#0b1026', borderColor: '#232a44' },
-  errorLine: { position: 'absolute', color: '#ff4d6d', textAlign: 'center', fontWeight: '600' },
   footer: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
   footText: { color: '#d8dce8' },
   footLink: { color: '#00D2FF', fontWeight: '700' },

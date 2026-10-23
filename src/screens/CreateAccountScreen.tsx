@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton,
+  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast,
 } from '../components/ui';
 import { AppleLogo, BackIcon, GoogleG, LockIcon, MailIcon, UserIcon } from '../components/icons';
 import { colors } from '../theme/tokens';
@@ -110,6 +110,9 @@ export default function CreateAccountScreen() {
         By creating an account, you agree to our{'\n'}
         <Text style={styles.legalLink}>Terms of Service</Text>  •  <Text style={styles.legalLink}>Privacy Policy</Text>
       </Text>
+
+      {/* errors pop up at the top */}
+      <TopToast message={banner} />
     </View>
   );
 }
@@ -121,7 +124,6 @@ const styles = StyleSheet.create({
   titleRow: { position: 'absolute', flexDirection: 'row', alignItems: 'center' },
   title: { color: '#fff', fontWeight: '800', letterSpacing: -0.3 },
   sub: { position: 'absolute', color: '#94a3b8' },
-  errorBanner: { position: 'absolute', color: '#ff4d6d', textAlign: 'center', fontWeight: '600' },
   signRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
   signText: { color: '#d7d9ea' },
   signLink: { color: '#3b82f6', fontWeight: '600' },

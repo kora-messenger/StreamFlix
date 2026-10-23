@@ -5,8 +5,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GradientButton, GradientText, Lockup } from '../components/ui';
-import { BackIcon, ClockIcon, MessageLockIcon } from '../components/icons';
+import { GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast } from '../components/ui';
+import { AppleLogo, BackIcon, ClockIcon, GoogleG, MessageLockIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
 
@@ -155,9 +155,6 @@ export default function EnterCodeScreen() {
         })}
       </Pressable>
 
-      {/* error line */}
-      <Text style={[styles.errorLine, { top: H * 0.648, left: padX, right: padX, fontSize: Math.round(k * 12.5) }]} numberOfLines={1}>{err}</Text>
-
       {/* timer */}
       {left > 0 && (
         <View style={[styles.timerRow, { top: H * 0.676 }]}>
@@ -168,17 +165,31 @@ export default function EnterCodeScreen() {
         </View>
       )}
 
+      {/* errors pop up at the top */}
+      <TopToast message={err} />
+
       {/* Next */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
         <GradientButton label={busy ? 'Verifying…' : 'Next'} height={Math.round(k * 68)} fontSize={Math.round(k * 20)} onPress={next} />
       </View>
 
       {/* footer */}
-      <View style={[styles.footer, { top: H * 0.858 }]}>
+      <View style={[styles.footer, { top: H * 0.820 }]}>
         <Text style={[styles.footText, { fontSize: Math.round(k * 14.5) }]}>Didn&apos;t receive the code? </Text>
         <Pressable onPress={resend}>
           <Text style={[styles.footLink, { fontSize: Math.round(k * 14.5) }]}>Resend</Text>
         </Pressable>
+      </View>
+
+      {/* same bottom design as the login screen: or divider + social buttons */}
+      <View style={{ position: 'absolute', top: H * 0.852, left: padX, right: padX }}>
+        <OrDivider compact />
+      </View>
+      <View style={{ position: 'absolute', top: H * 0.876, left: padX, right: padX }}>
+        <OutlineButton label="Continue with Google" icon={<GoogleG size={Math.round(k * 20)} />} height={Math.round(k * 52)} fontSize={Math.round(k * 15)} />
+      </View>
+      <View style={{ position: 'absolute', top: H * 0.933, left: padX, right: padX }}>
+        <OutlineButton label="Continue with Apple" icon={<AppleLogo size={Math.round(k * 20)} />} height={Math.round(k * 52)} fontSize={Math.round(k * 15)} />
       </View>
     </View>
   );
@@ -194,7 +205,6 @@ const styles = StyleSheet.create({
   box: { backgroundColor: '#0b1026', borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   digit: { color: '#fff', fontWeight: '700' },
   cursor: { position: 'absolute', width: 2, backgroundColor: '#fff', borderRadius: 1 },
-  errorLine: { position: 'absolute', color: '#ff4d6d', textAlign: 'center', fontWeight: '600' },
   timerRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   timerText: { color: '#d8dce8' },
   timerTime: { color: '#00D2FF', fontWeight: '600' },

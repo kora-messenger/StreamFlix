@@ -5,6 +5,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Defs, LinearGradient as SvgGrad, Stop, Text as SvgText, Circle } from 'react-native-svg';
 import { colors, gradients } from '../theme/tokens';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowRight, EyeIcon, EyeOffIcon } from './icons';
 
 export const GradientButton = ({
@@ -104,6 +105,39 @@ export const OrDivider = ({ compact }: { compact?: boolean }) => (
   </View>
 );
 
+/** Veltravia-style toast: dark pill below the status bar, slides in, auto-dismisses. */
+export const TopToast = ({ message, kind = 'error' }: { message: string; kind?: 'error' | 'info' }) => {
+  const insets = useSafeAreaInsets();
+  const a = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!message) return;
+    a.setValue(0);
+    Animated.timing(a, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+    const t = setTimeout(
+      () => Animated.timing(a, { toValue: 0, duration: 240, useNativeDriver: true }).start(),
+      3200,
+    );
+    return () => clearTimeout(t);
+  }, [message, a]);
+  if (!message) return null;
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute', top: insets.top + 10, left: 16, right: 16, zIndex: 99, elevation: 99,
+        opacity: a,
+        transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [-28, 0] }) }],
+      }}
+    >
+      <View style={s.toastPill}>
+        <Text style={[s.toastText, kind === 'error' ? { color: '#ff4d6d' } : null]} numberOfLines={2}>
+          {message}
+        </Text>
+      </View>
+    </Animated.View>
+  );
+};
+
 /** Logo + wordmark lockup. `stacked` = logo above, else side-by-side like auth screens. */
 export const Lockup = ({ stacked = false, scale = 1 }: { stacked?: boolean; scale?: number }) => {
   const logo = require('../assets/img/logo_soft.png');
@@ -169,6 +203,16 @@ export const Spinner = ({ size = 50 }: { size?: number }) => {
 };
 
 const s = StyleSheet.create({
+  toastPill: {
+    alignSelf: 'center', maxWidth: '92%',
+    backgroundColor: 'rgba(17,19,28,0.97)', borderRadius: 999,
+    paddingVertical: 10, paddingHorizontal: 20,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 14, shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  toastText: { color: '#fff', fontSize: 13, fontWeight: '600', textAlign: 'center' },
+
   gradBtn: {
     height: 58, borderRadius: 29, flexDirection: 'row', alignItems: 'center',
     justifyContent: 'center', gap: 10, alignSelf: 'stretch',

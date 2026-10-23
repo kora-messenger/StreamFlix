@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton,
+  Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast,
 } from '../components/ui';
 import { AppleLogo, CheckIcon, GoogleG, LockIcon, MailIcon } from '../components/icons';
 
@@ -93,9 +93,8 @@ export default function LoginScreen() {
       </View>
 
       {/* validation message */}
-      <Text style={[styles.errorBanner, { top: H * 0.535, left: fieldPad, right: fieldPad, fontSize: Math.round(k * 12.5) }]} numberOfLines={1}>
-        {banner}
-      </Text>
+      {/* errors pop up at the top */}
+      <TopToast message={banner} />
 
       {/* log in button (arrow like the reference) */}
       <View style={{ position: 'absolute', top: H * 0.573, left: fieldPad, right: fieldPad }}>
@@ -137,7 +136,6 @@ const styles = StyleSheet.create({
   checkOn: { backgroundColor: '#7B2CBF', borderColor: '#7B2CBF' },
   rememberText: { color: '#e4e6f5', marginLeft: 10 },
   forgot: { color: '#6C63FF', fontWeight: '600' },
-  errorBanner: { position: 'absolute', color: '#ff4d6d', textAlign: 'center', fontWeight: '600' },
   signRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
   signText: { color: '#d7d9ea' },
   signLink: { color: '#6C63FF', fontWeight: '700' },
