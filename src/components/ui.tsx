@@ -130,7 +130,7 @@ export const TopToast = ({ message, kind = 'error' }: { message: string; kind?: 
       }}
     >
       <View style={s.toastPill}>
-        <Text style={[s.toastText, kind === 'error' ? { color: '#ff4d6d' } : null]} numberOfLines={2}>
+        <Text style={[s.toastText, kind === 'error' ? { color: '#FFFFFF' } : null]} numberOfLines={2}>
           {message}
         </Text>
       </View>
