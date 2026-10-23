@@ -20,7 +20,8 @@ import {
    - the thin line at the very bottom is the ONLY way to seek/forward
      (no double-tap seeks, no hold-to-2x in this player) */
 
-const SPEEDS = [1, 1.25, 1.5, 2];
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const ACCENT = '#00f2fe';
 
 const BackChev = ({ size = 26, color = '#fff' }: { size?: number; color?: string }) => (
   <Text style={{ color, fontSize: size, lineHeight: size + 2, fontWeight: '300' }}>{'\u2039'}</Text>
@@ -52,7 +53,8 @@ export default function DramaPlayerScreen() {
   const [scrub, setScrub] = useState(false);
   const [saved, setSaved] = useState(false);
   const [expand, setExpand] = useState(false);
-  const [speed, setSpeed] = useState(0);
+  const [speed, setSpeed] = useState(2); // 1x
+  const [speedMenu, setSpeedMenu] = useState(false);
   const player = useRef<any>(null);
   const hideT = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fade = useRef(new Animated.Value(1)).current;
@@ -190,6 +192,21 @@ export default function DramaPlayerScreen() {
             <ChevronDownIcon size={13} color="#fff" />
           </Pressable>
 
+          {/* speed popup */}
+          {speedMenu ? (
+            <View style={styles.speedMenu}>
+              {SPEEDS.map((v, i) => (
+                <Pressable
+                  key={v}
+                  style={styles.speedItem}
+                  onPress={() => { setSpeed(i); setSpeedMenu(false); }}
+                >
+                  <Text style={[styles.speedItemTxt, i === speed && { color: ACCENT }]}>{v}x</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+
           {/* utility row */}
           <View style={styles.utilRow}>
             <Pressable style={styles.premium} onPress={() => {}}>
@@ -197,9 +214,9 @@ export default function DramaPlayerScreen() {
               <Text style={styles.premiumTxt}>Premium Pro</Text>
             </Pressable>
             <View style={{ flex: 1 }} />
-            <Pressable style={styles.speedWrap} onPress={() => setSpeed(s => (s + 1) % SPEEDS.length)}>
-              <Text style={styles.speedTxt}>{SPEEDS[speed]}x</Text>
-              <DialIcon size={15} />
+            <Pressable style={styles.speedWrap} onPress={() => setSpeedMenu(m => !m)}>
+              <Text style={[styles.speedTxt, speedMenu && { color: ACCENT }]}>{SPEEDS[speed]}x</Text>
+              <DialIcon size={15} color={speedMenu ? ACCENT : '#fff'} />
             </Pressable>
             <View style={styles.qPill}>
               <Text style={styles.qTxt}>HD 480P</Text>
@@ -254,6 +271,12 @@ const styles = StyleSheet.create({
   },
   premiumTxt: { color: '#111', fontSize: 11.5, fontWeight: '800' },
   speedWrap: { flexDirection: 'row', alignItems: 'center', marginRight: 10, gap: 4, paddingVertical: 4, paddingLeft: 4 },
+  speedMenu: {
+    position: 'absolute', right: 104, bottom: 66, width: 84,
+    backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: 16, paddingVertical: 4,
+  },
+  speedItem: { alignItems: 'center', paddingVertical: 7 },
+  speedItemTxt: { color: '#fff', fontSize: 12.5, fontWeight: '600' },
   speedTxt: { color: '#fff', fontSize: 12.5, fontWeight: '700' },
   qPill: {
     borderWidth: 1, borderColor: '#6B7180', borderRadius: 6,
