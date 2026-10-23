@@ -8,7 +8,7 @@ import {
   Field, GradientButton, GradientText, Lockup, OrDivider, OutlineButton,
 } from '../components/ui';
 import { AppleLogo, CheckIcon, GoogleG, LockIcon, MailIcon } from '../components/icons';
-import { Alert } from 'react-native';
+
 import * as auth from '../core/auth/authService';
 
 /**
