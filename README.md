@@ -86,6 +86,10 @@ Rebuilt to mirror MovieBox's real player behavior (measured frame by frame from 
 - **Sheets**: playback speed (0.5x-2x), Language (subtitle tracks from the stream), Setting.
 - Until per-title stream URLs are in the catalog it plays a public test HLS stream that includes real subtitle tracks.
 
+- **Volume boost is real, not cosmetic**: the player library is patched via `patch-package` (see `patches/react-native-video+6.19.3.patch`, auto-applied by the `postinstall` script).
+  - **Android**: values above 100% attach a system `LoudnessEnhancer` DSP to ExoPlayer's audio session and drive up to +6 dB gain (200% = +6 dB); the base player volume stays capped at 1.0 and mute resets gain to 0.
+  - **iOS**: values above 100% are applied as software gain on the audio track via `AVAudioMix` (capped at 2.0). Progressive/MP4 playback amplifies fully; HLS assets may not expose audio tracks, in which case boost safely no-ops.
+
 ## Tech stack
 
 - **React Native 0.87** with React 19 and TypeScript
