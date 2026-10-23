@@ -50,6 +50,17 @@ export async function googleSignInToken(): Promise<{ ok: boolean; idToken?: stri
     if (err?.code === '-5' || err?.code === 'SIGN_IN_CANCELLED' || String(err?.message || '').includes('cancel')) {
       return { ok: false, message: '' };
     }
-    return { ok: false, message: 'Google sign-in failed. Check your connection and try again.' };
+    const code = String(err?.code ?? '');
+    const raw = String(err?.message || '');
+    if (code === '10' || code === 'DEVELOPER_ERROR' || raw.includes('DEVELOPER_ERROR')) {
+      return { ok: false, message: 'Google rejected this account (code 10). If the GCP consent screen is still in Testing mode, only the registered test user can sign in until you press Publish app.' };
+    }
+    if (raw.toLowerCase().includes('play services')) {
+      return { ok: false, message: 'Google Play services is out of date on this phone. Update it and try again.' };
+    }
+    if (code === '12501' || raw.toLowerCase().includes('network')) {
+      return { ok: false, message: 'Google sign-in failed. Check your connection and try again.' };
+    }
+    return { ok: false, message: `Google sign-in failed (${code || raw.slice(0, 40)}). Try again.` };
   }
 }
