@@ -6,6 +6,60 @@ const base = (size = 22) => ({ width: size, height: size, viewBox: '0 0 24 24', 
 const st = (color = '#fff', w = 1.8) => ({ stroke: color, strokeWidth: w, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const });
 
 // Message bubble with a padlock and three asterisks (reset-code screen)
+/* Bottom-bar Downloads icon, measured from the MovieBox reference:
+   - untapped: rounded-square outline with a downward arrow stroke, light grey,
+     brand-gradient pill badge at the top-right corner with the paused-download count
+   - tapped: the square fills with the StreamMax gradient and the arrow becomes
+     a solid dark shape; badge stays
+   - warning: when a download is interrupted (network offline) or the user is
+     offline and resumes, the badge swaps to a red circle with a white "!" */
+export const DownloadsTabIcon = ({
+  size = 22, active = false, count = 15, warning = false, color = '#C1C4CC',
+}: { size?: number; active?: boolean; count?: number; warning?: boolean; color?: string }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Defs>
+      <SvgGrad id="dlFill" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0" stopColor="#00d2ff" />
+        <Stop offset="1" stopColor="#9d50bb" />
+      </SvgGrad>
+      <SvgGrad id="dlBadge" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0" stopColor="#00d2ff" />
+        <Stop offset="1" stopColor="#9d50bb" />
+      </SvgGrad>
+    </Defs>
+    {active ? (
+      <Rect x={3.4} y={4.4} width={17.2} height={15.8} rx={4.6} fill="url(#dlFill)" />
+    ) : (
+      <Rect x={3.4} y={4.4} width={17.2} height={15.8} rx={4.6} stroke={color} strokeWidth={1.9} />
+    )}
+    {active ? (
+      <Path
+        d="M11.05 8.2h1.9v5.75l2.42-2.32 1.38 1.44L12 17.4l-4.75-4.33 1.38-1.44 2.42 2.32Z"
+        fill="#2D2D2D"
+      />
+    ) : (
+      <G>
+        <Path d="M12 8.6v6.2" stroke={color} strokeWidth={1.9} strokeLinecap="round" />
+        <Path d="M9.1 12.4 12 15.3l2.9-2.9" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" />
+      </G>
+    )}
+    {warning ? (
+      <G>
+        <Circle cx={19.1} cy={3.9} r={3.3} fill="#E34338" />
+        <Path d="M19.1 2.35v2.35" stroke="#fff" strokeWidth={1} strokeLinecap="round" />
+        <Circle cx={19.1} cy={5.55} r={0.55} fill="#fff" />
+      </G>
+    ) : (
+      <G>
+        <Rect x={15.2} y={1.2} width={7.6} height={5.6} rx={2.8} fill="url(#dlBadge)" />
+        <SvgText x={19} y={5.35} fontSize={4.1} fontWeight="700" fill="#fff" textAnchor="middle">
+          {String(count)}
+        </SvgText>
+      </G>
+    )}
+  </Svg>
+);
+
 /* Bottom-bar Home icon, measured from the MovieBox reference:
    - untapped: rounded-pentagon house outline + center door stroke, light grey
    - tapped: same pentagon filled with the StreamMax gradient (cyan bottom-left

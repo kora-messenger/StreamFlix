@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DownloadIcon, HomeTabIcon, SearchIcon, UserIcon } from './icons';
+import { DownloadsTabIcon, HomeTabIcon, SearchIcon, UserIcon } from './icons';
 import { GradientText } from './ui';
 
 /**
@@ -17,16 +17,22 @@ export type BottomTabId = 'home' | 'search' | 'downloads' | 'mine';
 const TABS: { id: BottomTabId; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
   { id: 'home', label: 'Home', Icon: HomeTabIcon as React.ComponentType<{ size?: number; color?: string }> },
   { id: 'search', label: 'Dramas', Icon: SearchIcon },
-  { id: 'downloads', label: 'Downloads', Icon: DownloadIcon },
+  { id: 'downloads', label: 'Downloads', Icon: DownloadsTabIcon as React.ComponentType<{ size?: number; color?: string }> },
   { id: 'mine', label: 'Mine', Icon: UserIcon },
 ];
 
 export default function BottomNavBar({
   active,
   onPress,
+  downloadsCount = 15,
+  downloadsWarning = false,
 }: {
   active: BottomTabId;
   onPress?: (id: BottomTabId) => void;
+  /** paused-but-not-yet-downloaded total shown in the Downloads badge */
+  downloadsCount?: number;
+  /** true when a download was interrupted / user is offline and resumes */
+  downloadsWarning?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -43,7 +49,13 @@ export default function BottomNavBar({
               hitSlop={6}
               onPress={() => onPress?.(id)}
             >
-              {id === 'home' ? <HomeTabIcon size={22} active={on} /> : <Icon size={22} color={on ? '#fff' : '#C1C4CC'} />}
+              {id === 'home' ? (
+                <HomeTabIcon size={22} active={on} />
+              ) : id === 'downloads' ? (
+                <DownloadsTabIcon size={22} active={on} count={downloadsCount} warning={downloadsWarning} />
+              ) : (
+                <Icon size={22} color={on ? '#fff' : '#C1C4CC'} />
+              )}
               <View style={styles.labelBox}>
                 <Text style={on ? styles.labelOn : styles.label}>{label}</Text>
               </View>
