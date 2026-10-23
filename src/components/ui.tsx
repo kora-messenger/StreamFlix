@@ -58,12 +58,18 @@ export const GradientText = ({
   );
 };
 
+/* Android sometimes swallows TextInput's onBlur when focus jumps straight to
+   another field, leaving the old field's glow stuck on. Track the one field
+   the OS actually has focused at module level: only it glows. */
+let focusedFieldId: object | null = null;
+
 export const Field = ({
   icon, secure, style, focused, h, fs, error, radius, ...rest
 }: TextInputProps & { icon: React.ReactNode; secure?: boolean; focused?: boolean; style?: ViewStyle; h?: number; fs?: number; error?: boolean; radius?: number }) => {
   const [hidden, setHidden] = useState(!!secure);
   const [isFocus, setFocus] = useState(false);
-  const active = focused || isFocus;
+  const fieldId = useRef({});
+  const active = focused || (isFocus && focusedFieldId === fieldId.current);
   const inner = (
     <View style={[s.field, active ? s.fieldActive : null, h ? { height: h, borderRadius: radius ?? Math.min(15, h / 3) } : null]}>
       <View style={s.fieldIcon}>{icon}</View>
@@ -71,8 +77,8 @@ export const Field = ({
         {...rest}
         secureTextEntry={hidden}
         placeholderTextColor="#7b7f96"
-        onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}
+        onFocus={() => { focusedFieldId = fieldId.current; setFocus(true); }}
+        onBlur={() => { if (focusedFieldId === fieldId.current) focusedFieldId = null; setFocus(false); }}
         style={[s.fieldInput, h ? { height: h } : null, fs ? { fontSize: fs } : null]}
         selectionColor={colors.secondary}
       />

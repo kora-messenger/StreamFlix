@@ -117,7 +117,7 @@ export default function CreateAccountScreen() {
 
       {/* fields */}
       <View style={{ position: 'absolute', top: fieldsTop, left: padX, right: padX, gap: fieldGap }}>
-        <Field h={fieldH} fs={fieldFs} error={bad.name} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={v => { setName(v); fix('name')(); }} focused={name.length === 0} />
+        <Field h={fieldH} fs={fieldFs} error={bad.name} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={v => { setName(v); fix('name')(); }}  />
         <Field h={fieldH} fs={fieldFs} error={bad.email} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={v => { setEmail(v); fix('email')(); }} keyboardType="email-address" autoCapitalize="none" />
         <Field h={fieldH} fs={fieldFs} error={bad.password} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={v => { setPw(v); fix('password')(); }} secure />
         <Field h={fieldH} fs={fieldFs} error={bad.confirm} icon={<LockIcon />} placeholder="Confirm password" value={pw2} onChangeText={v => { setPw2(v); fix('confirm')(); }} secure />
