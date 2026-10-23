@@ -5,6 +5,25 @@ type P = { size?: number; color?: string; stroke?: number };
 const base = (size = 22) => ({ width: size, height: size, viewBox: '0 0 24 24', fill: 'none' });
 const st = (color = '#fff', w = 1.8) => ({ stroke: color, strokeWidth: w, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const });
 
+// Message bubble with a padlock and three asterisks (reset-code screen)
+export const MessageLockIcon = ({ size = 64, color = '#fff' }: { size?: number; color?: string }) => (
+  <Svg width={size} height={size * 0.82} viewBox="0 0 64 52" fill="none">
+    <Rect x="5" y="4" width="54" height="38" rx="10" stroke={color} strokeWidth="2.6" />
+    <Path d="M16 41.5 L12.5 49.5 L25 41.5" stroke={color} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    {/* padlock */}
+    <Path d="M22 25.5 v-3.5 a4.5 4.5 0 0 1 9 0 v3.5" stroke={color} strokeWidth="2.6" strokeLinecap="round" fill="none" />
+    <Rect x="18.5" y="25.5" width="16" height="12" rx="3" fill={color} />
+    {/* three asterisks */}
+    {[38, 46, 54].map((cx, i) => (
+      <Path key={i} d={`M${cx - 2.6} 23 h5.2 M${cx - 1.3} ${23 - 2.25} l2.6 4.5 M${cx - 1.3} ${23 + 2.25} l2.6 -4.5`} stroke={color} strokeWidth="1.7" strokeLinecap="round" />
+    ))}
+  </Svg>
+);
+
+export const ClockIcon = ({ size = 16, color = '#d8dce8' }: P) => (
+  <Svg {...base(size)}><Circle cx="12" cy="12" r="8.5" {...st(color, 1.8)} /><Path d="M12 7.5V12l3 2" {...st(color, 1.8)} /></Svg>
+);
+
 export const BackIcon = ({ size = 26, color = '#fff' }: P) => (
   <Svg {...base(size)}><Path d="M15 5l-7 7 7 7" {...st(color, 2)} /></Svg>
 );

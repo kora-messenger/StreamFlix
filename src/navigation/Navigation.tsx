@@ -7,6 +7,7 @@ import CreateAccountScreen from '../screens/CreateAccountScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import NewPasswordScreen from '../screens/NewPasswordScreen';
+import EnterCodeScreen from '../screens/EnterCodeScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import MovieViewScreen from '../screens/MovieViewScreen';
@@ -31,6 +32,7 @@ export default function Navigation() {
         <Stack.Screen name="Login" component={LoginScreen} options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="NewPassword" component={NewPasswordScreen} options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="EnterCode" component={EnterCodeScreen} options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Search" component={SearchScreen} options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="MovieView" component={MovieViewScreen} options={{ animation: 'slide_from_right' }} />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
+  Alert, Image, Pressable, StyleSheet, Text, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -37,7 +37,10 @@ export default function ForgotPasswordScreen() {
     if (!exists) {
       setBad(true); setErr('No account found with this email'); return;
     }
-    nav.navigate('NewPassword', { email: e });
+    const code = await auth.sendResetCode(e);
+    // email delivery lands with the backend mail service; until then the code is shown directly
+    Alert.alert('Your reset code', `${code}\n\nThis code expires in 10 minutes.`);
+    nav.navigate('EnterCode', { email: e });
   };
 
   const circleSize = Math.round(k * 186);

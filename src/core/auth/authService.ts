@@ -13,7 +13,7 @@ import { sha256 } from 'js-sha256';
 export interface AuthUser { id: string; fullName: string; email: string; }
 interface Account extends AuthUser { salt: string; hash: string; createdAt: number; }
 interface Session { userId: string; token: string; remember: boolean; }
-export type Field = 'name' | 'email' | 'password' | 'confirm';
+export type Field = 'name' | 'email' | 'password' | 'confirm' | 'code';
 export interface AuthResult { ok: boolean; field?: Field; message?: string; user?: AuthUser; }
 
 const ACCOUNTS_KEY = 'sm.accounts';
@@ -106,6 +106,43 @@ export async function logout() {
   await AsyncStorage.removeItem(SESSION_KEY);
 }
 
+/** Six-digit reset codes, device-local until the mail service is connected. */
+interface StoredResetCode { code: string; expiresAt: number; attempts: number; }
+const RESET_CODES_KEY = 'sm.resetCodes';
+
+async function readCodes(): Promise<Record<string, StoredResetCode>> {
+  const raw = await AsyncStorage.getItem(RESET_CODES_KEY);
+  return raw ? (JSON.parse(raw) as Record<string, StoredResetCode>) : {};
+}
+
+async function writeCodes(db: Record<string, StoredResetCode>) {
+  await AsyncStorage.setItem(RESET_CODES_KEY, JSON.stringify(db));
+}
+
+/** Generate and store a 6-digit reset code for an email. Returns the code; the caller decides how to deliver it. */
+export async function sendResetCode(email: string): Promise<string> {
+  const e = email.trim().toLowerCase();
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  const db = await readCodes();
+  db[e] = { code, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 };
+  await writeCodes(db);
+  return code;
+}
+
+/** Check a reset code (wrong attempts increment; 5 wrong tries invalidates it). */
+export async function verifyResetCode(email: string, code: string): Promise<{ ok: boolean; message?: string }> {
+  const e = email.trim().toLowerCase();
+  const db = await readCodes();
+  const rec = db[e];
+  if (!rec) return { ok: false, message: 'No reset code was requested. Go back and request one.' };
+  if (Date.now() > rec.expiresAt) return { ok: false, message: 'This code has expired. Request a new one.' };
+  if (rec.code === code.trim()) return { ok: true };
+  rec.attempts += 1;
+  if (rec.attempts >= 5) { delete db[e]; await writeCodes(db); return { ok: false, message: 'Too many wrong attempts. Request a new code.' }; }
+  await writeCodes(db);
+  return { ok: false, message: 'Incorrect code. Please try again.' };
+}
+
 /** Does an account exist for this email? */
 export async function emailExists(email: string): Promise<boolean> {
   const e = email.trim().toLowerCase();
@@ -113,8 +150,13 @@ export async function emailExists(email: string): Promise<boolean> {
 }
 
 /** Device-local password reset by email (no mail infrastructure yet). */
-export async function resetPassword(input: { email: string; password: string; confirm: string }): Promise<AuthResult> {
+export async function resetPassword(input: { email: string; code: string; password: string; confirm: string }): Promise<AuthResult> {
   const email = input.email.trim().toLowerCase();
+  const v = await verifyResetCode(email, input.code);
+  if (!v.ok) return { ok: false, field: 'code', message: v.message };
+  const db = await readCodes();
+  delete db[email];
+  await writeCodes(db);
   const list = await loadAccounts();
   const account = list.find(a => a.email === email);
   if (!account) return { ok: false, field: 'email', message: 'No account found with this email' };
