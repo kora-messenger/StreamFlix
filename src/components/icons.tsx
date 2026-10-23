@@ -6,6 +6,14 @@ const base = (size = 22) => ({ width: size, height: size, viewBox: '0 0 24 24', 
 const st = (color = '#fff', w = 1.8) => ({ stroke: color, strokeWidth: w, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const });
 
 // Message bubble with a padlock and three asterisks (reset-code screen)
+export const HouseIcon = ({ size = 22, color = '#7A8296' }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M4 11.2 12 4.4l8 6.8" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <Path d="M6 10v9.2h12V10" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <Path d="M10.2 19v-4.6h3.6V19" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </Svg>
+);
+
 export const MessageLockIcon = ({ size = 64, color = '#fff' }: { size?: number; color?: string }) => (
   <Svg width={size} height={size * 0.82} viewBox="0 0 64 52" fill="none">
     <Rect x="5" y="4" width="54" height="38" rx="10" stroke={color} strokeWidth="2.6" />

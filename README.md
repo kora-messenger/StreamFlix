@@ -90,6 +90,8 @@ Rebuilt to mirror MovieBox's real player behavior (measured frame by frame from 
   - **Android**: values above 100% attach a system `LoudnessEnhancer` DSP to ExoPlayer's audio session and drive up to +6 dB gain (200% = +6 dB); the base player volume stays capped at 1.0 and mute resets gain to 0.
   - **iOS**: values above 100% are applied as software gain on the audio track via `AVAudioMix` (capped at 2.0). Progressive/MP4 playback amplifies fully; HLS assets may not expose audio tracks, in which case boost safely no-ops.
 
+- **Bottom button bar (MovieBox-style)**: a floating rounded bar (radius 22, dark glass `rgba(13,15,23,0.97)` with a subtle border) hovering 10dp above the gesture area, on Home and Search. Four evenly spaced items — Home, Search, Downloads, Mine — with 22dp icons and 10sp labels; the active item's label renders as a cyan-to-purple gradient (`#00d2ff` → `#9d50bb`) with a white icon, inactive items slate grey (`#7A8296`). Home and Search route between screens; Downloads/Mine are placeholders until their screens exist. The home icon is a clean outline house pending Ijezie's custom icon.
+
 ## Tech stack
 
 - **React Native 0.87** with React 19 and TypeScript

@@ -10,6 +10,7 @@ import { GradientText } from '../components/ui';
 import { DownloadIcon, SearchIcon } from '../components/icons';
 import { Alert } from 'react-native';
 import { getCurrentUser, logout, AuthUser } from '../core/auth/authService';
+import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
 import { colors, gradients } from '../theme/tokens';
 
 const BAR_H = 52;
@@ -105,7 +106,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.root}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }} stickyHeaderIndices={[]}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }} stickyHeaderIndices={[]}>
         {/* Hero banner sits behind the bar + tabs */}
         <View style={{ height: heroH }}>
           <FlatList
@@ -153,6 +154,12 @@ export default function HomeScreen() {
           <Section heading="New Releases" data={[...titles].reverse().slice(0, 8)} />
         </View>
       </ScrollView>
+
+      {/* floating round bottom button bar */}
+      <BottomNavBar
+        active="home"
+        onPress={(id: BottomTabId) => { if (id === 'search') nav.navigate('Search'); }}
+      />
 
       {/* Fixed top bar + tabs (overlay) */}
       <View style={[styles.top, { paddingTop: insets.top + 6 }]} pointerEvents="box-none">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import BottomNavBar, { BottomTabId } from '../components/BottomNavBar';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -52,7 +53,7 @@ export default function SearchScreen() {
         <Pressable style={{ marginLeft: 12 }}><MicIcon size={26} /></Pressable>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }} keyboardShouldPersistTaps="handled">
         {recent.length > 0 && !q ? (
           <View style={styles.block}>
             <View style={styles.blockHead}>
@@ -122,6 +123,11 @@ export default function SearchScreen() {
           </View>
         )}
       </ScrollView>
+
+      <BottomNavBar
+        active="search"
+        onPress={(id: BottomTabId) => { if (id === 'home') nav.goBack(); }}
+      />
     </View>
   );
 }
