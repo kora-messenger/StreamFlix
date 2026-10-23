@@ -5,8 +5,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GradientButton, GradientText, Lockup, OrDivider, OutlineButton, TopToast } from '../components/ui';
-import { AppleLogo, BackIcon, ClockIcon, GoogleG, MessageLockIcon } from '../components/icons';
+import { GradientButton, GradientText, Lockup, TopToast } from '../components/ui';
+import { BackIcon, ClockIcon, MessageLockIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
 
@@ -174,23 +174,13 @@ export default function EnterCodeScreen() {
       </View>
 
       {/* footer */}
-      <View style={[styles.footer, { top: H * 0.820 }]}>
+      <View style={[styles.footer, { top: H * 0.858 }]}>
         <Text style={[styles.footText, { fontSize: Math.round(k * 14.5) }]}>Didn&apos;t receive the code? </Text>
         <Pressable onPress={resend}>
           <Text style={[styles.footLink, { fontSize: Math.round(k * 14.5) }]}>Resend</Text>
         </Pressable>
       </View>
 
-      {/* same bottom design as the login screen: or divider + social buttons */}
-      <View style={{ position: 'absolute', top: H * 0.852, left: padX, right: padX }}>
-        <OrDivider compact />
-      </View>
-      <View style={{ position: 'absolute', top: H * 0.876, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG size={Math.round(k * 20)} />} height={Math.round(k * 52)} fontSize={Math.round(k * 15)} />
-      </View>
-      <View style={{ position: 'absolute', top: H * 0.933, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Apple" icon={<AppleLogo size={Math.round(k * 20)} />} height={Math.round(k * 52)} fontSize={Math.round(k * 15)} />
-      </View>
     </View>
   );
 }
