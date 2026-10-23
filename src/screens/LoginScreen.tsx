@@ -94,6 +94,9 @@ export default function LoginScreen() {
   const fieldFs = 16;
   const btnH = 52;
   const socialH = 48;
+  // Remember-me row follows the actual bottom of the two fields (fixed px) so
+  // its spacing can't drift by screen size — a clean ~34px gap below Password.
+  const rememberTop = Math.round(H * 0.373) + 2 * fieldH + fieldGap + Math.round(H * 0.033);
 
   return (
     <View style={[styles.root, { backgroundColor: '#000000' }]}>
@@ -131,7 +134,7 @@ export default function LoginScreen() {
       </View>
 
       {/* remember / forgot */}
-      <View style={[styles.rememberRow, { top: H * 0.505, left: fieldPad, right: fieldPad }]}>
+      <View style={[styles.rememberRow, { top: rememberTop, left: fieldPad, right: fieldPad }]}>
         <Pressable style={styles.remember} onPress={() => setRemember(r => !r)}>
           <View style={[styles.check, remember ? styles.checkOn : null]}>
             {remember ? <CheckIcon size={14} /> : null}
