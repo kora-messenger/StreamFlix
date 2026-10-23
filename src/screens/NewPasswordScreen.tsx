@@ -5,15 +5,16 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { Field, GradientButton, GradientText, TopToast } from '../components/ui';
-import { BackIcon, LockIcon } from '../components/icons';
+import { GradientButton, GradientText, Lockup, TopToast, Field } from '../components/ui';
+import { BackIcon, CheckIcon, LockIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
 
 /**
- * New Password — step 2 of the forgot-password flow, same visual language:
- * poster background, back arrow, padlock in the gradient ring, split title,
- * two password fields, gradient button with arrow.
+ * New Password (Reset Password) — final step of the forgot-password flow.
+ * Flat deep-navy background (#07091A) with the designed top aurora (indigo
+ * corner glow + sweeping blue ribbon) and the login bottom wave glow.
+ * Positions measured from the 683x1024 design reference.
  */
 export default function NewPasswordScreen() {
   const nav = useNavigation<any>();
@@ -28,15 +29,29 @@ export default function NewPasswordScreen() {
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
   const [err, setErr] = useState('');
-  const [bad, setBad] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
 
+  // live requirement checks
+  const rules = [
+    { label: 'At least 8 characters', ok: pw.length >= 8 },
+    { label: 'Includes a letter (A-Z / a-z)', ok: /[A-Za-z]/.test(pw) },
+    { label: 'Includes a number (0-9)', ok: /\d/.test(pw) },
+    { label: 'Includes a symbol (!@#$%^&*)', ok: /[^A-Za-z0-9]/.test(pw) },
+  ];
+
   const update = async () => {
+    if (rules.some(r => !r.ok)) {
+      setErr('Please meet all the password requirements');
+      return;
+    }
+    if (pw !== pw2) {
+      setErr("Passwords don't match");
+      return;
+    }
     setBusy(true);
     const r = await auth.resetPassword({ email, code, password: pw, confirm: pw2 });
     setBusy(false);
     if (!r.ok) {
-      setBad({ [r.field || 'password']: true });
       setErr(r.message || 'Something went wrong');
       return;
     }
@@ -45,89 +60,115 @@ export default function NewPasswordScreen() {
     ]);
   };
 
-  const circleSize = Math.round(k * 186);
+  const circleSize = Math.round(k * 124);
 
   return (
     <View style={styles.root}>
-      <Image source={require('../assets/img/forgot_bg.png')} style={StyleSheet.absoluteFill} resizeMode="cover" />
+      {/* designed top aurora: indigo corner glow + sweeping blue ribbon */}
+      <Image
+        source={require('../assets/img/reset_top_aurora.png')}
+        style={StyleSheet.absoluteFill}
+        resizeMode="stretch"
+      />
 
       {/* back arrow */}
-      <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 8, left: W * 0.059 }}>
+      <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 8, left: W * 0.051 }}>
         <BackIcon size={Math.round(k * 26)} color="#fff" />
       </Pressable>
 
-      {/* padlock in glowing gradient ring */}
-      <View style={{ position: 'absolute', top: H * 0.309 - circleSize / 2, left: (W - circleSize) / 2, width: circleSize, height: circleSize }}>
+      {/* logo + wordmark lockup */}
+      <View style={{ position: 'absolute', top: H * 0.088, left: 0, right: 0, alignItems: 'center' }}>
+        <Lockup scale={k * 0.88} />
+      </View>
+
+      {/* padlock in the glowing blue-violet ring */}
+      <View style={{ position: 'absolute', top: H * 0.226 - circleSize / 2, left: (W - circleSize) / 2, width: circleSize, height: circleSize }}>
         <View style={[StyleSheet.absoluteFill, { borderRadius: circleSize / 2, overflow: 'hidden' }]}>
-          <LinearGradient
-            colors={['rgba(108,99,255,0.45)', 'rgba(0,210,255,0.38)']}
-            style={StyleSheet.absoluteFill}
-          />
+          <LinearGradient colors={['rgba(108,99,255,0.35)', 'rgba(0,210,255,0.28)']} style={StyleSheet.absoluteFill} />
         </View>
         <LinearGradient
           colors={gradients.brand}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ flex: 1, margin: Math.round(k * 15), borderRadius: (circleSize - k * 30) / 2, padding: Math.round(k * 7) }}
+          style={{ flex: 1, margin: Math.round(k * 8), borderRadius: (circleSize - k * 16) / 2, padding: Math.round(k * 4) }}
         >
-          <View style={{ flex: 1, borderRadius: (circleSize - k * 44) / 2, backgroundColor: '#0b0f2b', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ flex: 1, borderRadius: (circleSize - k * 24) / 2, backgroundColor: '#070B22', alignItems: 'center', justifyContent: 'center' }}>
             <LockIcon size={Math.round(k * 54)} color="#fff" />
           </View>
         </LinearGradient>
       </View>
 
-      {/* Reset Password? */}
-      <View style={[styles.titleRow, { top: H * 0.419 }]}>
-        <Text style={[styles.titleWhite, { fontSize: Math.round(k * 50) }]}>Reset </Text>
-        <GradientText text="Password?" size={Math.round(k * 50)} width={Math.round(k * 252)} height={Math.round(k * 64)} weight="800" colorsArr={gradients.brand} />
+      {/* Reset Password */}
+      <View style={[styles.titleRow, { top: H * 0.310 }]}>
+        <Text style={[styles.titleWhite, { fontSize: Math.round(k * 54) }]}>Reset </Text>
+        <GradientText text="Password" size={Math.round(k * 54)} width={Math.round(k * 237)} height={Math.round(k * 68)} weight="800" colorsArr={gradients.brand} />
       </View>
 
-      {/* subtitle */}
+      {/* instruction */}
       <Text style={[styles.sub, {
-        top: H * 0.485, width: W * 0.655, left: W * 0.1725,
-        fontSize: Math.round(k * 15.5), lineHeight: Math.round(k * 29),
+        top: H * 0.378, left: W * 0.14, right: W * 0.14,
+        fontSize: Math.round(k * 19), lineHeight: Math.round(k * 28),
       }]}>
-        Choose a new password to secure your account.
+        Enter your new password below. Make sure it's at least 8 characters long and includes a mix of letters, numbers and symbols.
       </Text>
 
       {/* password fields */}
-      <View style={{ position: 'absolute', top: H * 0.552, left: padX, right: padX, gap: Math.round(k * 16) }}>
+      <View style={{ position: 'absolute', top: H * 0.472, left: padX, right: padX, gap: Math.round(k * 21) }}>
         <Field
-          h={Math.round(k * 60)} fs={Math.round(k * 16)} error={bad.password}
-          icon={<LockIcon size={Math.round(k * 22)} />} placeholder="New password" value={pw}
-          onChangeText={v => { setPw(v); setBad({}); setErr(''); }} secure style={styles.fieldBox}
+          h={Math.round(k * 68)} fs={Math.round(k * 17)}
+          icon={<LockIcon size={Math.round(k * 24)} />} placeholder="New password" placeholderTextColor="#6575A3"
+          value={pw} onChangeText={v => { setPw(v); setErr(''); }} secure style={styles.fieldBox}
         />
         <Field
-          h={Math.round(k * 60)} fs={Math.round(k * 16)} error={bad.confirm}
-          icon={<LockIcon size={Math.round(k * 22)} />} placeholder="Confirm new password" value={pw2}
-          onChangeText={v => { setPw2(v); setBad({}); setErr(''); }} secure style={styles.fieldBox}
+          h={Math.round(k * 68)} fs={Math.round(k * 17)}
+          icon={<LockIcon size={Math.round(k * 24)} />} placeholder="Confirm new password" placeholderTextColor="#6575A3"
+          value={pw2} onChangeText={v => { setPw2(v); setErr(''); }} secure style={styles.fieldBox}
         />
+      </View>
+
+      {/* requirements checklist */}
+      <View style={{ position: 'absolute', top: H * 0.651, left: W * 0.123, gap: Math.round(k * 28.5) }}>
+        {rules.map(r => (
+          <View key={r.label} style={styles.ruleRow}>
+            <CheckIcon size={Math.round(k * 20)} color={r.ok ? '#0386FF' : '#39406B'} />
+            <Text style={[styles.ruleText, { fontSize: Math.round(k * 18) }, r.ok ? { color: '#C9D5F0' } : null]}>{r.label}</Text>
+          </View>
+        ))}
       </View>
 
       {/* errors pop up at the top */}
       <TopToast message={err} />
 
-      {/* Update Password */}
-      <View style={{ position: 'absolute', top: H * 0.762, left: padX, right: padX }}>
-        <GradientButton label={busy ? 'Updating…' : 'Update Password'} height={Math.round(k * 68)} fontSize={Math.round(k * 21)} onPress={update} />
+      {/* Reset Password button */}
+      <View style={{ position: 'absolute', top: H * 0.781, left: padX, right: padX }}>
+        <GradientButton label={busy ? 'Resetting…' : 'Reset Password'} height={Math.round(k * 70)} fontSize={Math.round(k * 26)} onPress={update} />
       </View>
 
       {/* footer */}
-      <View style={[styles.footer, { top: H * 0.885 }]}>
+      <View style={[styles.footer, { top: H * 0.883 }]}>
         <Pressable onPress={() => nav.reset({ index: 0, routes: [{ name: 'Login' }] })}>
-          <Text style={[styles.footLink, { fontSize: Math.round(k * 16) }]}>Back to Sign In</Text>
+          <Text style={[styles.footLink, { fontSize: Math.round(k * 19) }]}>Back to Login</Text>
         </Pressable>
       </View>
+
+      {/* designed bottom wave: same blue-violet glow as the login screen */}
+      <Image
+        source={require('../assets/img/login_bottom_glow.png')}
+        style={{ position: 'absolute', bottom: 0, width: W, height: H * 0.132 }}
+        resizeMode="stretch"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#05070a' },
+  root: { flex: 1, backgroundColor: '#07091A' },
   titleRow: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   titleWhite: { color: '#fff', fontWeight: '800' },
-  sub: { position: 'absolute', color: '#b0b0b0', textAlign: 'center' },
-  fieldBox: { backgroundColor: '#0b1026', borderColor: '#232a44' },
-  footer: { position: 'absolute', left: 0, right: 0, flexDirection: 'row', justifyContent: 'center' },
-  footLink: { color: '#00D2FF', fontWeight: '700' },
+  sub: { position: 'absolute', color: '#8E97B8', textAlign: 'center' },
+  fieldBox: { backgroundColor: '#0A1026', borderColor: '#0D296B', borderRadius: 14 },
+  ruleRow: { flexDirection: 'row', alignItems: 'center', gap: 13 },
+  ruleText: { color: '#9AA6C8' },
+  footer: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  footLink: { color: '#8094C2', fontWeight: '600' },
 });
