@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Image, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions,
+  Image, Keyboard, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -39,6 +39,19 @@ export default function EnterCodeScreen() {
   const [left, setLeft] = useState(RESEND_SECONDS);
   const [focused, setFocused] = useState(true);
   const input = useRef<any>(null);
+
+  const openKeyboard = () => {
+    const el = input.current;
+    if (!el) return;
+    el.blur();
+    setTimeout(() => el.focus(), 60);
+  };
+
+  // keep the keyboard available: if the user dismisses it with the back gesture, a tap anywhere on the code area re-opens it
+  useEffect(() => {
+    const sub = Keyboard.addListener('keyboardDidHide', () => setFocused(false));
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setLeft(s => (s > 0 ? s - 1 : 0)), 1000);
@@ -94,9 +107,9 @@ export default function EnterCodeScreen() {
     toast('Code sent to your email.', 'info');
   };
 
-  const boxW = Math.round(k * 71);
-  const boxH = Math.round(k * 78);
-  const gap = Math.round(k * 12);
+  const gap = 10;
+  const boxW = Math.floor((W * 0.88 - 5 * gap) / 6);
+  const boxH = Math.round(boxW * 1.12);
   const circleSize = Math.round(k * 186);
   const active = focused && code.length < CODE_LEN ? code.length : CODE_LEN - 1;
 
@@ -104,7 +117,7 @@ export default function EnterCodeScreen() {
     <View style={styles.root}>
       <Image source={require('../assets/img/forgot_bg.png')} style={StyleSheet.absoluteFill} resizeMode="cover" />
 
-      {/* hidden digit capture */}
+      {/* digit capture: kept off-screen-small but focusable; boxes + a big tap area re-open the keyboard */}
       <TextInput
         ref={input}
         value={code}
@@ -112,10 +125,13 @@ export default function EnterCodeScreen() {
         keyboardType="number-pad"
         maxLength={CODE_LEN}
         autoFocus
+        showSoftInputOnFocus
+        caretHidden
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={styles.hiddenInput}
         textContentType="oneTimeCode"
+        autoComplete="sms-otp"
       />
 
       {/* back arrow */}
@@ -156,14 +172,14 @@ export default function EnterCodeScreen() {
 
       {/* subtitle */}
       <Text style={[styles.sub, {
-        top: H * 0.474, width: W * 0.66, left: W * 0.17,
-        fontSize: Math.round(k * 16), lineHeight: Math.round(k * 30),
+        top: H * 0.474, width: W * 0.84, left: W * 0.08,
+        fontSize: 17, lineHeight: 26,
       }]}>
         We&apos;ve sent a 6-digit code to your email address.{'\n'}{purpose === 'reset' ? 'Enter the code below to reset your password.' : 'Enter the code below to continue.'}
       </Text>
 
       {/* six code boxes */}
-      <Pressable style={[styles.boxRow, { top: H * 0.561, gap }]} onPress={() => input.current?.focus()}>
+      <Pressable style={[styles.boxRow, { top: H * 0.561 - 24, paddingVertical: 24, gap }]} onPress={openKeyboard} hitSlop={20}>
         {Array.from({ length: CODE_LEN }).map((_, i) => {
           const isActive = i === active;
           const box = (
@@ -171,7 +187,7 @@ export default function EnterCodeScreen() {
               width: boxW, height: boxH, borderRadius: Math.round(k * 16),
               borderColor: isActive ? 'transparent' : '#2d3348',
             }]}>
-              <Text style={[styles.digit, { fontSize: Math.round(k * 28) }]}>{code[i] || ''}</Text>
+              <Text style={[styles.digit, { fontSize: 32 }]}>{code[i] || ''}</Text>
               {isActive && !code[i] && focused && <View style={[styles.cursor, { height: Math.round(k * 26) }]} />}
             </View>
           );
@@ -193,10 +209,10 @@ export default function EnterCodeScreen() {
       {/* timer */}
       {left > 0 && (
         <View style={[styles.timerRow, { top: H * 0.676 }]}>
-          <ClockIcon size={Math.round(k * 15)} color="#00D2FF" />
+          <ClockIcon size={18} color="#00D2FF" />
           <View style={{ width: Math.round(k * 6) }} />
-          <Text style={[styles.timerText, { fontSize: Math.round(k * 15) }]}>Resend code in </Text>
-          <Text style={[styles.timerTime, { fontSize: Math.round(k * 15) }]}>{mm}:{ss}</Text>
+          <Text style={[styles.timerText, { fontSize: 17 }]}>Resend code in </Text>
+          <Text style={[styles.timerTime, { fontSize: 17 }]}>{mm}:{ss}</Text>
         </View>
       )}
 
@@ -217,9 +233,9 @@ export default function EnterCodeScreen() {
 
       {/* footer */}
       <View style={[styles.footer, { top: H * 0.858 }]}>
-        <Text style={[styles.footText, { fontSize: Math.round(k * 14.5) }]}>Didn&apos;t receive the code? </Text>
-        <Pressable onPress={resend}>
-          <Text style={[styles.footLink, { fontSize: Math.round(k * 14.5) }]}>Resend</Text>
+        <Text style={[styles.footText, { fontSize: 16 }]}>Didn&apos;t receive the code? </Text>
+        <Pressable onPress={resend} hitSlop={14}>
+          <Text style={[styles.footLink, { fontSize: 16 }]}>Resend</Text>
         </Pressable>
       </View>
 
