@@ -16,7 +16,7 @@ export type BottomTabId = 'home' | 'search' | 'downloads' | 'mine';
 
 const TABS: { id: BottomTabId; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
   { id: 'home', label: 'Home', Icon: HouseIcon },
-  { id: 'search', label: 'Search', Icon: SearchIcon },
+  { id: 'search', label: 'Dramas', Icon: SearchIcon },
   { id: 'downloads', label: 'Downloads', Icon: DownloadIcon },
   { id: 'mine', label: 'Mine', Icon: UserIcon },
 ];
