@@ -182,8 +182,6 @@ export default function SettingsScreen() {
           <View style={styles.group}>
             <NavRow title="Check update" onPress={() => toast('You\'re on the latest version (v1.0.0)', 'info')} />
             <Sep />
-            <NavRow title="About us" onPress={soon('About us')} />
-            <Sep />
             <NavRow title="Privacy Policy" onPress={soon('Privacy Policy')} />
             <Sep />
             <NavRow title="User Agreement" onPress={soon('User Agreement')} />

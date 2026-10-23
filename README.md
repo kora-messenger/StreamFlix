@@ -59,7 +59,7 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 ### Settings (opened from the gear on the Me screen)
 - Layout measured from the MovieBox settings recording: centered "Settings" header with back chevron, then two rounded dark groups under the labels "Your app and preferences" and "More info and support".
 - Group 1: Notifications >, Language >, Watch Options (value Download/Stream, picker) >, Family Mode (switch + helper text), Download in background (switch; turning it on shows the "Stop optimizing battery usage? Deny / Allow" prompt), Auto activate Miniplayer (switch + helper, on by default), Privacy Settings >.
-- Group 2: Check update (toast: latest version), About us, Privacy Policy, User Agreement, Log out (confirm, clears session, back to Welcome).
+- Group 2: Check update (toast: latest version), Privacy Policy, User Agreement, Log out (confirm, clears session, back to Welcome).
 - Switches are StreamMax-branded (cyan→purple gradient track when on, grey when off) and persist locally via AsyncStorage (`streammax.settings.v1`). Rows without a destination yet show the dark pill toast.
 
 ### DramaPlayer (opened from any Dramas card)
