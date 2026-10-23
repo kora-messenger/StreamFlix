@@ -69,11 +69,12 @@ export default function LoginScreen() {
 
   const fieldPad = W * 0.092;   // fields + buttons: x 47-464 of 512
   const textPad = W * 0.164;    // heading + sub: x 84 of 512
-  const fieldH = Math.round(k * 46);
-  const fieldGap = Math.round(k * 14);
-  const fieldFs = Math.round(k * 14);
-  const btnH = Math.round(k * 46);
-  const socialH = Math.round(k * 42);
+  // professional app sizes (dp/sp), mock used for layout only
+  const fieldH = 50;
+  const fieldGap = 14;
+  const fieldFs = 16;
+  const btnH = 52;
+  const socialH = 48;
 
   return (
     <View style={[styles.root, { backgroundColor: '#000000' }]}>
@@ -97,10 +98,10 @@ export default function LoginScreen() {
 
       {/* heading + sub (left-aligned in the reference) */}
       <View style={[styles.titleRow, { top: H * 0.246, left: textPad }]}>
-        <Text style={[styles.title, { fontSize: Math.round(k * 40) }]}>Welcome </Text>
-        <GradientText text="Back" size={Math.round(k * 40)} width={Math.round(k * 100)} height={Math.round(k * 48)} weight="800" colorsArr={['#3A78FF', '#A044FF']} />
+        <Text style={[styles.title, { fontSize: 32 }]}>Welcome </Text>
+        <GradientText text="Back" size={32} width={110} height={40} weight="800" colorsArr={['#3A78FF', '#A044FF']} />
       </View>
-      <Text style={[styles.sub, { top: H * 0.30, left: textPad, width: W * 0.55, fontSize: Math.round(k * 16), lineHeight: Math.round(k * 22) }]}>
+      <Text style={[styles.sub, { top: H * 0.30, left: textPad, width: W * 0.55, fontSize: 15, lineHeight: 22 }]}>
         Log in to continue watching your favorite movies and shows.
       </Text>
 
@@ -116,9 +117,9 @@ export default function LoginScreen() {
           <View style={[styles.check, remember ? styles.checkOn : null]}>
             {remember ? <CheckIcon size={14} /> : null}
           </View>
-          <Text style={[styles.rememberText, { fontSize: Math.round(k * 13) }]}>Remember me</Text>
+          <Text style={[styles.rememberText, { fontSize: 15 }]}>Remember me</Text>
         </Pressable>
-        <Pressable onPress={() => nav.navigate('ForgotPassword', { email })}><Text style={[styles.forgot, { fontSize: Math.round(k * 13) }]}>Forgot password?</Text></Pressable>
+        <Pressable onPress={() => nav.navigate('ForgotPassword', { email })}><Text style={[styles.forgot, { fontSize: 15 }]}>Forgot password?</Text></Pressable>
       </View>
 
       {/* validation message */}
@@ -127,7 +128,7 @@ export default function LoginScreen() {
 
       {/* log in button (arrow like the reference) */}
       <View style={{ position: 'absolute', top: H * 0.573, left: fieldPad, right: fieldPad }}>
-        <GradientButton label={busy ? 'Logging in…' : 'Log In'} height={btnH} fontSize={Math.round(k * 17)} onPress={doLogin} />
+        <GradientButton label={busy ? 'Logging in…' : 'Log In'} height={btnH} fontSize={16} onPress={doLogin} />
       </View>
 
       {/* or divider */}
@@ -137,7 +138,7 @@ export default function LoginScreen() {
 
       {/* social */}
       <View style={{ position: 'absolute', top: H * 0.70, left: fieldPad, right: fieldPad }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} onPress={googleCode} />
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={15} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: H * 0.77, left: fieldPad, right: fieldPad }}>
         <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
@@ -145,9 +146,9 @@ export default function LoginScreen() {
 
       {/* sign up row */}
       <View style={[styles.signRow, { top: H * 0.858 }]}>
-        <Text style={[styles.signText, { fontSize: Math.round(k * 13) }]}>Don't have an account? </Text>
+        <Text style={[styles.signText, { fontSize: 15 }]}>Don't have an account? </Text>
         <Pressable onPress={() => nav.navigate('CreateAccount')}>
-          <Text style={[styles.signLink, { fontSize: Math.round(k * 14.5) }]}>Sign Up</Text>
+          <Text style={[styles.signLink, { fontSize: 16 }]}>Sign Up</Text>
         </Pressable>
       </View>
     </View>

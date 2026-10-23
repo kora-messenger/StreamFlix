@@ -15,15 +15,16 @@ export default function WelcomeScreen() {
   // Measured from the reference mockup (512x1024): logo at 33% height,
   // wordmark ~55%, tagline ~62%, desc ~66%, icons ~74%, button ~85%.
   const k = W / 512;
-  const logoSize = Math.round(k * 99);
-  const wordmarkSize = Math.round(k * 56);
-  const tagSize = Math.max(13, Math.round(k * 20));
+  // professional app sizes (sp), mock used for layout only
+  const logoSize = Math.max(72, Math.round(k * 99));
+  const wordmarkSize = Math.max(38, Math.round(k * 56));
+  const tagSize = 17;
   const tagSpacing = k * 0.2;
-  const descSize = Math.max(11, Math.round(k * 14));
-  const iconSize = Math.round(k * 30);
-  const labelSize = Math.max(9.5, Math.round(k * 12.5));
-  const btnHeight = Math.max(44, Math.round(k * 48));
-  const btnText = Math.max(13, Math.round(k * 15));
+  const descSize = 15;
+  const iconSize = Math.max(24, Math.round(k * 30));
+  const labelSize = 13;
+  const btnHeight = 52;
+  const btnText = 16;
 
   const features = [
     { icon: <FeatureClapper size={iconSize} />, label: 'Thousands of\nMovies & Shows' },
@@ -61,7 +62,7 @@ export default function WelcomeScreen() {
           Your Movies. Your Way.
         </Text>
 
-        <Text style={[styles.desc, { marginTop: H * 0.022, fontSize: descSize, lineHeight: descSize * 1.5, maxWidth: W * 0.66 }]}>
+        <Text style={[styles.desc, { marginTop: H * 0.022, fontSize: descSize, lineHeight: descSize * 1.5, maxWidth: W * 0.8 }]}>
           Discover, stream and enjoy the best movies, TV shows and more — all in one place.
         </Text>
 

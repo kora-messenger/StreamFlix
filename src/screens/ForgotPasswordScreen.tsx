@@ -62,17 +62,17 @@ export default function ForgotPasswordScreen() {
 
       {/* back arrow over the poster */}
       <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 8, left: W * 0.059 }}>
-        <BackIcon size={Math.round(k * 26)} color="#fff" />
+        <BackIcon size={26} color="#fff" />
       </Pressable>
 
       {/* heading: "Forgot " white + "Password?" blue-to-purple gradient, centered */}
       <View style={[styles.titleRow, { top: H * 0.476 }]}>
-        <Text style={[styles.titleWhite, { fontSize: Math.round(k * 50) }]}>Forgot </Text>
+        <Text style={[styles.titleWhite, { fontSize: 34 }]}>Forgot </Text>
         <GradientText
           text="Password?"
-          size={Math.round(k * 50)}
-          width={Math.round(k * 262)}
-          height={Math.round(k * 64)}
+          size={34}
+          width={186}
+          height={42}
           weight="800"
           colorsArr={['#0E80E8', '#7623EB']}
         />
@@ -81,7 +81,7 @@ export default function ForgotPasswordScreen() {
       {/* two-line centered subtitle */}
       <Text style={[styles.sub, {
         top: H * 0.545, left: (W - W * 0.655) / 2, width: W * 0.655,
-        fontSize: Math.round(k * 16), lineHeight: Math.round(k * 30),
+        fontSize: 16, lineHeight: 24,
       }]}>
         No worries! Enter your email address and we&apos;ll send you a link to reset your password.
       </Text>
@@ -89,11 +89,11 @@ export default function ForgotPasswordScreen() {
       {/* email field — tall, rounded, dark navy with blue border */}
       <View style={{ position: 'absolute', top: H * 0.629, left: padX, right: padX }}>
         <Field
-          h={Math.round(k * 77)}
-          radius={Math.round(k * 26)}
-          fs={Math.round(k * 17)}
+          h={56}
+          radius={18}
+          fs={16}
           error={bad}
-          icon={<MailIcon size={Math.round(k * 24)} color="#5B7FB8" />}
+          icon={<MailIcon size={22} color="#5B7FB8" />}
           placeholderTextColor="#4F6FA6"
           placeholder="Email address"
           value={email}
@@ -110,14 +110,14 @@ export default function ForgotPasswordScreen() {
 
       {/* gradient pill button with arrow */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
-        <GradientButton label="Send Reset Link" height={Math.round(k * 76)} fontSize={Math.round(k * 20)} onPress={send} />
+        <GradientButton label="Send Reset Link" height={56} fontSize={16} onPress={send} />
       </View>
 
       {/* footer */}
       <View style={[styles.footer, { top: H * 0.872 }]}>
-        <Text style={[styles.footText, { fontSize: Math.round(k * 15) }]}>Remember your password? </Text>
+        <Text style={[styles.footText, { fontSize: 15 }]}>Remember your password? </Text>
         <Pressable onPress={() => nav.goBack()} hitSlop={8}>
-          <GradientText text="Sign In" size={Math.round(k * 15)} width={Math.round(k * 52)} height={Math.round(k * 22)} weight="700" colorsArr={['#0E80E8', '#7623EB']} />
+          <GradientText text="Sign In" size={15} width={52} height={20} weight="700" colorsArr={['#0E80E8', '#7623EB']} />
         </Pressable>
       </View>
     </View>

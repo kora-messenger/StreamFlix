@@ -141,7 +141,7 @@ export default function EnterCodeScreen() {
 
       {/* lockup: icon + StreamMax wordmark + tagline */}
       <View style={{ position: 'absolute', top: H * 0.104, left: 0, right: 0 }}>
-        <Lockup scale={k * 0.88} />
+        <Lockup scale={Math.max(0.75, k * 0.88)} />
       </View>
 
       {/* message bubble with padlock, in glowing gradient ring */}
@@ -166,8 +166,8 @@ export default function EnterCodeScreen() {
 
       {/* Enter Reset Code */}
       <View style={[styles.titleRow, { top: H * 0.409 }]}>
-        <Text style={[styles.titleWhite, { fontSize: Math.round(k * 42) }]}>Enter </Text>
-        <GradientText text={purpose === 'reset' ? 'Reset Code' : 'Code'} size={Math.round(k * 42)} width={Math.round(k * 272)} height={Math.round(k * 54)} weight="800" colorsArr={gradients.brand} />
+        <Text style={[styles.titleWhite, { fontSize: 34 }]}>Enter </Text>
+        <GradientText text={purpose === 'reset' ? 'Reset Code' : 'Code'} size={34} width={purpose === 'reset' ? 230 : 110} height={42} weight="800" colorsArr={gradients.brand} />
       </View>
 
       {/* subtitle */}
@@ -228,7 +228,7 @@ export default function EnterCodeScreen() {
 
       {/* Next */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
-        <GradientButton label={busy ? 'Verifying…' : 'Next'} height={Math.round(k * 68)} fontSize={Math.round(k * 20)} onPress={next} />
+        <GradientButton label={busy ? 'Verifying…' : 'Next'} height={56} fontSize={16} onPress={next} />
       </View>
 
       {/* footer */}

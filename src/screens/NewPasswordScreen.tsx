@@ -59,7 +59,7 @@ export default function NewPasswordScreen() {
     nav.reset({ index: 0, routes: [{ name: 'Login' }] });
   };
 
-  const circleSize = Math.round(k * 124);
+  const circleSize = Math.max(96, Math.round(k * 124));
 
   return (
     <View style={styles.root}>
@@ -72,7 +72,7 @@ export default function NewPasswordScreen() {
 
       {/* back arrow */}
       <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 8, left: W * 0.051 }}>
-        <BackIcon size={Math.round(k * 26)} color="#fff" />
+        <BackIcon size={26} color="#fff" />
       </Pressable>
 
       {/* logo + wordmark lockup */}
@@ -89,48 +89,48 @@ export default function NewPasswordScreen() {
           colors={gradients.brand}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ flex: 1, margin: Math.round(k * 8), borderRadius: (circleSize - k * 16) / 2, padding: Math.round(k * 4) }}
+          style={{ flex: 1, margin: 8, borderRadius: (circleSize - 16) / 2, padding: 4 }}
         >
           <View style={{ flex: 1, borderRadius: (circleSize - k * 24) / 2, backgroundColor: '#070B22', alignItems: 'center', justifyContent: 'center' }}>
-            <LockIcon size={Math.round(k * 54)} color="#fff" />
+            <LockIcon size={44} color="#fff" />
           </View>
         </LinearGradient>
       </View>
 
       {/* Reset Password */}
       <View style={[styles.titleRow, { top: H * 0.310 }]}>
-        <Text style={[styles.titleWhite, { fontSize: Math.round(k * 54) }]}>Reset </Text>
-        <GradientText text="Password" size={Math.round(k * 54)} width={Math.round(k * 237)} height={Math.round(k * 68)} weight="800" colorsArr={gradients.brand} />
+        <Text style={[styles.titleWhite, { fontSize: 34 }]}>Reset </Text>
+        <GradientText text="Password" size={34} width={168} height={42} weight="800" colorsArr={gradients.brand} />
       </View>
 
       {/* instruction */}
       <Text style={[styles.sub, {
         top: H * 0.378, left: W * 0.14, right: W * 0.14,
-        fontSize: Math.round(k * 19), lineHeight: Math.round(k * 28),
+        fontSize: 15, lineHeight: 22,
       }]}>
         Enter your new password below. Make sure it's at least 8 characters long and includes a mix of letters, numbers and symbols.
       </Text>
 
       {/* password fields */}
-      <View style={{ position: 'absolute', top: H * 0.472, left: padX, right: padX, gap: Math.round(k * 21) }}>
+      <View style={{ position: 'absolute', top: H * 0.472, left: padX, right: padX, gap: 12 }}>
         <Field
-          h={Math.round(k * 68)} fs={Math.round(k * 17)}
-          icon={<LockIcon size={Math.round(k * 24)} />} placeholder="New password" placeholderTextColor="#6575A3"
+          h={52} fs={16}
+          icon={<LockIcon size={22} />} placeholder="New password" placeholderTextColor="#6575A3"
           value={pw} onChangeText={v => { setPw(v); setErr(''); }} secure style={styles.fieldBox}
         />
         <Field
-          h={Math.round(k * 68)} fs={Math.round(k * 17)}
-          icon={<LockIcon size={Math.round(k * 24)} />} placeholder="Confirm new password" placeholderTextColor="#6575A3"
+          h={52} fs={16}
+          icon={<LockIcon size={22} />} placeholder="Confirm new password" placeholderTextColor="#6575A3"
           value={pw2} onChangeText={v => { setPw2(v); setErr(''); }} secure style={styles.fieldBox}
         />
       </View>
 
       {/* requirements checklist */}
-      <View style={{ position: 'absolute', top: H * 0.651, left: W * 0.123, gap: Math.round(k * 28.5) }}>
+      <View style={{ position: 'absolute', top: H * 0.651, left: W * 0.123, gap: 10 }}>
         {rules.map(r => (
           <View key={r.label} style={styles.ruleRow}>
-            <CheckIcon size={Math.round(k * 20)} color={r.ok ? '#0386FF' : '#39406B'} />
-            <Text style={[styles.ruleText, { fontSize: Math.round(k * 18) }, r.ok ? { color: '#C9D5F0' } : null]}>{r.label}</Text>
+            <CheckIcon size={18} color={r.ok ? '#0386FF' : '#39406B'} />
+            <Text style={[styles.ruleText, { fontSize: 14 }, r.ok ? { color: '#C9D5F0' } : null]}>{r.label}</Text>
           </View>
         ))}
       </View>
@@ -140,13 +140,13 @@ export default function NewPasswordScreen() {
 
       {/* Reset Password button */}
       <View style={{ position: 'absolute', top: H * 0.781, left: padX, right: padX }}>
-        <GradientButton label={busy ? 'Resetting…' : 'Reset Password'} height={Math.round(k * 70)} fontSize={Math.round(k * 26)} onPress={update} />
+        <GradientButton label={busy ? 'Resetting…' : 'Reset Password'} height={56} fontSize={16} onPress={update} />
       </View>
 
       {/* footer */}
       <View style={[styles.footer, { top: H * 0.883 }]}>
         <Pressable onPress={() => nav.reset({ index: 0, routes: [{ name: 'Login' }] })}>
-          <Text style={[styles.footLink, { fontSize: Math.round(k * 19) }]}>Back to Login</Text>
+          <Text style={[styles.footLink, { fontSize: 15 }]}>Back to Login</Text>
         </Pressable>
       </View>
 

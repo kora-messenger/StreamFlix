@@ -69,11 +69,12 @@ export default function CreateAccountScreen() {
   };
 
   const padX = W * 0.102;
-  const fieldH = Math.round(k * 46);      // compact input boxes
-  const fieldGap = Math.round(k * 12);
-  const fieldFs = Math.round(k * 14);
-  const btnH = Math.round(k * 46);
-  const socialH = Math.round(k * 42);
+  // professional app sizes (dp/sp), mock used for layout only
+  const fieldH = 50;
+  const fieldGap = 12;
+  const fieldFs = 16;
+  const btnH = 52;
+  const socialH = 48;
 
   /* compact vertical chain: the button sits directly under the field stack
      and everything below follows sequentially, so the legal footer never
@@ -84,7 +85,7 @@ export default function CreateAccountScreen() {
   const orTop = btnTop + btnH + H * 0.024;
   const soc1Top = orTop + H * 0.026;
   const soc2Top = soc1Top + socialH + H * 0.03;
-  const legalLH = Math.round(k * 17);
+  const legalLH = 18;
   const legalBottom = insets.bottom + 10;
   const signBottom = legalBottom + legalLH * 2 + 12;
 
@@ -108,10 +109,10 @@ export default function CreateAccountScreen() {
 
       {/* heading + sub */}
       <View style={[styles.titleRow, { top: H * 0.202, left: padX }]}>
-        <Text style={[styles.title, { fontSize: Math.round(k * 40) }]}>Create Your </Text>
-        <GradientText text="Account" size={Math.round(k * 40)} width={Math.round(k * 165)} height={Math.round(k * 48)} weight="800" />
+        <Text style={[styles.title, { fontSize: 32 }]}>Create Your </Text>
+        <GradientText text="Account" size={32} width={175} height={40} weight="800" />
       </View>
-      <Text style={[styles.sub, { top: H * 0.257, left: padX, width: W * 0.65, fontSize: Math.round(k * 16), lineHeight: Math.round(k * 22) }]}>
+      <Text style={[styles.sub, { top: H * 0.257, left: padX, width: W * 0.8, fontSize: 15, lineHeight: 22 }]}>
         Join StreamMax and get unlimited access to your favorite movies, TV shows and more.
       </Text>
 
@@ -125,7 +126,7 @@ export default function CreateAccountScreen() {
 
       {/* primary button */}
       <View style={{ position: 'absolute', top: btnTop, left: padX, right: padX }}>
-        <GradientButton label="Create Account" arrow={false} height={btnH} fontSize={Math.round(k * 15)} onPress={createAccount} />
+        <GradientButton label="Create Account" arrow={false} height={btnH} fontSize={16} onPress={createAccount} />
       </View>
 
       {/* or divider */}
@@ -135,7 +136,7 @@ export default function CreateAccountScreen() {
 
       {/* social */}
       <View style={{ position: 'absolute', top: soc1Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} onPress={googleCode} />
+        <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={15} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: soc2Top, left: padX, right: padX }}>
         <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
@@ -143,12 +144,12 @@ export default function CreateAccountScreen() {
 
       {/* sign in + legal */}
       <View style={[styles.signRow, { bottom: signBottom }]}>
-        <Text style={[styles.signText, { fontSize: Math.round(k * 13) }]}>Already have an account? </Text>
+        <Text style={[styles.signText, { fontSize: 15 }]}>Already have an account? </Text>
         <Pressable onPress={() => nav.navigate('Login')}>
-          <Text style={[styles.signLink, { fontSize: Math.round(k * 14) }]}>Sign In</Text>
+          <Text style={[styles.signLink, { fontSize: 16 }]}>Sign In</Text>
         </Pressable>
       </View>
-      <Text style={[styles.legal, { bottom: legalBottom, fontSize: Math.round(k * 11), lineHeight: legalLH }]}>
+      <Text style={[styles.legal, { bottom: legalBottom, fontSize: 13, lineHeight: legalLH }]}>
         By creating an account, you agree to our{'\n'}
         <Text style={styles.legalLink}>Terms of Service</Text>  •  <Text style={styles.legalLink}>Privacy Policy</Text>
       </Text>
