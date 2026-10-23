@@ -6,13 +6,35 @@ const base = (size = 22) => ({ width: size, height: size, viewBox: '0 0 24 24', 
 const st = (color = '#fff', w = 1.8) => ({ stroke: color, strokeWidth: w, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const });
 
 // Message bubble with a padlock and three asterisks (reset-code screen)
-export const HouseIcon = ({ size = 22, color = '#7A8296' }: P) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <Path d="M4 11.2 12 4.4l8 6.8" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    <Path d="M6 10v9.2h12V10" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    <Path d="M10.2 19v-4.6h3.6V19" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-  </Svg>
-);
+/* Bottom-bar Home icon, measured from the MovieBox reference:
+   - untapped: rounded-pentagon house outline + center door stroke, light grey
+   - tapped: same pentagon filled with the StreamMax gradient (cyan bottom-left
+     to purple top-right, standing in for MovieBox's blue-to-green) with a
+     door cutout in the bar's background color */
+export const HomeTabIcon = ({ size = 22, active = false, color = '#C1C4CC' }: { size?: number; active?: boolean; color?: string }) => {
+  const house =
+    'M12 2.7c-.4 0-.75.1-1.05.32L5.1 7.85a1.35 1.35 0 0 0-.4.95V19a1.9 1.9 0 0 0 1.9 1.9h10.8a1.9 1.9 0 0 0 1.9-1.9V8.8a1.35 1.35 0 0 0-.4-.95L13.05 3.02A1.62 1.62 0 0 0 12 2.7Z';
+  if (active) {
+    return (
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Defs>
+          <SvgGrad id="homeTabFill" x1="0" y1="1" x2="1" y2="0">
+            <Stop offset="0" stopColor="#00d2ff" />
+            <Stop offset="1" stopColor="#9d50bb" />
+          </SvgGrad>
+        </Defs>
+        <Path d={house} fill="url(#homeTabFill)" />
+        <Rect x={10.85} y={12} width={2.3} height={5.6} fill="#0D0F17" />
+      </Svg>
+    );
+  }
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d={house} stroke={color} strokeWidth="1.9" strokeLinejoin="round" />
+      <Path d="M12 14.3v5.3" stroke={color} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+};
 
 export const MessageLockIcon = ({ size = 64, color = '#fff' }: { size?: number; color?: string }) => (
   <Svg width={size} height={size * 0.82} viewBox="0 0 64 52" fill="none">

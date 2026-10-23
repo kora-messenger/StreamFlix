@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DownloadIcon, HouseIcon, SearchIcon, UserIcon } from './icons';
+import { DownloadIcon, HomeTabIcon, SearchIcon, UserIcon } from './icons';
 import { GradientText } from './ui';
 
 /**
@@ -15,7 +15,7 @@ import { GradientText } from './ui';
 export type BottomTabId = 'home' | 'search' | 'downloads' | 'mine';
 
 const TABS: { id: BottomTabId; label: string; Icon: React.ComponentType<{ size?: number; color?: string }> }[] = [
-  { id: 'home', label: 'Home', Icon: HouseIcon },
+  { id: 'home', label: 'Home', Icon: HomeTabIcon as React.ComponentType<{ size?: number; color?: string }> },
   { id: 'search', label: 'Dramas', Icon: SearchIcon },
   { id: 'downloads', label: 'Downloads', Icon: DownloadIcon },
   { id: 'mine', label: 'Mine', Icon: UserIcon },
@@ -43,14 +43,10 @@ export default function BottomNavBar({
               hitSlop={6}
               onPress={() => onPress?.(id)}
             >
-              <Icon size={22} color={on ? '#fff' : '#7A8296'} />
-              {on ? (
-                <GradientText text={label} size={10} width={Math.round(label.length * 6.4)} height={13} weight="700" colorsArr={['#00d2ff', '#9d50bb']} />
-              ) : (
-                <View style={styles.labelBox}>
-                  <Text style={styles.label}>{label}</Text>
-                </View>
-              )}
+              {id === 'home' ? <HomeTabIcon size={22} active={on} /> : <Icon size={22} color={on ? '#fff' : '#C1C4CC'} />}
+              <View style={styles.labelBox}>
+                <Text style={on ? styles.labelOn : styles.label}>{label}</Text>
+              </View>
             </Pressable>
           );
         })}
@@ -73,5 +69,6 @@ const styles = StyleSheet.create({
   },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 },
   labelBox: { height: 13, justifyContent: 'center' },
-  label: { color: '#7A8296', fontSize: 10, fontWeight: '600' },
+  label: { color: '#C1C4CC', fontSize: 10, fontWeight: '600' },
+  labelOn: { color: '#fff', fontSize: 10, fontWeight: '700' },
 });
