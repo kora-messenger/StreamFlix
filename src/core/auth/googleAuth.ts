@@ -3,7 +3,7 @@
  *
  * Setup (one-time, in Google Cloud Console):
  *   1. OAuth consent screen → External, app "StreamMax".
- *   2. OAuth client ID → Android → package `com.streamflix.app`,
+ *   2. OAuth client ID → Android → package `com.streammax.app` (applicationId — the app's installed package; the Java namespace remains com.streamflix.app),
  *      SHA-1 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25
  *      (the committed keystore that debug AND release builds sign with).
  *   3. OAuth client ID → Web application → paste its value into
