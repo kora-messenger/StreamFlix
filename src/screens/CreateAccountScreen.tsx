@@ -46,6 +46,19 @@ export default function CreateAccountScreen() {
   const btnH = Math.round(k * 46);
   const socialH = Math.round(k * 42);
 
+  /* compact vertical chain: the button sits directly under the field stack
+     and everything below follows sequentially, so the legal footer never
+     gets pushed off-screen. */
+  const fieldsTop = H * 0.314;
+  const stackH = 4 * fieldH + 3 * fieldGap;
+  const btnTop = fieldsTop + stackH + H * 0.022;
+  const orTop = btnTop + btnH + H * 0.024;
+  const soc1Top = orTop + H * 0.026;
+  const soc2Top = soc1Top + socialH + H * 0.03;
+  const legalLH = Math.round(k * 17);
+  const legalBottom = insets.bottom + 10;
+  const signBottom = legalBottom + legalLH * 2 + 12;
+
   return (
     <View style={styles.root}>
       {/* Spider-Man corner graphic, top-right, fading into the black bg */}
@@ -74,7 +87,7 @@ export default function CreateAccountScreen() {
       </Text>
 
       {/* fields */}
-      <View style={{ position: 'absolute', top: H * 0.314, left: padX, right: padX, gap: fieldGap }}>
+      <View style={{ position: 'absolute', top: fieldsTop, left: padX, right: padX, gap: fieldGap }}>
         <Field h={fieldH} fs={fieldFs} error={bad.name} icon={<UserIcon />} placeholder="Full name" value={name} onChangeText={v => { setName(v); fix('name')(); }} focused={name.length === 0} />
         <Field h={fieldH} fs={fieldFs} error={bad.email} icon={<MailIcon />} placeholder="Email address" value={email} onChangeText={v => { setEmail(v); fix('email')(); }} keyboardType="email-address" autoCapitalize="none" />
         <Field h={fieldH} fs={fieldFs} error={bad.password} icon={<LockIcon />} placeholder="Password" value={pw} onChangeText={v => { setPw(v); fix('password')(); }} secure />
@@ -82,31 +95,31 @@ export default function CreateAccountScreen() {
       </View>
 
       {/* primary button */}
-      <View style={{ position: 'absolute', top: H * 0.604, left: padX, right: padX }}>
-        <GradientButton label="Create Account" arrow={false} height={btnH} fontSize={Math.round(k * 15)} onPress={() => nav.reset({ index: 0, routes: [{ name: 'Home' }] })} />
+      <View style={{ position: 'absolute', top: btnTop, left: padX, right: padX }}>
+        <GradientButton label="Create Account" arrow={false} height={btnH} fontSize={Math.round(k * 15)} onPress={createAccount} />
       </View>
 
       {/* or divider */}
-      <View style={{ position: 'absolute', top: H * 0.674, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: orTop, left: padX, right: padX }}>
         <OrDivider compact />
       </View>
 
       {/* social */}
-      <View style={{ position: 'absolute', top: H * 0.723, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: soc1Top, left: padX, right: padX }}>
         <OutlineButton label="Continue with Google" icon={<GoogleG />} height={socialH} fontSize={Math.round(k * 14)} />
       </View>
-      <View style={{ position: 'absolute', top: H * 0.792, left: padX, right: padX }}>
+      <View style={{ position: 'absolute', top: soc2Top, left: padX, right: padX }}>
         <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={Math.round(k * 14)} />
       </View>
 
       {/* sign in + legal */}
-      <View style={[styles.signRow, { top: H * 0.879 }]}>
+      <View style={[styles.signRow, { bottom: signBottom }]}>
         <Text style={[styles.signText, { fontSize: Math.round(k * 13) }]}>Already have an account? </Text>
         <Pressable onPress={() => nav.navigate('Login')}>
           <Text style={[styles.signLink, { fontSize: Math.round(k * 14) }]}>Sign In</Text>
         </Pressable>
       </View>
-      <Text style={[styles.legal, { top: H * 0.925, fontSize: Math.round(k * 11), lineHeight: Math.round(k * 17) }]}>
+      <Text style={[styles.legal, { bottom: legalBottom, fontSize: Math.round(k * 11), lineHeight: legalLH }]}>
         By creating an account, you agree to our{'\n'}
         <Text style={styles.legalLink}>Terms of Service</Text>  •  <Text style={styles.legalLink}>Privacy Policy</Text>
       </Text>

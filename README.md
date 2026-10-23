@@ -34,7 +34,7 @@ StreamMax is a full-featured streaming app built with React Native. It delivers 
 - Splash screen with deep navy radial backdrop, faint poster art in the corners and two sweeping translucent film-strip ribbons with sprocket holes
 - Android 12+ device splash (SplashScreen API): neon logo icon on the deep navy backdrop, matching icon background inside the system container and a 200 ms icon animation, followed by the in-app cinematic splash
 - Welcome onboarding: cinematic TV-room hero (new background art) runs edge to edge as the full-screen backdrop fading into deep black, with the neon logo, StreamMax wordmark, tagline, description, gradient feature icons, full-width Get Started CTA and page dots overlaid on top at design-mockup proportions — fixed layout, no scrolling
-- Create Account and Login with corner hero art, brand lockup, gradient title accent, gradient-focused first field and full-width gradient CTA
+- Create Account and Login with corner hero art, brand lockup, gradient title accent, gradient-focused first field and full-width gradient CTA. Create Account uses a compact vertical chain: the CTA sits directly under the field stack, social buttons follow sequentially, and the sign-in row + legal footer are anchored from the screen bottom so they never clip.
 - Google and Apple sign-in options
 - Remember me and forgot-password flows
 
