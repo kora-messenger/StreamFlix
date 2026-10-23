@@ -51,6 +51,14 @@ export default function CreateAccountScreen() {
   };
 
   const [gBusy, setGBusy] = useState(false);
+  const [aBusy, setABusy] = useState(false);
+  const appleSoon = async () => {
+    if (aBusy) return;
+    setABusy(true);
+    await new Promise(r => { setTimeout(() => r(undefined), 900); });
+    setABusy(false);
+    toast('Apple sign-in is coming soon.', 'info');
+  };
   const googleCode = async () => {
     if (gBusy) return;
     if (isGoogleSdkReady()) {
@@ -150,7 +158,7 @@ export default function CreateAccountScreen() {
         <OutlineButton label="Continue with Google" icon={<GoogleG />} loading={gBusy} height={socialH} fontSize={15} onPress={googleCode} />
       </View>
       <View style={{ position: 'absolute', top: soc2Top, left: padX, right: padX }}>
-        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} height={socialH} fontSize={15} />
+        <OutlineButton label="Continue with Apple" icon={<AppleLogo />} loading={aBusy} height={socialH} fontSize={15} onPress={appleSoon} />
       </View>
 
       {/* sign in + legal */}
