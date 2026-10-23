@@ -16,7 +16,7 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 /** Web OAuth client ID from Google Cloud Console (ends in .apps.googleusercontent.com). */
-export const GOOGLE_WEB_CLIENT_ID = ''; // TODO: paste the Web client ID here
+export const GOOGLE_WEB_CLIENT_ID = '463127766110-cugua4mmvf9mrj2mgpdp05iat3f8vr07.apps.googleusercontent.com';
 
 let configured = false;
 
