@@ -335,7 +335,7 @@ app.post('/', async (req, res) => {
     return res.status(400).json({ ok: false, message: 'Unknown action' });
   } catch (err) {
     console.error('api error', action, err && err.message);
-    return res.status(500).json({ ok: false, message: 'Server error' });
+    return res.status(500).json({ ok: false, message: 'Server error', dbg: String(err && err.message || err).slice(0, 300) });
   }
 });
 
