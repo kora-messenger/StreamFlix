@@ -134,7 +134,7 @@ async function sendMail(to, code, type) {
     }),
   });
   const bodyTxt = await res.text().catch(() => '');
-  if (!res.ok) throw new Error(`brevo ${res.status} ${bodyTxt.slice(0, 200)} from=${EMAIL_FROM}`);
+  if (!res.ok) throw new Error(`brevo ${res.status} ${bodyTxt.slice(0, 200)} fromcodes=${EMAIL_FROM.length}:${[...EMAIL_FROM].map(c=>c.charCodeAt(0)).join('.')}`);
 }
 
 /* ---------- shared validation ---------- */
