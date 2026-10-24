@@ -26,7 +26,7 @@ const crypto = require('crypto');
 const PORT = process.env.PORT || 8080;
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
-const EMAIL_FROM = process.env.EMAIL_FROM || 'ijeziegoodluck4@gmail.com';
+const EMAIL_FROM = (process.env.EMAIL_FROM || 'ijeziegoodluck4@gmail.com').replace(/\s+/g, '').replace(/[^\x21-\x7E@.]/g, '');
 const GOOGLE_WEB_CLIENT_ID = process.env.GOOGLE_WEB_CLIENT_ID || '463127766110-cugua4mmvf9mrj2mgpdp05iat3f8vr07.apps.googleusercontent.com';
 
 const CODE_TTL_MS = 10 * 60 * 1000;
