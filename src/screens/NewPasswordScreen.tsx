@@ -140,7 +140,7 @@ export default function NewPasswordScreen() {
 
       {/* Reset Password button */}
       <View style={{ position: 'absolute', top: H * 0.781, left: padX, right: padX }}>
-        <GradientButton label={busy ? 'Resetting…' : 'Reset Password'} height={56} fontSize={16} onPress={update} />
+        <GradientButton label="Reset Password" loading={busy} height={56} fontSize={16} onPress={update} />
       </View>
 
       {/* footer */}

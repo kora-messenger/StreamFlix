@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GradientText, Lockup, TopToast, useToast } from '../components/ui';
+import { GradientText, Lockup, TopToast, useCountingDots, useToast } from '../components/ui';
 import { BackIcon, ClockIcon, MessageLockIcon } from '../components/icons';
 import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
@@ -39,6 +39,7 @@ export default function EnterCodeScreen() {
   const [busy, setBusy] = useState(false);
   const [left, setLeft] = useState(RESEND_SECONDS);
   const submitting = useRef(false);
+  const vDots = useCountingDots(busy);
   const inputRef = useRef<any>(null);
 
   useEffect(() => {
@@ -226,7 +227,7 @@ export default function EnterCodeScreen() {
               )}
             </View>
 
-            {busy ? <Text style={styles.verifying}>Verifying…</Text> : null}
+            {busy ? <Text style={styles.verifying}>{`Verifying${'.'.repeat(vDots)}`}</Text> : null}
 
             <View style={{ flexGrow: 1 }} />
           </View>

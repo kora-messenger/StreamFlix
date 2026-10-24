@@ -146,7 +146,8 @@ export default function LoginScreen() {
 
             {/* log in */}
             <GradientButton
-              label={busy ? 'Logging in…' : 'Log In'}
+              label="Log In"
+              loading={busy}
               height={52}
               fontSize={16}
               onPress={doLogin}

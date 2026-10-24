@@ -7,20 +7,44 @@ import { colors, gradients } from '../theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowRight, EyeIcon, EyeOffIcon } from './icons';
 
+// counting dots for loading labels: "Loading." -> "Loading.." -> "Loading..."
+export const useCountingDots = (active: boolean, ms = 400) => {
+  const [n, setN] = useState(1);
+  useEffect(() => {
+    if (!active) {
+      setN(1);
+      return;
+    }
+    const t = setInterval(() => setN(v => (v % 3) + 1), ms);
+    return () => clearInterval(t);
+  }, [active, ms]);
+  return n;
+};
+
 export const GradientButton = ({
-  label, onPress, arrow = true, style, height, fontSize,
-}: { label: string; onPress?: () => void; arrow?: boolean; style?: ViewStyle; height?: number; fontSize?: number }) => (
-  <Pressable onPress={onPress} style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }, style]}>
-    <LinearGradient
-      colors={gradients.button}
-      start={{ x: 0, y: 0.5 }}
-      end={{ x: 1, y: 0.5 }}
-      style={[s.gradBtn, height ? { height, borderRadius: height / 2 } : null]}>
-      <Text style={[s.gradBtnText, fontSize ? { fontSize } : null]}>{label}</Text>
-      {arrow ? <ArrowRight size={fontSize ? fontSize + 4 : 22} color="#fff" /> : null}
-    </LinearGradient>
-  </Pressable>
-);
+  label, onPress, arrow = true, style, height, fontSize, loading,
+}: {
+  label: string; onPress?: () => void; arrow?: boolean; style?: ViewStyle;
+  height?: number; fontSize?: number; loading?: boolean;
+}) => {
+  const dots = useCountingDots(!!loading);
+  return (
+    <Pressable
+      onPress={loading ? undefined : onPress}
+      style={({ pressed }) => [{ opacity: loading ? 0.75 : pressed ? 0.88 : 1 }, style]}>
+      <LinearGradient
+        colors={gradients.button}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={[s.gradBtn, height ? { height, borderRadius: height / 2 } : null]}>
+        <Text style={[s.gradBtnText, fontSize ? { fontSize } : null]}>
+          {loading ? `Loading${'.'.repeat(dots)}` : label}
+        </Text>
+        {arrow && !loading ? <ArrowRight size={fontSize ? fontSize + 4 : 22} color="#fff" /> : null}
+      </LinearGradient>
+    </Pressable>
+  );
+};
 
 export const OutlineButton = ({
   label, icon, onPress, height, fontSize, loading,

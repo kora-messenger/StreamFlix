@@ -28,17 +28,22 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState(route.params?.email || '');
   const [err, setErr] = useState('');
   const [bad, setBad] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const send = async () => {
+    if (busy) return;
     const e = email.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) {
       setBad(true); setErr('Enter a valid email address'); return;
     }
+    setBusy(true);
     const exists = await auth.emailExists(e);
     if (!exists) {
+      setBusy(false);
       setBad(true); setErr('No account found with this email'); return;
     }
     const r = await auth.requestCode(e, 'reset');
+    setBusy(false);
     if (!r.ok) {
       setBad(true); setErr(r.message || 'Could not send the code'); return;
     }
@@ -110,7 +115,7 @@ export default function ForgotPasswordScreen() {
 
       {/* gradient pill button with arrow */}
       <View style={{ position: 'absolute', top: H * 0.745, left: padX, right: padX }}>
-        <GradientButton label="Send Reset Code" height={56} fontSize={16} onPress={send} />
+        <GradientButton label="Send Reset Code" loading={busy} height={56} fontSize={16} onPress={send} />
       </View>
 
       {/* footer */}

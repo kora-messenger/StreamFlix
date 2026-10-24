@@ -132,6 +132,7 @@ export default function CreateAccountScreen() {
             <GradientButton
               label="Create Account"
               arrow={false}
+              loading={busy}
               height={52}
               fontSize={16}
               onPress={createAccount}
