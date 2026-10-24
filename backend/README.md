@@ -31,7 +31,7 @@ Beyond verification codes, the API sends two security/lifecycle emails
   personalized greeting, and a detail panel with signed-in account,
   device (from the optional `device` payload field — the app sends a
   Platform-based description), approximate location (IP geolookup via
-  ipapi.co, best-effort), and the sign-in time in West Africa Time;
+  ipwho.is, best-effort), and the sign-in time in West Africa Time;
   ends with a "Secure my account" deep-link button (streammax://home).
 - **Welcome email** — sent to brand-new users: after `register`, after a
   first-time Google sign-in (`googleVerify` with no existing account),

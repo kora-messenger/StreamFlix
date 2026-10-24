@@ -214,10 +214,10 @@ function alertHtml(first, emailAddr, device, location, when) {
 
 async function ipLocation(ip) {
   try {
-    const r = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, { signal: AbortSignal.timeout(4000) });
+    const r = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { signal: AbortSignal.timeout(4000) });
     const j = await r.json();
-    if (j && j.city && j.country_name) return `${j.city}, ${j.country_name}`;
-    if (j && j.country_name) return j.country_name;
+    if (j && j.success && j.city && j.country) return `${j.city}, ${j.country}`;
+    if (j && j.success && j.country) return j.country;
     return 'Unavailable';
   } catch { return 'Unavailable'; }
 }
