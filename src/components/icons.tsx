@@ -362,3 +362,19 @@ export const PadlockIcon = ({ size = 40, color = '#fff' }: P) => (
     <Path d="M5.5 10.5h13V20h-13z" {...st(color, 2)} />
   </Svg>
 );
+
+/** Toast icons: warning triangle (error) and check-circle (info). */
+export const ToastWarnIcon = ({ size = 18, color = '#FF5F6D' }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Path d="M12 3.5 21.2 19.2H2.8L12 3.5Z" {...st(color, 2)} />
+    <Path d="M12 9.4v4.4" {...st(color, 2)} />
+    <Circle cx="12" cy="16.9" r="1.15" fill={color} />
+  </Svg>
+);
+
+export const ToastCheckIcon = ({ size = 18, color = '#00D2FF' }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Circle cx="12" cy="12" r="9" {...st(color, 2)} />
+    <Path d="m8.2 12.3 2.6 2.6 5-5.4" {...st(color, 2)} />
+  </Svg>
+);

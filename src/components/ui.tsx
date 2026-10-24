@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Defs, LinearGradient as SvgGrad, Stop, Text as SvgText, Circle } from 'react-native-svg';
 import { colors, gradients } from '../theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowRight, EyeIcon, EyeOffIcon } from './icons';
+import { ArrowRight, EyeIcon, EyeOffIcon, ToastCheckIcon, ToastWarnIcon } from './icons';
 
 // counting dots for loading labels: "Loading." -> "Loading.." -> "Loading..."
 export const useCountingDots = (active: boolean, ms = 400) => {
@@ -167,30 +167,53 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export const TopToast = ({ message, kind = 'error' }: { message: string; kind?: 'error' | 'info' }) => {
   const insets = useSafeAreaInsets();
   const a = useRef(new Animated.Value(0)).current;
+  const bar = useRef(new Animated.Value(0)).current;
+  const D = 3200;
+
   useEffect(() => {
-    if (!message) return;
-    a.setValue(0);
-    Animated.timing(a, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+    // spring in with a little overshoot, drain the time bar, fade back up
+    Animated.spring(a, { toValue: 1, useNativeDriver: true, friction: 7, tension: 60 }).start();
+    Animated.timing(bar, { toValue: 1, duration: D, useNativeDriver: false }).start();
     const t = setTimeout(
-      () => Animated.timing(a, { toValue: 0, duration: 240, useNativeDriver: true }).start(),
-      3200,
+      () => Animated.timing(a, { toValue: 0, duration: 220, useNativeDriver: true }).start(),
+      D,
     );
     return () => clearTimeout(t);
-  }, [message, a]);
-  if (!message) return null;
+  }, [a, bar]);
+
+  const isError = kind === 'error';
+  const accent = isError ? '#FF5F6D' : '#00D2FF';
+  const Icon = isError ? ToastWarnIcon : ToastCheckIcon;
+
   return (
     <Animated.View
       pointerEvents="none"
       style={{
         position: 'absolute', top: insets.top + 10, left: 16, right: 16, zIndex: 99, elevation: 99,
         opacity: a,
-        transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [-28, 0] }) }],
+        transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [-36, 0] }) }],
       }}
     >
-      <View style={s.toastPill}>
-        <Text style={[s.toastText, kind === 'error' ? { color: '#FFFFFF' } : null]} numberOfLines={2}>
+      <View style={[s.toastPill, { borderColor: isError ? 'rgba(255,95,109,0.28)' : 'rgba(0,210,255,0.28)', shadowColor: accent }]}>
+        <View style={[s.toastIconRing, { backgroundColor: isError ? 'rgba(255,95,109,0.14)' : 'rgba(0,210,255,0.14)' }]}>
+          <Icon size={16} color={accent} />
+        </View>
+        <Text style={[s.toastText, { flexShrink: 1 }]} numberOfLines={2}>
           {message}
         </Text>
+        {/* time bar drains over the toast's lifetime */}
+        <View style={s.toastBarTrack}>
+          <Animated.View
+            style={{
+              height: 2, borderRadius: 1,
+              backgroundColor: accent,
+              alignSelf: 'stretch',
+              opacity: 0.85,
+              transform: [{ scaleX: bar.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }],
+              transformOrigin: 'right',
+            }}
+          />
+        </View>
       </View>
     </Animated.View>
   );
@@ -262,14 +285,22 @@ export const Spinner = ({ size = 50 }: { size?: number }) => {
 
 const s = StyleSheet.create({
   toastPill: {
-    alignSelf: 'center', maxWidth: '92%',
+    alignSelf: 'center', maxWidth: '92%', position: 'relative', overflow: 'hidden',
     backgroundColor: 'rgba(17,19,28,0.97)', borderRadius: 999,
-    paddingVertical: 10, paddingHorizontal: 20,
+    paddingVertical: 11, paddingHorizontal: 18,
+    flexDirection: 'row', alignItems: 'center', gap: 10,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
     shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 14, shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
+    elevation: 10,
   },
-  toastText: { color: '#fff', fontSize: 13, fontWeight: '600', textAlign: 'center' },
+  toastIconRing: {
+    width: 26, height: 26, borderRadius: 13,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  toastText: { color: '#fff', fontSize: 13, fontWeight: '600', textAlign: 'left' },
+  toastBarTrack: {
+    position: 'absolute', left: 20, right: 20, bottom: 4, height: 2,
+  },
 
   gradBtn: {
     height: 58, borderRadius: 29, flexDirection: 'row', alignItems: 'center',
