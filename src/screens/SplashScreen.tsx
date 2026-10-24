@@ -3,7 +3,7 @@ import { Animated, Easing, Image, StyleSheet, Text, View, useWindowDimensions } 
 import Svg, { Path, Defs, LinearGradient as SvgGrad, Stop } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { Spinner, Wordmark } from '../components/ui';
-import { resumeSession } from '../core/auth/authService';
+import { migrateLocalAccounts, resumeSession } from '../core/auth/authService';
 
 const grad = (id: string, a: string, b: string) => (
   <Defs>
@@ -29,6 +29,7 @@ export default function SplashScreen() {
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
     const t = setTimeout(async () => {
+    migrateLocalAccounts(); // one-time import of pre-MongoDB device accounts (fire-and-forget)
     const user = await resumeSession();
     nav.reset({ index: 0, routes: [{ name: user ? 'Home' : 'Welcome' }] });
   }, 2400);
