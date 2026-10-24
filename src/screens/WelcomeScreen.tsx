@@ -1,114 +1,332 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ImageBackground,
+  Pressable,
+  StatusBar,
+  useWindowDimensions,
+  ScrollView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { GradientButton, Wordmark } from '../components/ui';
-import { FeatureBolt, FeatureClapper, FeatureDevices, FeatureHeart } from '../components/icons';
 
-/**
- * Welcome onboarding — 100% mock fidelity (2026-10-24 rebuild).
- *
- * The cinematic TV scene is a TOP hero (~45% of the screen, fading into the
- * dark #010214 background), NOT a full-screen backdrop. Every element sits
- * at its measured mock percentage of screen height:
- *   logo 44.2% | wordmark 54.2% | tagline 61.2% | description 66.4%
- *   feature row 73.7% | CTA 84.8% | page dots 93.8%
- * Fixed layout, no scrolling, sizes scale with screen width (mock is
- * 512x1024: sizes here are W x 0.0xx of that reference).
- */
-const MOCK_BG = '#010214';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function WelcomeScreen() {
+type Props = {
+  onGetStarted?: () => void;
+};
+
+// Ijezie's corrected layout (2026-10-24): standard RN, top hero + gradient
+// fade, no page dots. Hero art = cinematic TV-room scene; neon play logo.
+const POSTER = require('../assets/img/welcome_hero.png');
+const LOGO = require('../assets/img/logo_splash.png');
+
+export default function WelcomeScreen({ onGetStarted }: Props) {
   const nav = useNavigation<any>();
-  const { width: W, height: H } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
-  const logoSize = Math.round(W * 0.186);
-  const wordmarkSize = Math.round(W * 0.105);
-  const iconSize = Math.round(W * 0.058);
-  const iconLabel = Math.max(9.5, Math.round(W * 0.0235 * 2) / 2);
-  const ctaHeight = Math.round(W * 0.117);
-  const dot = Math.max(6.5, Math.round(W * 0.019));
-  const dotGap = Math.round(W * 0.035);
+  const compact = height < 740;
+  const posterHeight = Math.min(height * 0.44, 390);
 
   const features = [
-    { icon: <FeatureClapper size={iconSize} />, label: 'Thousands of\nMovies & Shows' },
-    { icon: <FeatureDevices size={iconSize} />, label: 'Watch on\nAny Device' },
-    { icon: <FeatureBolt size={iconSize} />, label: 'High Quality\nStreaming' },
-    { icon: <FeatureHeart size={iconSize} />, label: 'Personalized\nJust for You' },
+    {
+      icon: 'movie-open-play-outline',
+      label: 'Thousands\nof Movies & Shows',
+    },
+    {
+      icon: 'devices',
+      label: 'Watch on\nAny Device',
+    },
+    {
+      icon: 'lightning-bolt-circle',
+      label: 'High Quality\nStreaming',
+    },
+    {
+      icon: 'heart-outline',
+      label: 'Personalized\nJust for You',
+    },
   ];
 
   return (
-    <View style={[styles.root, { height: H, width: W }]}>
-      {/* top hero — fades into the background */}
-      <Image
-        source={require('../assets/img/welcome_hero_top.png')}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: Math.round(H * 0.45) }}
-        resizeMode="cover"
-      />
+    <View style={styles.screen}>
+      <StatusBar barStyle="light-content" />
 
-      {/* brand mark */}
-      <Image
-        source={require('../assets/img/logo_splash.png')}
-        style={{ position: 'absolute', top: H * 0.442, alignSelf: 'center', width: logoSize, height: logoSize }}
-        resizeMode="contain"
-      />
-      <View style={{ position: 'absolute', top: H * 0.542, alignSelf: 'center', alignItems: 'center' }}>
-        <Wordmark size={wordmarkSize} />
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        {/* EXISTING CINEMATIC MOVIE POSTER */}
+        <View style={[styles.posterContainer, { height: posterHeight }]}>
+          <ImageBackground
+            source={POSTER}
+            style={styles.poster}
+            resizeMode="cover"
+          >
+            <LinearGradient
+              colors={[
+                'rgba(3,5,26,0)',
+                'rgba(3,5,26,0.08)',
+                'rgba(3,5,26,0.55)',
+                '#03051A',
+              ]}
+              locations={[0, 0.5, 0.8, 1]}
+              style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              }}
+            />
+          </ImageBackground>
+        </View>
 
-      {/* tagline + description */}
-      <Text style={[styles.tag, { top: H * 0.612, fontSize: Math.round(W * 0.046) }]}>
-        Your Movies. Your Way.
-      </Text>
-      <Text style={[styles.desc, { top: H * 0.664, maxWidth: W * 0.66, fontSize: Math.max(12, Math.round(W * 0.03)) }]}>
-        Discover, stream and enjoy the best movies, TV shows and more — all in one place.
-      </Text>
-
-      {/* four feature cells with thin separators */}
-      <View style={[styles.grid, { top: H * 0.737, paddingHorizontal: Math.round(W * 0.03) }]}>
-        {features.map((f, i) => (
-          <View key={i} style={[styles.cell, i > 0 ? styles.cellSep : null]}>
-            {f.icon}
-            <Text style={[styles.cellText, { fontSize: iconLabel, marginTop: Math.round(W * 0.012) }]}>{f.label}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* CTA */}
-      <GradientButton
-        label="Get Started"
-        onPress={() => nav.navigate('CreateAccount')}
-        height={ctaHeight}
-        fontSize={Math.max(14, Math.round(W * 0.035))}
-        style={{ position: 'absolute', top: H * 0.848, left: Math.round(W * 0.088), right: Math.round(W * 0.088) }}
-      />
-
-      {/* page dots — first active */}
-      <View style={[styles.dots, { top: H * 0.938, gap: dotGap }]}>
-        {[0, 1, 2, 3].map((i) => (
-          <View
-            key={i}
-            style={[styles.dot, { width: dot, height: dot, borderRadius: dot / 2, backgroundColor: i === 0 ? '#7C26CD' : '#2A2C5C' }]}
+        {/* STREAMMAX BRANDING */}
+        <View style={styles.brandSection}>
+          <Image
+            source={LOGO}
+            style={styles.logo}
+            resizeMode="contain"
+            accessibilityLabel="StreamMax logo"
           />
-        ))}
-      </View>
+
+          <View style={styles.titleRow}>
+            <Text style={styles.titleWhite}>Stream</Text>
+
+            <LinearGradient
+              colors={['#06D6F5', '#2875FF', '#A020F0']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.gradientText}
+            >
+              <Text style={styles.titleGradient}>Max</Text>
+            </LinearGradient>
+          </View>
+
+          <Text style={styles.tagline}>
+            Your Movies. Your Way.
+          </Text>
+
+          <Text style={styles.description}>
+            Discover, stream and enjoy the best movies, TV shows and more
+            {' — '}all in one place.
+          </Text>
+        </View>
+
+        {/* FOUR FEATURE ITEMS */}
+        <View
+          style={[
+            styles.featuresRow,
+            { width: width - 24 },
+            compact && styles.compactFeatures,
+          ]}
+        >
+          {features.map((feature, index) => (
+            <View key={feature.label} style={styles.feature}>
+              {index !== 0 && <View style={styles.separator} />}
+
+              <Icon
+                name={feature.icon}
+                size={compact ? 28 : 32}
+                color={index % 2 === 0 ? '#168BFF' : '#962DFF'}
+              />
+
+              <Text style={styles.featureText}>
+                {feature.label}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* GET STARTED BUTTON */}
+        <View style={styles.bottomSection}>
+          <Pressable
+            onPress={onGetStarted ?? (() => nav.navigate('CreateAccount'))}
+            accessibilityRole="button"
+            accessibilityLabel="Get Started"
+            style={({ pressed }) => [
+              styles.buttonWrapper,
+              pressed && styles.buttonPressed,
+            ]}
+          >
+            <LinearGradient
+              colors={['#971BFA', '#6031FF', '#086CFF']}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>
+                Get Started
+              </Text>
+
+              <Ionicons
+                name="arrow-forward"
+                size={25}
+                color="#FFFFFF"
+              />
+            </LinearGradient>
+          </Pressable>
+        </View>
+
+        {/* No page indicators or dots at the bottom */}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: MOCK_BG },
-  tag: {
-    position: 'absolute', alignSelf: 'center', color: '#ffffff',
-    fontWeight: '500', letterSpacing: 0.2, textAlign: 'center',
+  screen: {
+    flex: 1,
+    backgroundColor: '#03051A',
   },
-  desc: {
-    position: 'absolute', alignSelf: 'center', color: '#B0B3C6', fontWeight: '300',
-    lineHeight: 22, textAlign: 'center',
+
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 28,
   },
-  grid: { position: 'absolute', left: 0, right: 0, flexDirection: 'row' },
-  cell: { flex: 1, alignItems: 'center', paddingHorizontal: 2 },
-  cellSep: { borderLeftWidth: 1, borderLeftColor: 'rgba(255,255,255,0.10)' },
-  cellText: { color: 'rgba(255,255,255,0.82)', lineHeight: 14, textAlign: 'center', fontWeight: '500' },
-  dots: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center' },
-  dot: {},
+
+  posterContainer: {
+    width: '100%',
+    overflow: 'hidden',
+    backgroundColor: '#03051A',
+  },
+
+  poster: {
+    width: '100%',
+    height: '100%',
+  },
+
+  brandSection: {
+    alignItems: 'center',
+    paddingHorizontal: 25,
+    marginTop: -2,
+  },
+
+  logo: {
+    width: 76,
+    height: 76,
+    marginBottom: 4,
+  },
+
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  titleWhite: {
+    color: '#FFFFFF',
+    fontSize: 43,
+    fontWeight: '800',
+    letterSpacing: -1.8,
+  },
+
+  gradientText: {
+    borderRadius: 3,
+  },
+
+  titleGradient: {
+    color: '#39C8FF',
+    fontSize: 43,
+    fontWeight: '800',
+    letterSpacing: -1.8,
+  },
+
+  tagline: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    marginTop: 12,
+    textAlign: 'center',
+  },
+
+  description: {
+    color: '#C6CDDF',
+    fontSize: 15,
+    lineHeight: 23,
+    textAlign: 'center',
+    marginTop: 25,
+    maxWidth: 440,
+  },
+
+  featuresRow: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    marginTop: 35,
+    marginBottom: 30,
+  },
+
+  compactFeatures: {
+    marginTop: 23,
+    marginBottom: 20,
+  },
+
+  feature: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 2,
+    position: 'relative',
+  },
+
+  separator: {
+    position: 'absolute',
+    left: 0,
+    top: 3,
+    height: 77,
+    width: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(148,163,184,0.25)',
+  },
+
+  featureText: {
+    color: '#E5E7F0',
+    fontSize: 11.5,
+    lineHeight: 17,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 12,
+  },
+
+  bottomSection: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 'auto',
+    paddingTop: 10,
+    paddingHorizontal: 24,
+  },
+
+  buttonWrapper: {
+    width: '100%',
+    maxWidth: 520,
+    borderRadius: 40,
+    overflow: 'hidden',
+    elevation: 8,
+    shadowColor: '#4F46E5',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.28,
+    shadowRadius: 12,
+  },
+
+  buttonPressed: {
+    opacity: 0.82,
+    transform: [{ scale: 0.985 }],
+  },
+
+  button: {
+    minHeight: 62,
+    borderRadius: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 13,
+    paddingHorizontal: 20,
+  },
+
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 19,
+    fontWeight: '700',
+  },
 });
