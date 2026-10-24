@@ -11,9 +11,11 @@ import { gradients } from '../theme/tokens';
 import * as auth from '../core/auth/authService';
 
 /**
- * Enter Code — flex layout, the standard OS keyboard provides the digits.
- * A single hidden number-pad TextInput captures the code; the six boxes
- * display it and the code auto-verifies the moment the sixth digit is typed.
+ * Enter Code — rebuilt 2026-10-24 for reliable tapping.
+ * The boxes are pure display; a single transparent number-pad TextInput
+ * overlays the whole box row, so tapping ANY box taps the input itself
+ * and the standard OS keyboard always opens (no focus() dance, no custom
+ * keypad). The code auto-verifies the moment the sixth digit is typed.
  */
 const CODE_LEN = 6;
 const RESEND_SECONDS = 83; // 01:23
@@ -41,8 +43,7 @@ export default function EnterCodeScreen() {
 
   useEffect(() => {
     const t = setInterval(() => setLeft(s => (s > 0 ? s - 1 : 0)), 1000);
-    const f = setTimeout(() => inputRef.current?.focus(), 250);
-    return () => { clearInterval(t); clearTimeout(f); };
+    return () => clearInterval(t);
   }, []);
 
   const mm = Math.floor(left / 60).toString().padStart(2, '0');
@@ -52,14 +53,12 @@ export default function EnterCodeScreen() {
     if (submitting.current) return;
     submitting.current = true;
     setBusy(true);
-    inputRef.current?.blur();
     const v = await auth.checkCode(email, purpose, full);
     if (!v.ok) {
       setBusy(false);
       submitting.current = false;
       setCode('');
       setErr(v.message || 'Incorrect code. Please try again.');
-      inputRef.current?.focus();
       return;
     }
     if (purpose === 'reset') {
@@ -89,16 +88,6 @@ export default function EnterCodeScreen() {
     setErr(r.message || 'Could not sign you in');
   };
 
-  // Android: if the keyboard was dismissed, the hidden input is still
-  // "focused", so a plain focus() is a no-op and the keyboard never
-  // reappears. Blur first, then refocus on the next tick.
-  const focusInput = () => {
-    const el = inputRef.current;
-    if (!el) return;
-    el.blur();
-    setTimeout(() => el.focus(), 0);
-  };
-
   const onChangeCode = (text: string) => {
     const clean = text.replace(/[^0-9]/g, '').slice(0, CODE_LEN);
     setCode(clean);
@@ -113,7 +102,6 @@ export default function EnterCodeScreen() {
     setCode(''); setErr('');
     setLeft(RESEND_SECONDS);
     toast('Code sent to your email.', 'info');
-    focusInput();
   };
 
   const gap = 10;
@@ -136,7 +124,7 @@ export default function EnterCodeScreen() {
           <View style={[styles.content, { paddingTop: insets.top + 18, paddingBottom: 30 }]}>
 
             {/* back arrow */}
-            <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 12, left: 22 }}>
+            <Pressable onPress={() => nav.goBack()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 12, left: 22, zIndex: 2 }}>
               <BackIcon size={Math.round(k * 26)} color="#fff" />
             </Pressable>
 
@@ -180,42 +168,45 @@ export default function EnterCodeScreen() {
               {purpose === 'reset' ? 'Enter the code below to reset your password.' : 'Enter the code below to continue.'}
             </Text>
 
-            {/* six code boxes — tapping anywhere focuses the hidden input */}
-            <Pressable onPress={focusInput} hitSlop={{ top: 14, bottom: 14 }} style={[styles.boxRow, { gap }]}>
-              {Array.from({ length: CODE_LEN }).map((_, i) => {
-                const isActive = i === active;
-                const box = (
-                  <View style={[styles.box, isActive ? styles.boxActive : null, { width: boxW, height: boxH }]}>
-                    <Text style={styles.digit}>{code[i] || ''}</Text>
-                  </View>
-                );
-                if (!isActive) return <View key={i}>{box}</View>;
-                return (
-                  <LinearGradient
-                    key={i}
-                    colors={gradients.brand}
-                    start={{ x: 0, y: 0.5 }}
-                    end={{ x: 1, y: 0.5 }}
-                    style={{ borderRadius: Math.round(k * 18), padding: Math.round(k * 2.5) }}
-                  >
-                    {box}
-                  </LinearGradient>
-                );
-              })}
-            </Pressable>
+            {/* six code boxes + the transparent input overlaying the whole row.
+                Tapping a box taps the input directly — the OS keyboard always opens. */}
+            <View style={styles.boxRowWrap}>
+              <View style={[styles.boxRow, { gap }]}>
+                {Array.from({ length: CODE_LEN }).map((_, i) => {
+                  const isActive = i === active;
+                  const box = (
+                    <View style={[styles.box, isActive ? styles.boxActive : null, { width: boxW, height: boxH }]}>
+                      <Text style={styles.digit}>{code[i] || ''}</Text>
+                    </View>
+                  );
+                  if (!isActive) return <View key={i}>{box}</View>;
+                  return (
+                    <LinearGradient
+                      key={i}
+                      colors={gradients.brand}
+                      start={{ x: 0, y: 0.5 }}
+                      end={{ x: 1, y: 0.5 }}
+                      style={{ borderRadius: Math.round(k * 18), padding: Math.round(k * 2.5) }}
+                    >
+                      {box}
+                    </LinearGradient>
+                  );
+                })}
+              </View>
 
-            {/* hidden digit input driven by the OS keyboard */}
-            <TextInput
-              ref={inputRef}
-              value={code}
-              onChangeText={onChangeCode}
-              keyboardType="number-pad"
-              maxLength={CODE_LEN}
-              autoFocus
-              editable={!busy}
-              style={styles.hiddenInput}
-              textContentType="oneTimeCode"
-            />
+              <TextInput
+                ref={inputRef}
+                value={code}
+                onChangeText={onChangeCode}
+                keyboardType="number-pad"
+                maxLength={CODE_LEN}
+                autoFocus
+                caretHidden
+                editable={!busy}
+                style={styles.rowInput}
+                textContentType="oneTimeCode"
+              />
+            </View>
 
             {/* resend countdown / resend link */}
             <View style={styles.timerRow}>
@@ -226,9 +217,12 @@ export default function EnterCodeScreen() {
                   <Text style={styles.timerTime}>{mm}:{ss}</Text>
                 </>
               ) : (
-                <Pressable onPress={resend} hitSlop={10}>
-                  <Text style={styles.resendLink}>Resend code</Text>
-                </Pressable>
+                <Text
+                  style={styles.resendLink}
+                  onPress={resend}
+                >
+                  Resend code
+                </Text>
               )}
             </View>
 
@@ -251,11 +245,13 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', marginTop: 30 },
   titleWhite: { color: '#fff', fontSize: 32, fontWeight: '800', letterSpacing: -0.5 },
   sub: { color: '#b0b0b0', fontSize: 15, lineHeight: 23, textAlign: 'center', marginTop: 10 },
-  boxRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 30 },
+  boxRowWrap: { position: 'relative', marginTop: 26 },
+  boxRow: { flexDirection: 'row', justifyContent: 'center' },
+  // the transparent input covers the full box row: every tap opens the OS keyboard
+  rowInput: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0, color: 'transparent', backgroundColor: 'transparent' },
   box: { backgroundColor: '#0b1026', borderWidth: 2, borderColor: '#2d3348', borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   boxActive: { borderWidth: 2, borderColor: 'transparent' },
   digit: { color: '#fff', fontSize: 26, fontWeight: '700' },
-  hiddenInput: { position: 'absolute', width: 1, height: 1, opacity: 0 },
   timerRow: { flexDirection: 'row', alignItems: 'center', marginTop: 18, minHeight: 20 },
   timerText: { color: '#d8dce8', fontSize: 14 },
   timerTime: { color: '#00D2FF', fontSize: 14, fontWeight: '600' },
