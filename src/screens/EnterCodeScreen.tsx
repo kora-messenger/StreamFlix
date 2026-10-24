@@ -89,6 +89,16 @@ export default function EnterCodeScreen() {
     setErr(r.message || 'Could not sign you in');
   };
 
+  // Android: if the keyboard was dismissed, the hidden input is still
+  // "focused", so a plain focus() is a no-op and the keyboard never
+  // reappears. Blur first, then refocus on the next tick.
+  const focusInput = () => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.blur();
+    setTimeout(() => el.focus(), 0);
+  };
+
   const onChangeCode = (text: string) => {
     const clean = text.replace(/[^0-9]/g, '').slice(0, CODE_LEN);
     setCode(clean);
@@ -103,7 +113,7 @@ export default function EnterCodeScreen() {
     setCode(''); setErr('');
     setLeft(RESEND_SECONDS);
     toast('Code sent to your email.', 'info');
-    inputRef.current?.focus();
+    focusInput();
   };
 
   const gap = 10;
@@ -171,7 +181,7 @@ export default function EnterCodeScreen() {
             </Text>
 
             {/* six code boxes — tapping anywhere focuses the hidden input */}
-            <Pressable onPress={() => inputRef.current?.focus()} style={[styles.boxRow, { gap }]}>
+            <Pressable onPress={focusInput} hitSlop={{ top: 14, bottom: 14 }} style={[styles.boxRow, { gap }]}>
               {Array.from({ length: CODE_LEN }).map((_, i) => {
                 const isActive = i === active;
                 const box = (
