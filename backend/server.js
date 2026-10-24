@@ -133,7 +133,8 @@ async function sendMail(to, code, type) {
       textContent: `${c.intro} Your code: ${code}. It expires in 10 minutes.`,
     }),
   });
-  if (!res.ok) throw new Error(`brevo ${res.status}`);
+  const bodyTxt = await res.text().catch(() => '');
+  if (!res.ok) throw new Error(`brevo ${res.status} ${bodyTxt.slice(0, 200)} from=${EMAIL_FROM}`);
 }
 
 /* ---------- shared validation ---------- */
