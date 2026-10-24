@@ -154,33 +154,57 @@ function watTime(d = new Date()) {
   } catch { return d.toUTCString(); }
 }
 
-function alertHtml(device, when) {
+function shortDevice(raw) {
+  let d = cleanDevice(raw);
+  if (/^streammax on /i.test(d)) d = d.slice('streammax on '.length);
+  return d ? `${d} \u00b7 StreamMax app` : 'StreamMax app';
+}
+
+function alertHtml(first, emailAddr, device, location, when) {
   const row = (label, value) => `
-        <tr><td align="left" style="padding:14px 18px;background:#0f1117;border-radius:10px;">
-          <span style="font-size:11px;color:#8a8ea3;text-transform:uppercase;letter-spacing:1px;">${label}</span><br/>
-          <span style="font-size:14px;color:#ffffff;">${value}</span>
+        <tr><td align="left" style="padding:12px 18px;background:#0f1117;border:1px solid #22273a;border-radius:10px;">
+          <span style="font-size:10px;color:#7d8296;text-transform:uppercase;letter-spacing:1.5px;">${label}</span><br/>
+          <span style="font-size:14px;color:#ffffff;font-weight:bold;">${value}</span>
         </td></tr>`;
   return `<!DOCTYPE html>
 <html><body style="margin:0;background:#0c0d11;font-family:Arial,Helvetica,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0c0d11;padding:32px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;background:#171a22;border-radius:14px;padding:32px 28px;">
-        <tr><td align="center" style="padding-bottom:8px;">
-          <span style="font-size:20px;font-weight:bold;color:#ffffff;">Stream<span style="color:#8b7bff;">Max</span></span>
-        </td></tr>
-        <tr><td align="center" style="padding-bottom:6px;">
-          <span style="font-size:18px;font-weight:bold;color:#ffffff;">New login to your account</span>
-        </td></tr>
-        <tr><td align="center" style="padding-bottom:22px;">
-          <span style="font-size:14px;color:#a0a3b1;line-height:1.6;">Your StreamMax account was just signed in to. If this was you, no action is needed.</span>
-        </td></tr>
-        <tr><td style="padding-bottom:8px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-spacing:0 8px;">
-            ${row('Device', device)}${row('Date &amp; time', when)}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;background:#171a22;border-radius:16px;overflow:hidden;">
+        <tr><td style="padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+            <tr height="4" style="height:4px;font-size:0;line-height:0;">
+              <td width="34%" style="background:#6C63FF;"></td>
+              <td width="33%" style="background:#3A7BFF;"></td>
+              <td width="33%" style="background:#00D2FF;"></td>
+            </tr>
           </table>
         </td></tr>
-        <tr><td align="center" style="padding-top:14px;">
-          <span style="font-size:12px;color:#8a8ea3;line-height:1.6;">If this wasn't you, change your StreamMax password immediately and secure the email account linked to it.</span>
+        <tr><td align="center" style="padding:32px 28px 0;">
+          <span style="font-size:20px;font-weight:bold;color:#ffffff;">Stream<span style="color:#8b7bff;">Max</span></span>
+        </td></tr>
+        <tr><td align="center" style="padding:16px 0 0;">
+          <span style="display:inline-block;width:44px;height:44px;line-height:44px;background:#6C63FF;color:#ffffff;font-size:20px;font-weight:bold;border-radius:22px;text-align:center;">!</span>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:6px;">
+          <span style="font-size:18px;font-weight:bold;color:#ffffff;">New sign-in detected</span>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:20px;">
+          <span style="font-size:14px;color:#a0a3b1;line-height:1.6;">Hi ${first}, your account was just signed in to from a new session.<br/>If this was you, no action is needed.</span>
+        </td></tr>
+        <tr><td style="padding-bottom:16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-spacing:0 8px;">
+            ${row('Signed-in account', emailAddr)}
+            ${row('Device', device)}
+            ${row('Location', location)}
+            ${row('Date &amp; time', when)}
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:18px;">
+          <a href="streammax://home" style="display:inline-block;background:linear-gradient(90deg,#6C63FF,#00D2FF);background-color:#6C63FF;color:#ffffff;font-size:14px;font-weight:bold;padding:13px 36px;border-radius:10px;text-decoration:none;">Secure my account</a>
+        </td></tr>
+        <tr><td align="center" style="padding:0 8px 28px;">
+          <span style="font-size:12px;color:#8a8ea3;line-height:1.7;">If this wasn't you, open StreamMax and change your password immediately, then secure the email account linked to it.<br/>You received this alert because your email and password were verified successfully.</span>
         </td></tr>
       </table>
     </td></tr>
@@ -188,18 +212,30 @@ function alertHtml(device, when) {
 </body></html>`;
 }
 
-async function sendLoginAlert(to, device) {
+async function ipLocation(ip) {
+  try {
+    const r = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, { signal: AbortSignal.timeout(4000) });
+    const j = await r.json();
+    if (j && j.city && j.country_name) return `${j.city}, ${j.country_name}`;
+    if (j && j.country_name) return j.country_name;
+    return 'Unavailable';
+  } catch { return 'Unavailable'; }
+}
+
+async function sendLoginAlert(to, name, device, ip) {
+  const first = cleanName(name).split(' ')[0] || 'there';
   const when = watTime();
-  const dev = cleanDevice(device);
+  const dev = shortDevice(device);
+  const location = await ipLocation(String(ip || ''));
   const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({
       sender: { name: 'StreamMax', email: EMAIL_FROM },
       to: [{ email: to }],
-      subject: 'New login to your StreamMax account',
-      htmlContent: alertHtml(dev, when),
-      textContent: `Your StreamMax account was just signed in to from ${dev} on ${when}. If this wasn't you, change your password immediately.`,
+      subject: 'New sign-in to your StreamMax account',
+      htmlContent: alertHtml(first, to, dev, location, when),
+      textContent: `New sign-in to your StreamMax account (${to}) from ${dev} in ${location} on ${when}. If this wasn't you, change your password immediately.`,
     }),
   });
   if (!res.ok) throw new Error(`brevo ${res.status}`);
@@ -288,6 +324,7 @@ app.get('/', (req, res) => res.json({ ok: true, service: 'streammax-auth' }));
 
 app.post('/', async (req, res) => {
   const body = req.body || {};
+  const clientIp = String((req.headers['x-forwarded-for'] || '').split(',')[0] || '').trim();
   const action = String(body.action || '');
   const email = String(body.email || '').trim().toLowerCase();
 
@@ -325,7 +362,7 @@ app.post('/', async (req, res) => {
         user = await findUser(gEmail);
       }
       if (wasReturning) {
-        sendLoginAlert(gEmail, body.device).catch(() => {});
+        sendLoginAlert(gEmail, user ? user.fullName : gName, body.device, clientIp).catch(() => {});
       } else {
         sendWelcome(gEmail, (user && user.fullName) || gName).catch(() => {});
       }
@@ -347,7 +384,7 @@ app.post('/', async (req, res) => {
         user = await findUser(email);
       }
       if (wasReturning) {
-        sendLoginAlert(email, body.device).catch(() => {});
+        sendLoginAlert(email, user ? user.fullName : '', body.device, clientIp).catch(() => {});
       } else {
         sendWelcome(email, user ? user.fullName : '').catch(() => {});
       }
@@ -432,7 +469,8 @@ app.post('/', async (req, res) => {
       if (rec.code === String(body.code || '').trim()) {
         await d.collection('codes').updateOne({ _id: rec._id }, { $set: { used: true } });
         if (type === 'login') {
-          sendLoginAlert(email, body.device).catch(() => {}); // fire-and-forget: login still succeeds if the alert email fails
+          const u = await findUser(email);
+          sendLoginAlert(email, u ? u.fullName : '', body.device, clientIp).catch(() => {}); // fire-and-forget: login still succeeds if the alert email fails
         }
         return res.json({ ok: true });
       }

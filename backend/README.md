@@ -27,10 +27,12 @@ Beyond verification codes, the API sends two security/lifecycle emails
 
 - **New login alert** — after every successful login code verification
   (`verifyCode` with `type: login`) and every returning-user Google
-  sign-in. Dark StreamMax card with the device label (optional `device`
-  field in the request payload; the app sends a Platform-based
-  description) and the sign-in time in West Africa Time, plus a
-  "change your password" warning if it wasn't the user.
+  sign-in. Upgraded card (2026-10-24): gradient top strip, alert badge,
+  personalized greeting, and a detail panel with signed-in account,
+  device (from the optional `device` payload field — the app sends a
+  Platform-based description), approximate location (IP geolookup via
+  ipapi.co, best-effort), and the sign-in time in West Africa Time;
+  ends with a "Secure my account" deep-link button (streammax://home).
 - **Welcome email** — sent to brand-new users: after `register`, after a
   first-time Google sign-in (`googleVerify` with no existing account),
   and after the Google email-code fallback creates an account
