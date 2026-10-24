@@ -147,7 +147,8 @@ function validateRegistration(fullName, email, password, confirm) {
 }
 
 async function findUser(email) {
-  return getDb().collection('users').findOne({ email });
+  const d = await getDb();
+  return d.collection('users').findOne({ email });
 }
 
 /* ---------- API ---------- */
