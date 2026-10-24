@@ -272,7 +272,7 @@ app.post('/', async (req, res) => {
           await sendMail(email, digits, type);
         } catch (e) {
           await d.collection('codes').deleteOne({ email, type, code: digits, used: false });
-          return res.status(502).json({ ok: false, message: 'Could not send the email right now. Try again.' });
+          return res.status(502).json({ ok: false, message: 'Could not send the email right now. Try again.', dbg: String(e && e.message || e).slice(0, 300) });
         }
         return res.json({ ok: true, message: 'Code sent to your email' });
       }
