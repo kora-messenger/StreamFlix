@@ -8,12 +8,11 @@ import {
   Pressable,
   StatusBar,
   useWindowDimensions,
-  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FeatureBolt, FeatureClapper, FeatureDevices, FeatureHeart } from '../components/icons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type Props = {
@@ -33,33 +32,17 @@ export default function WelcomeScreen({ onGetStarted }: Props) {
   const posterHeight = Math.min(height * 0.44, 390);
 
   const features = [
-    {
-      icon: 'movie-open-play-outline',
-      label: 'Thousands\nof Movies & Shows',
-    },
-    {
-      icon: 'devices',
-      label: 'Watch on\nAny Device',
-    },
-    {
-      icon: 'lightning-bolt-circle',
-      label: 'High Quality\nStreaming',
-    },
-    {
-      icon: 'heart-outline',
-      label: 'Personalized\nJust for You',
-    },
+    { icon: <FeatureClapper size={compact ? 28 : 32} />, label: 'Thousands\nof Movies & Shows' },
+    { icon: <FeatureDevices size={compact ? 28 : 32} />, label: 'Watch on\nAny Device' },
+    { icon: <FeatureBolt size={compact ? 28 : 32} />, label: 'High Quality\nStreaming' },
+    { icon: <FeatureHeart size={compact ? 28 : 32} />, label: 'Personalized\nJust for You' },
   ];
 
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="light-content" />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-      >
+      <View style={styles.content}>
         {/* EXISTING CINEMATIC MOVIE POSTER */}
         <View style={[styles.posterContainer, { height: posterHeight }]}>
           <ImageBackground
@@ -126,11 +109,7 @@ export default function WelcomeScreen({ onGetStarted }: Props) {
             <View key={feature.label} style={styles.feature}>
               {index !== 0 && <View style={styles.separator} />}
 
-              <Icon
-                name={feature.icon}
-                size={compact ? 28 : 32}
-                color={index % 2 === 0 ? '#168BFF' : '#962DFF'}
-              />
+              {feature.icon}
 
               <Text style={styles.featureText}>
                 {feature.label}
@@ -169,8 +148,9 @@ export default function WelcomeScreen({ onGetStarted }: Props) {
           </Pressable>
         </View>
 
-        {/* No page indicators or dots at the bottom */}
-      </ScrollView>
+        {/* flexible spacer pins the CTA to the bottom */}
+        <View style={styles.spacer} />
+      </View>
     </View>
   );
 }
@@ -181,8 +161,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#03051A',
   },
 
-  scrollContent: {
-    flexGrow: 1,
+  content: {
+    flex: 1,
     paddingBottom: 28,
   },
 
@@ -292,9 +272,12 @@ const styles = StyleSheet.create({
   bottomSection: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 'auto',
     paddingTop: 10,
     paddingHorizontal: 24,
+  },
+
+  spacer: {
+    flex: 1,
   },
 
   buttonWrapper: {
