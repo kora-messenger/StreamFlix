@@ -241,7 +241,7 @@ function welcomeHtml(name, emailAddr) {
           </table>
         </td></tr>
         <tr><td align="center" style="padding-top:6px;">
-          <span style="display:inline-block;background:linear-gradient(90deg,#6C63FF,#00D2FF);color:#ffffff;font-size:14px;font-weight:bold;padding:12px 34px;border-radius:10px;">Start Watching</span>
+          <a href="streammax://home" style="display:inline-block;background:linear-gradient(90deg,#6C63FF,#00D2FF);color:#ffffff;font-size:14px;font-weight:bold;padding:12px 34px;border-radius:10px;text-decoration:none;">Start Watching</a>
         </td></tr>
         <tr><td align="center" style="padding-top:18px;">
           <span style="font-size:12px;color:#8a8ea3;line-height:1.6;">Account created with ${emailAddr}<br/>If you didn't create this account, you can safely ignore this email.</span>

@@ -35,7 +35,10 @@ Beyond verification codes, the API sends two security/lifecycle emails
   first-time Google sign-in (`googleVerify` with no existing account),
   and after the Google email-code fallback creates an account
   (`googleSession` with no existing account). Greeting with first name,
-  feature highlights, and the account email.
+  feature highlights, and the account email. The "Start Watching" button
+  deep-links to the app via the custom `streammax://home` scheme (when the
+  StreamMax .com domain exists, switch it to a verified https App Link for
+  full Gmail reliability).
 
 Passwords are hashed with scrypt (per-user random salt). Accounts imported from
 the old device-local era keep their legacy sha256 hash and are upgraded to
