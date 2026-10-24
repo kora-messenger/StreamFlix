@@ -136,6 +136,137 @@ async function sendMail(to, code, type) {
   if (!res.ok) throw new Error(`brevo ${res.status}`);
 }
 
+/* ---------- security alert: new login ---------- */
+
+const DEVICE_MAX = 60;
+const cleanDevice = (raw) => String(raw || '')
+  .replace(/[<>\\"'&]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, DEVICE_MAX) || 'Unknown device';
+
+function watTime(d = new Date()) {
+  try {
+    return new Intl.DateTimeFormat('en-NG', {
+      timeZone: 'Africa/Lagos', weekday: 'short', year: 'numeric', month: 'short',
+      day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
+    }).format(d) + ' WAT';
+  } catch { return d.toUTCString(); }
+}
+
+function alertHtml(device, when) {
+  const row = (label, value) => `
+        <tr><td align="left" style="padding:14px 18px;background:#0f1117;border-radius:10px;">
+          <span style="font-size:11px;color:#8a8ea3;text-transform:uppercase;letter-spacing:1px;">${label}</span><br/>
+          <span style="font-size:14px;color:#ffffff;">${value}</span>
+        </td></tr>`;
+  return `<!DOCTYPE html>
+<html><body style="margin:0;background:#0c0d11;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0c0d11;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;background:#171a22;border-radius:14px;padding:32px 28px;">
+        <tr><td align="center" style="padding-bottom:8px;">
+          <span style="font-size:20px;font-weight:bold;color:#ffffff;">Stream<span style="color:#8b7bff;">Max</span></span>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:6px;">
+          <span style="font-size:18px;font-weight:bold;color:#ffffff;">New login to your account</span>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:22px;">
+          <span style="font-size:14px;color:#a0a3b1;line-height:1.6;">Your StreamMax account was just signed in to. If this was you, no action is needed.</span>
+        </td></tr>
+        <tr><td style="padding-bottom:8px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-spacing:0 8px;">
+            ${row('Device', device)}${row('Date &amp; time', when)}
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-top:14px;">
+          <span style="font-size:12px;color:#8a8ea3;line-height:1.6;">If this wasn't you, change your StreamMax password immediately and secure the email account linked to it.</span>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+}
+
+async function sendLoginAlert(to, device) {
+  const when = watTime();
+  const dev = cleanDevice(device);
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: { 'api-key': BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({
+      sender: { name: 'StreamMax', email: EMAIL_FROM },
+      to: [{ email: to }],
+      subject: 'New login to your StreamMax account',
+      htmlContent: alertHtml(dev, when),
+      textContent: `Your StreamMax account was just signed in to from ${dev} on ${when}. If this wasn't you, change your password immediately.`,
+    }),
+  });
+  if (!res.ok) throw new Error(`brevo ${res.status}`);
+}
+
+/* ---------- welcome email (new users) ---------- */
+
+const cleanName = (raw) => String(raw || '')
+  .replace(/[<>\\"'&]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 40);
+
+function welcomeHtml(name, emailAddr) {
+  const first = (cleanName(name).split(' ')[0]) || 'there';
+  const li = (txt) => `
+        <tr><td align="left" style="padding:7px 0;">
+          <span style="font-size:14px;color:#c6c9d4;line-height:1.6;"><span style="color:#8b7bff;">&#9679;</span>&nbsp; ${txt}</span>
+        </td></tr>`;
+  return `<!DOCTYPE html>
+<html><body style="margin:0;background:#0c0d11;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0c0d11;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;background:#171a22;border-radius:14px;padding:32px 28px;">
+        <tr><td align="center" style="padding-bottom:8px;">
+          <span style="font-size:20px;font-weight:bold;color:#ffffff;">Stream<span style="color:#8b7bff;">Max</span></span>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:6px;">
+          <span style="font-size:18px;font-weight:bold;color:#ffffff;">Welcome to StreamMax, ${first}</span>
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:22px;">
+          <span style="font-size:14px;color:#a0a3b1;line-height:1.6;">Your account is ready. Thousands of movies and shows are waiting for you — your movies, your way.</span>
+        </td></tr>
+        <tr><td style="padding-bottom:10px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            ${li('Stream movies and TV shows in a premium cinema-grade player')}
+            ${li('Save what you love and pick up where you left off')}
+            ${li('Your account and watchlist, secured and private')}
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-top:6px;">
+          <span style="display:inline-block;background:linear-gradient(90deg,#6C63FF,#00D2FF);color:#ffffff;font-size:14px;font-weight:bold;padding:12px 34px;border-radius:10px;">Start Watching</span>
+        </td></tr>
+        <tr><td align="center" style="padding-top:18px;">
+          <span style="font-size:12px;color:#8a8ea3;line-height:1.6;">Account created with ${emailAddr}<br/>If you didn't create this account, you can safely ignore this email.</span>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+}
+
+async function sendWelcome(to, name) {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: { 'api-key': BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({
+      sender: { name: 'StreamMax', email: EMAIL_FROM },
+      to: [{ email: to }],
+      subject: 'Welcome to StreamMax',
+      htmlContent: welcomeHtml(name, to),
+      textContent: `Welcome to StreamMax! Your account (${to}) is ready. If you didn't create this account, you can safely ignore this email.`,
+    }),
+  });
+  if (!res.ok) throw new Error(`brevo ${res.status}`);
+}
+
 /* ---------- shared validation ---------- */
 
 function validateRegistration(fullName, email, password, confirm) {
@@ -180,6 +311,7 @@ app.post('/', async (req, res) => {
       const gEmail = String(info.email).toLowerCase();
       const gName = String(info.name || '');
       let user = await findUser(gEmail);
+      const wasReturning = !!user;
       if (!user) {
         const salt = crypto.randomBytes(16).toString('hex');
         const inserted = await d.collection('users').insertOne({
@@ -192,6 +324,11 @@ app.post('/', async (req, res) => {
         await d.collection('users').updateOne({ email: gEmail }, { $set: { fullName: gName, google: true } });
         user = await findUser(gEmail);
       }
+      if (wasReturning) {
+        sendLoginAlert(gEmail, body.device).catch(() => {});
+      } else {
+        sendWelcome(gEmail, (user && user.fullName) || gName).catch(() => {});
+      }
       return res.json({ ok: true, email: gEmail, name: gName, user: pubUser(user || { fullName: gName, email: gEmail }) });
     }
 
@@ -199,6 +336,7 @@ app.post('/', async (req, res) => {
     if (action === 'googleSession') {
       if (!emailOk(email)) return res.status(400).json({ ok: false, field: 'email', message: 'Enter a valid email address' });
       let user = await findUser(email);
+      const wasReturning = !!user;
       if (!user) {
         const salt = crypto.randomBytes(16).toString('hex');
         await d.collection('users').insertOne({
@@ -207,6 +345,11 @@ app.post('/', async (req, res) => {
           pwLegacy: false, google: true, createdAt: new Date(),
         });
         user = await findUser(email);
+      }
+      if (wasReturning) {
+        sendLoginAlert(email, body.device).catch(() => {});
+      } else {
+        sendWelcome(email, user ? user.fullName : '').catch(() => {});
       }
       return res.json({ ok: true, user: pubUser(user) });
     }
@@ -237,6 +380,7 @@ app.post('/', async (req, res) => {
         hash: scryptHash(body.password, salt), pwLegacy: false, createdAt: new Date(),
       });
       const user = await findUser(e);
+      sendWelcome(e, user ? user.fullName : String(body.fullName || '').trim()).catch(() => {});
       return res.json({ ok: true, user: pubUser(user) });
     }
 
@@ -287,6 +431,9 @@ app.post('/', async (req, res) => {
 
       if (rec.code === String(body.code || '').trim()) {
         await d.collection('codes').updateOne({ _id: rec._id }, { $set: { used: true } });
+        if (type === 'login') {
+          sendLoginAlert(email, body.device).catch(() => {}); // fire-and-forget: login still succeeds if the alert email fails
+        }
         return res.json({ ok: true });
       }
       const attempts = (rec.attempts || 0) + 1;

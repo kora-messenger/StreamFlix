@@ -10,10 +10,20 @@
  * MongoDB once via the `migrate` action.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 /* StreamMax backend — domain-swappable: this is the ONLY place the URL lives.
    Render free tier; flip to the .com infrastructure when the domain is bought. */
 const API_BASE = 'https://streammax-api.onrender.com';
+
+/** Human-readable device label sent with sign-ins (shown in login-alert emails). */
+function deviceDescription(): string {
+  return Platform.OS === 'android'
+    ? `StreamMax on Android${typeof Platform.Version === 'number' ? ' (API ' + Platform.Version + ')' : ''}`
+    : Platform.OS === 'ios'
+      ? `StreamMax on iOS${typeof Platform.Version === 'number' ? ' ' + Platform.Version : ''}`
+      : `StreamMax on ${Platform.OS || 'web'}`;
+}
 
 export type CodeType = 'signup' | 'login' | 'reset' | 'google';
 export interface CodeResult { ok: boolean; message?: string; }
@@ -149,7 +159,9 @@ export async function requestCode(email: string, type: CodeType): Promise<CodeRe
 /** Check a code the user typed against the backend. */
 export async function checkCode(email: string, type: CodeType, code: string): Promise<CodeResult> {
   const e = email.trim().toLowerCase();
-  const r = await callAuth({ action: 'verifyCode', email: e, type, code: code.trim() });
+  const payload: Record<string, unknown> = { action: 'verifyCode', email: e, type, code: code.trim() };
+  if (type === 'login') payload.device = deviceDescription(); // backend emails a new-login alert
+  const r = await callAuth(payload);
   return { ok: !!r.ok, message: r.message };
 }
 
@@ -162,7 +174,7 @@ export async function checkCode(email: string, type: CodeType, code: string): Pr
  * session. No emailed code is involved.
  */
 export async function googleTokenLogin(idToken: string): Promise<AuthResult> {
-  const r = await callAuth({ action: 'googleVerify', idToken });
+  const r = await callAuth({ action: 'googleVerify', idToken, device: deviceDescription() });
   if (!r.ok) return { ok: false, message: r.message || 'Google could not verify that sign-in. Try again.' };
   if (!r.user) return { ok: false, message: 'Could not sign you in' };
   await openSession(r.user, true);
