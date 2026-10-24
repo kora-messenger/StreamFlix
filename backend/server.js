@@ -26,7 +26,7 @@ const crypto = require('crypto');
 const PORT = process.env.PORT || 8080;
 const MONGODB_URI = process.env.MONGODB_URI || '';
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
-const EMAIL_FROM = (process.env.EMAIL_FROM || 'ijeziegoodluck4@gmail.com').replace(/\s+/g, '').replace(/[^\x21-\x7E@.]/g, '');
+const EMAIL_FROM = (() => { const raw = String(process.env.EMAIL_FROM || ''); const m = raw.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/); return m ? m[0] : 'ijeziegoodluck4@gmail.com'; })();
 const GOOGLE_WEB_CLIENT_ID = process.env.GOOGLE_WEB_CLIENT_ID || '463127766110-cugua4mmvf9mrj2mgpdp05iat3f8vr07.apps.googleusercontent.com';
 
 const CODE_TTL_MS = 10 * 60 * 1000;
@@ -134,7 +134,7 @@ async function sendMail(to, code, type) {
     }),
   });
   const bodyTxt = await res.text().catch(() => '');
-  if (!res.ok) throw new Error(`brevo ${res.status} ${bodyTxt.slice(0, 200)} fromcodes=${EMAIL_FROM.length}:${[...EMAIL_FROM].map(c=>c.charCodeAt(0)).join('.')}`);
+  if (!res.ok) throw new Error(`brevo ${res.status} ${bodyTxt.slice(0, 200)} from=${EMAIL_FROM}`);
 }
 
 /* ---------- shared validation ---------- */
