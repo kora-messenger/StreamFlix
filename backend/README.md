@@ -20,6 +20,23 @@ ID tokens directly. The app speaks the same JSON contract it always did
 | `emailExists` | `email` | `{ ok, exists }` |
 | `migrate` | `accounts: [{fullName,email,salt,hash}]` | `{ ok, imported }` (one-time import of old device-local accounts) |
 
+## Transactional emails (Brevo)
+
+Beyond verification codes, the API sends two security/lifecycle emails
+(both fire-and-forget: a Brevo failure never blocks sign-in):
+
+- **New login alert** — after every successful login code verification
+  (`verifyCode` with `type: login`) and every returning-user Google
+  sign-in. Dark StreamMax card with the device label (optional `device`
+  field in the request payload; the app sends a Platform-based
+  description) and the sign-in time in West Africa Time, plus a
+  "change your password" warning if it wasn't the user.
+- **Welcome email** — sent to brand-new users: after `register`, after a
+  first-time Google sign-in (`googleVerify` with no existing account),
+  and after the Google email-code fallback creates an account
+  (`googleSession` with no existing account). Greeting with first name,
+  feature highlights, and the account email.
+
 Passwords are hashed with scrypt (per-user random salt). Accounts imported from
 the old device-local era keep their legacy sha256 hash and are upgraded to
 scrypt automatically on their first successful login. Codes are 6 digits,
