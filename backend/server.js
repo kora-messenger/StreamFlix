@@ -133,8 +133,7 @@ async function sendMail(to, code, type) {
       textContent: `${c.intro} Your code: ${code}. It expires in 10 minutes.`,
     }),
   });
-  const bodyTxt = await res.text().catch(() => '');
-  if (!res.ok) throw new Error(`brevo ${res.status} ${bodyTxt.slice(0, 200)} from=${EMAIL_FROM}`);
+  if (!res.ok) throw new Error(`brevo ${res.status}`);
 }
 
 /* ---------- shared validation ---------- */
@@ -273,7 +272,7 @@ app.post('/', async (req, res) => {
           await sendMail(email, digits, type);
         } catch (e) {
           await d.collection('codes').deleteOne({ email, type, code: digits, used: false });
-          return res.status(502).json({ ok: false, message: 'Could not send the email right now. Try again.', dbg: `${String(e && e.message || e).slice(0, 200)} | keylen=${BREVO_API_KEY.length} | keyend=${BREVO_API_KEY.slice(-12)}` });
+          return res.status(502).json({ ok: false, message: 'Could not send the email right now. Try again.' });
         }
         return res.json({ ok: true, message: 'Code sent to your email' });
       }
@@ -337,7 +336,7 @@ app.post('/', async (req, res) => {
     return res.status(400).json({ ok: false, message: 'Unknown action' });
   } catch (err) {
     console.error('api error', action, err && err.message);
-    return res.status(500).json({ ok: false, message: 'Server error', dbg: String(err && err.message || err).slice(0, 300) });
+    return res.status(500).json({ ok: false, message: 'Server error' });
   }
 });
 
